@@ -12,8 +12,11 @@ struct ContentView: View {
     @State private var viewModel = AuthViewModel()
     
     var body: some View {
-        if viewModel.isLogged{
-            Text("Nastia is so hungry")
+        if viewModel.isLogged && viewModel.pairID == nil{
+            PairView(viewModel: viewModel)
+        }
+        else if viewModel.isLogged && viewModel.pairID != nil{
+            MainTabView()
         }
         else{
             AuthView(viewModel: viewModel)

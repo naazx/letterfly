@@ -17,7 +17,7 @@ struct PawLetterApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
+             ContentView()
            // AuthView()
         }
     }
