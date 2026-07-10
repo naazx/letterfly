@@ -12,13 +12,27 @@ struct AuthView: View {
     
     @State private var email: String = ""
     @State private var password: String = ""
+    @State private var isPasswordVisible: Bool = false
     
     var body: some View {
         NavigationStack{
             Form {
                 Section{
                     TextField("Email", text: $email)
-                    SecureField("Password", text: $password)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+                    HStack {
+                        if isPasswordVisible {
+                            TextField("Password", text: $password)
+                        } else {
+                            SecureField("Password", text: $password)
+                        }
+                        Button {
+                            isPasswordVisible.toggle()
+                        } label: {
+                            Image(systemName: isPasswordVisible ? "eye.slash" : "eye")
+                        }
+                    }
                 }
                 Section {
                     Button("Sign in"){

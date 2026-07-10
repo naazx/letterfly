@@ -16,7 +16,7 @@ struct ContentView: View {
             PairView(viewModel: viewModel)
         }
         else if viewModel.isLogged && viewModel.pairID != nil{
-            MainTabView()
+            MainTabView(viewModel: viewModel)
         }
         else{
             AuthView(viewModel: viewModel)
