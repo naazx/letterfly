@@ -8,17 +8,14 @@ import FirebaseAuth
 import SwiftUI
 
 struct HomeView: View {
-    @State private var homeViewModel = HomeViewModel()
     @State private var isShowingNewLetter: Bool = false
+    var homeViewModel: HomeViewModel
     var pairID: String
     
     var body: some View {
         NavigationStack{
             List(homeViewModel.letters) { letter in
                 Text(letter.text)
-            }
-            .onAppear {
-                homeViewModel.startListening(pairID: pairID)
             }
             .toolbar{
                 Button("Add new list", systemImage: "plus"){
@@ -30,10 +27,11 @@ struct HomeView: View {
                     NewLetterView(pairID: pairID, authorID: currentUser)
                 }
             }
+            .navigationTitle("Your lists")
         }
     }
 }
 
 #Preview {
-    HomeView(pairID: "qJ23Kdi6EMFLYmtnWgiD")
+    HomeView(homeViewModel: HomeViewModel(), pairID: "qJ23Kdi6EMFLYmtnWgiD")
 }

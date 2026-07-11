@@ -7,7 +7,7 @@
 import FirebaseFirestore
 import Foundation
 
-struct Letter : Codable, Identifiable{
+struct Letter : Codable, Identifiable, Equatable{
     @DocumentID var id: String?
     var authorID: String
     var text: String
