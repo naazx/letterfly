@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct CalendarView: View {
-    @State private var grouped: [Date: [Letter]] = [:]
     @State private var viewModel = CalendarViewModel()
     @State private var isShowingDayDetail: Bool = false
     
@@ -17,6 +16,8 @@ struct CalendarView: View {
     let currentMonth: Date
     
     var body: some View {
+        let grouped = viewModel.groupedLetters(letters)
+        
         NavigationStack {
             ScrollViewReader{ proxy in
                 ScrollView {
@@ -70,14 +71,15 @@ struct CalendarView: View {
                 }
                 .navigationTitle("Calendar")
                 .onAppear {
-                    proxy.scrollTo(currentMonth, anchor: .center)
+                    DispatchQueue.main.async {
+                        proxy.scrollTo(currentMonth, anchor: .center)
+                    }
                 }
             }
         }
         .sheet(isPresented: $isShowingDayDetail) {
             DayLettersView(date: viewModel.selectedDate! , letters: grouped[viewModel.selectedDate!] ?? [])
         }
-        .onChange(of: letters, initial: true) { _, newValue in grouped = viewModel.groupedLetters(newValue) }
     }
     init(letters: [Letter]){
         let calendar = Calendar.current

@@ -12,7 +12,11 @@ struct ContentView: View {
     @State private var viewModel = AuthViewModel()
     
     var body: some View {
-        if viewModel.isLogged && viewModel.pairID == nil{
+        
+        if viewModel.isLoadingPairID{
+            ProgressView()
+        }
+        else if viewModel.isLogged && viewModel.pairID == nil{
             PairView(viewModel: viewModel)
         }
         else if viewModel.isLogged && viewModel.pairID != nil{

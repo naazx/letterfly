@@ -13,11 +13,13 @@ class AuthViewModel {
     var isLogged: Bool = false
     let userServices = UserServices()
     var pairID: String?
+    var isLoadingPairID: Bool = false
     
     init(){
         if let currentUser = Auth.auth().currentUser {
             isLogged = true
             let userID = currentUser.uid
+            isLoadingPairID = true
             Task{
                 await loadPairID(uid: userID)
             }
@@ -75,5 +77,6 @@ class AuthViewModel {
         } catch {
             print("error: \(error.localizedDescription)")
         }
+        isLoadingPairID = false
     }
 }
