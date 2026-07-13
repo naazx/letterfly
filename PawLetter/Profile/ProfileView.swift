@@ -9,10 +9,8 @@ import FirebaseAuth
 import SwiftUI
 
 struct ProfileView: View {
-    @State private var inviteCode: String?
-    
-    var viewModel: AuthViewModel
-    var userServices = UserServices()
+    @State private var profileViewModel = ProfileViewModel()
+    var authViewModel: AuthViewModel
     
     var body: some View {
         NavigationStack{
@@ -27,23 +25,14 @@ struct ProfileView: View {
                     }
                     .listRowBackground(Color.clear)
                     Section("Your code"){
-                        Text(inviteCode ?? "Loading...")
+                        Text(profileViewModel.inviteCode ?? "Loading...")
                     }
                     Button("Logout", systemImage: "person.crop.circle.fill.badge.xmark") {
-                        viewModel.signOut()
+                        authViewModel.signOut()
                     }
                 }
                 .task {
-                    guard let user = Auth.auth().currentUser else {
-                        inviteCode = "NO USER"
-                        return
-                    }
-                    do {
-                        let fetchedCode = try await userServices.fetchInviteCode(uid: user.uid)
-                        inviteCode = fetchedCode ?? "NIL CODE"
-                    } catch {
-                        inviteCode = "ERROR: \(error.localizedDescription)"
-                    }
+                   await profileViewModel.loadInviteCode()
                 }
                 .navigationTitle("Profile")
             }
@@ -51,5 +40,5 @@ struct ProfileView: View {
 }
 
 #Preview {
-    ProfileView(viewModel: AuthViewModel())
+    ProfileView(authViewModel: AuthViewModel())
 }

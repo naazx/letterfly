@@ -22,7 +22,7 @@ struct MainTabView: View {
                     .tabItem{
                         Label("Calendar", systemImage: "calendar")
                     }
-                ProfileView(viewModel: viewModel)
+                ProfileView(authViewModel: viewModel)
                     .tabItem{
                         Label("Profile", systemImage: "person")
                     }
