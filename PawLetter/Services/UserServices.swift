@@ -18,7 +18,6 @@ class UserServices {
             "pairID": NSNull()
         ])
     }
-
     func isCodeTaken(_ code: String) async throws -> Bool {
         let snapshot = try await db.collection("users")
             .whereField("inviteCode", isEqualTo: code)
@@ -43,9 +42,8 @@ class UserServices {
             let taken = try await isCodeTaken(code)
             
             if !taken {
-                return code   // одразу виходимо і повертаємо код
+                return code
             }
-            // інакше цикл повторюється
         }
     }
     func fetchPairID(uid: String) async throws -> String? {

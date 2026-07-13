@@ -12,23 +12,23 @@ import SwiftUI
 struct ProfileView: View {
     @State private var profileViewModel = ProfileViewModel()
     @State private var selectedItem: PhotosPickerItem?
+    @State private var showFullScreenAvatar: Bool = false
     var authViewModel: AuthViewModel
     
     var body: some View {
         NavigationStack{
             Form {
                 Section {
-                    PhotosPicker(
-                        selection: $selectedItem,
-                        matching: .images
-                    ) {
-                        ZStack{
+                    ZStack{
                             if let previewImage = profileViewModel.previewImage {
                                 Image(uiImage: previewImage)
                                     .resizable()
                                     .scaledToFill()
                                     .frame(width: 100, height: 100)
                                     .clipShape(Circle())
+                                    .onTapGesture {
+                                        showFullScreenAvatar = true
+                                    }
                             } else if let imageURL = profileViewModel.avatarURL {
                                 AsyncImage(url: imageURL) { image in
                                     image
@@ -39,6 +39,9 @@ struct ProfileView: View {
                                 }
                                 .frame(width: 100, height: 100)
                                 .clipShape(Circle())
+                                .onTapGesture {
+                                    showFullScreenAvatar = true
+                                }
                             } else {
                                 Image(systemName: "person.circle.fill")
                                     .resizable()
@@ -46,6 +49,9 @@ struct ProfileView: View {
                                     .foregroundStyle(.blue)
                                     .frame(width: 100, height: 100)
                                     .clipShape(Circle())
+                                    .onTapGesture {
+                                        showFullScreenAvatar = true
+                                    }
                             }
                             
                             if profileViewModel.isLoading {
@@ -56,9 +62,36 @@ struct ProfileView: View {
                                 ProgressView()
                             }
                         }
-                    }
                     .frame(maxWidth: .infinity)
-                    .disabled(profileViewModel.isLoading)
+                    .overlay(alignment: .bottomTrailing) {
+                        PhotosPicker(selection: $selectedItem, matching: .images) {
+                            Image(systemName: "camera.circle.fill")
+                                .font(.title2)
+                                .foregroundStyle(.blue)
+                        }
+                        .disabled(profileViewModel.isLoading)
+                    }
+                    .fullScreenCover(isPresented: $showFullScreenAvatar) {
+                        if let previewImage = profileViewModel.previewImage {
+                            Image(uiImage: previewImage)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                .background(Color.black)
+                                .ignoresSafeArea()
+                                .onTapGesture { showFullScreenAvatar = false }
+                        } else {
+                            AsyncImage(url: profileViewModel.avatarURL) { image in
+                                image.resizable().scaledToFit()
+                            } placeholder: {
+                                ProgressView()
+                            }
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .background(Color.black)
+                            .ignoresSafeArea()
+                            .onTapGesture { showFullScreenAvatar = false }
+                        }
+                    }
                 }
                 .listRowBackground(Color.clear)
                        
@@ -77,6 +110,7 @@ struct ProfileView: View {
             }
             .task {
                 await profileViewModel.loadProfile()
+                await profileViewModel.loadFullImage()
             }
             .alert("Error", isPresented: $profileViewModel.showError) {
                 Button("OK") {}

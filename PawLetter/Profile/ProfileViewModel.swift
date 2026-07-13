@@ -89,4 +89,11 @@ class ProfileViewModel{
             showError = true
         }
     }
+    func loadFullImage() async {
+        guard let avatarURL else { return }
+        do {
+            let (data, _) = try await URLSession.shared.data(from: avatarURL)
+            previewImage = UIImage(data: data)
+        } catch {}
+    }
 }
