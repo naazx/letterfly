@@ -15,6 +15,7 @@ class ProfileViewModel{
     var storageService = StorageService()
     
     var avatarURL: URL?
+    var previewImage: UIImage?
     var isLoading: Bool = false
     var showError: Bool = false
     var errorMessage: String = ""
@@ -39,6 +40,7 @@ class ProfileViewModel{
                 showError = true
                 return
             }
+            previewImage = image
             
             do{
                 guard let compression = image.jpegData(compressionQuality: 0.7)  else {
@@ -51,9 +53,11 @@ class ProfileViewModel{
                         showError = true
                         return
                     }
-                        avatarURL = try await storageService.uploadImage(data: compression, path: "avatars/\(id).jpg")
-                        errorMessage = ""
-                        showError = false
+                    let uploadedURL = try await storageService.uploadImage(data: compression, path: "avatars/\(id).jpg")
+                    avatarURL = uploadedURL
+                    try await userServices.updateAvatarURL(uid: id, url: uploadedURL.absoluteString)
+                    errorMessage = ""
+                    showError = false
                 }
             } catch StorageError.fileTooLarge {
                 errorMessage = "File is too large"
@@ -67,15 +71,19 @@ class ProfileViewModel{
             showError = true
         }
     }
-    func loadInviteCode() async {
+    func loadProfile() async {
         guard let user = Auth.auth().currentUser else {
             errorMessage = "NO USER"
             showError = true
             return
         }
         do {
-            let fetchedCode = try await userServices.fetchInviteCode(uid: user.uid)
-            inviteCode = fetchedCode ?? "NIL CODE"
+            let profile = try await userServices.fetchUserProfile(uid: user.uid)
+            inviteCode = profile.inviteCode ?? "NIL CODE"
+            if let temp = profile.avatarURL {
+                avatarURL =  URL(string: temp)
+            }
+            
         } catch {
             errorMessage = "ERROR: \(error.localizedDescription)"
             showError = true

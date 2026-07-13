@@ -51,6 +51,17 @@ class UserServices {
     func fetchPairID(uid: String) async throws -> String? {
         try await db.collection("users").document(uid).getDocument().data()?["pairID"] as? String
     }
+    func updateAvatarURL(uid: String, url: String) async throws {
+        try await db.collection("users").document(uid).updateData(
+            ["avatarURL": url]
+        )
+    }
+    func fetchUserProfile(uid: String) async throws -> (inviteCode: String?, avatarURL: String?) {
+        let data = try await db.collection("users").document(uid).getDocument().data()
+        let inviteCode = data?["inviteCode"] as? String
+        let avatarURL = data?["avatarURL"] as? String
+        return (inviteCode, avatarURL)
+    }
     func fetchInviteCode(uid: String) async throws -> String? {
         try await db.collection("users").document(uid).getDocument().data()?["inviteCode"] as? String
     }
