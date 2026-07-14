@@ -69,8 +69,8 @@ struct PairView: View {
                     return
                 }
                 do {
-                    let fetchedCode = try await userServices.fetchInviteCode(uid: user.uid)
-                    inviteCode = fetchedCode ?? "NIL CODE"
+                    let profile = try await userServices.fetchUserProfile(uid: user.uid)
+                    inviteCode = profile.inviteCode ?? "NIL CODE"
                 } catch {
                     inviteCode = "ERROR: \(error.localizedDescription)"
                 }

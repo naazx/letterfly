@@ -60,7 +60,4 @@ class UserServices {
         let avatarURL = data?["avatarURL"] as? String
         return (inviteCode, avatarURL)
     }
-    func fetchInviteCode(uid: String) async throws -> String? {
-        try await db.collection("users").document(uid).getDocument().data()?["inviteCode"] as? String
-    }
 }
