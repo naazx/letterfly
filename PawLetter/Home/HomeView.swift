@@ -15,7 +15,11 @@ struct HomeView: View {
     var body: some View {
         NavigationStack{
             List(homeViewModel.letters) { letter in
-                Text(letter.text)
+                HStack {
+                       Text(letter.text)
+                       Spacer()
+                       Text(letter.formattedDate)
+                   }
             }
             .toolbar{
                 Button("Add new list", systemImage: "plus"){
