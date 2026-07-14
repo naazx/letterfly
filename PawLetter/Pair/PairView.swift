@@ -40,7 +40,7 @@ struct PairView: View {
                             
                             do {
                                 try await pairServices.joinPair(myUID: user.uid, partnerCode: partnerCodeInput)
-                                await viewModel.loadPairID(uid: user.uid)
+                                await viewModel.loadUserData(uid: user.uid)
                             } catch PairError.codeNotFound{
                                 errorMessage = "code is not found"
                                 showError = true

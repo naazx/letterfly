@@ -13,6 +13,7 @@ class AuthViewModel {
     var isLogged: Bool = false
     let userServices = UserServices()
     var pairID: String?
+    var displayName: String?
     var isLoadingPairID: Bool = false
     
     init(){
@@ -21,16 +22,15 @@ class AuthViewModel {
             let userID = currentUser.uid
             isLoadingPairID = true
             Task{
-                await loadPairID(uid: userID)
+                await loadUserData(uid: userID)
             }
         }
     }
-    
     func signIn(email: String, password: String) async {
         do{
             try await Auth.auth().signIn(withEmail: email , password:password)
             let userID = Auth.auth().currentUser!.uid
-            await loadPairID(uid: userID)
+            await loadUserData(uid: userID)
         }
         catch{
             print("Error: \(error.localizedDescription)")
@@ -58,6 +58,7 @@ class AuthViewModel {
             try  Auth.auth().signOut()
             isLogged = false
             pairID = nil
+            displayName = nil
         }catch{
             print("error: \(error.localizedDescription)")
         }
@@ -71,12 +72,23 @@ class AuthViewModel {
                     return
         }
     }
-    func loadPairID(uid: String) async {
-        do{
-            pairID = try await userServices.fetchPairID(uid: uid)
+    func loadUserData(uid: String) async {
+        do {
+            let profile = try await userServices.fetchUserProfile(uid: uid)
+            pairID = profile.pairID
+            displayName = profile.displayName
         } catch {
             print("error: \(error.localizedDescription)")
         }
         isLoadingPairID = false
+    }
+    func saveDisplayName(_ name: String) async {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        do {
+            try await userServices.updateDisplayName(uid: uid, name: name)
+            displayName = name
+        } catch {
+            print("error: \(error.localizedDescription)")
+        }
     }
 }

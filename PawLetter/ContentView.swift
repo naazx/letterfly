@@ -9,23 +9,25 @@ import SwiftUI
 
 struct ContentView: View {
     
-    @State private var viewModel = AuthViewModel()
+    @State private var authViewModel = AuthViewModel()
     
     var body: some View {
         
-        if viewModel.isLoadingPairID{
+        if authViewModel.isLoadingPairID{
             ProgressView()
         }
-        else if viewModel.isLogged && viewModel.pairID == nil{
-            PairView(viewModel: viewModel)
+        else if authViewModel.isLogged == false{
+            AuthView(viewModel: authViewModel)
         }
-        else if viewModel.isLogged && viewModel.pairID != nil{
-            MainTabView(viewModel: viewModel)
+        else if authViewModel.displayName == nil{
+            NameSetupView(authViewModel: authViewModel)
+        }
+        else if authViewModel.pairID == nil{
+            PairView(viewModel: authViewModel)
         }
         else{
-            AuthView(viewModel: viewModel)
+            MainTabView(viewModel: authViewModel)
         }
-            
     }
 }
 

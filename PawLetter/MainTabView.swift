@@ -12,9 +12,12 @@ struct MainTabView: View {
     var viewModel: AuthViewModel
     
     var body: some View {
+        guard let pairID = viewModel.pairID else {
+                return AnyView(ProgressView())
+            }
+        return AnyView(
             TabView{
-                // pairID гарантовано не nil тут, бо ContentView перевіряє це перед показом MainTabView
-                HomeView(homeViewModel: homeViewModel, pairID: viewModel.pairID!)
+                HomeView(homeViewModel: homeViewModel, pairID: pairID)
                     .tabItem{
                         Label("Home", systemImage: "house")
                     }
@@ -28,8 +31,9 @@ struct MainTabView: View {
                     }
             }
             .onAppear {
-                homeViewModel.startListening(pairID: viewModel.pairID!)
+                homeViewModel.startListening(pairID: pairID)
         }
+            )
     }
 }
 
