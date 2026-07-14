@@ -17,6 +17,9 @@ struct ProfileView: View {
     
     @State private var isEditingName: Bool = false
     @State private var editedName: String = ""
+    
+    @State private var isEditingPartnerNickname: Bool = false
+    @State private var editedPartnerNickname: String = ""
 
     var authViewModel: AuthViewModel
 
@@ -86,7 +89,7 @@ struct ProfileView: View {
                     }
                     .foregroundStyle(.red)
                     
-                    Button("Confirm", role: .confirm) {
+                    Button("Confirm") {
                         Task{
                             await authViewModel.saveDisplayName(editedName)
                             isEditingName = false
@@ -94,6 +97,41 @@ struct ProfileView: View {
                     }
                     .foregroundStyle(.green)
                     .disabled(editedName.trimmingCharacters(in: .whitespaces).isEmpty)
+                }
+            }
+            
+            HStack {
+                Image(systemName: "heart.fill")
+                
+                if isEditingPartnerNickname  == false{
+                    Text(authViewModel.partnerNickname ?? authViewModel.partnerDisplayName ??
+                         "—")
+                    
+                    Spacer()
+
+                    Button("Edit") {
+                        editedPartnerNickname = authViewModel.partnerNickname ?? ""
+                        isEditingPartnerNickname = true
+                    }
+                }
+                else{
+                    TextField("Name", text: $editedPartnerNickname)
+                    
+                    Spacer()
+                    
+                    Button("Cancel"){
+                        isEditingPartnerNickname = false
+                    }
+                    .foregroundStyle(.red)
+                    
+                    Button("Confirm") {
+                        Task{
+                            await authViewModel.savePartnerNickname(editedPartnerNickname)
+                            isEditingPartnerNickname = false
+                        }
+                    }
+                    .foregroundStyle(.green)
+                    .disabled(editedPartnerNickname.trimmingCharacters(in: .whitespaces).isEmpty)
                 }
             }
 

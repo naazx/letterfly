@@ -50,5 +50,11 @@ class PairServices{
         ])
         return  newPairRef.documentID
     }
-  
+    func fetchPartnerID(pairID: String, myUID: String) async throws -> String? {
+        let snapshot = try await db.collection("pairs").document(pairID).getDocument()
+        
+        guard let members = snapshot.data()?["members"] as? [String] else { return nil }
+        
+        return members.first(where: { $0 != myUID })
+    }
 }
