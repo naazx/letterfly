@@ -62,6 +62,7 @@ struct NewLetterView: View {
             .onChange(of: viewModel.isSuccess){ _, _ in
                 dismiss()
             }
+            .navigationTitle("New letter")
         }
     }
 }
