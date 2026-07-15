@@ -10,8 +10,11 @@ import Foundation
 struct Letter : Codable, Identifiable, Equatable{
     @DocumentID var id: String?
     var authorID: String
+    var subject: String
     var text: String
     var createdAt: Date
+    var photoURL: String?
+    var isRead: Bool = false
 }
 extension Letter {
     var formattedDate: String {

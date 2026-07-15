@@ -99,17 +99,17 @@ struct CalendarView: View {
     let sampleLetters: [Letter] = [
         Letter(
             authorID: "previewUser1",
-            text: "Привіт, любий! Як твій день?",
+            subject: "i love you", text: "Привіт, любий! Як твій день?",
             createdAt: .now
         ),
         Letter(
             authorID: "previewUser2",
-            text: "Скучив за тобою",
+            subject: "i love you 2", text: "Скучив за тобою",
             createdAt: Calendar.current.date(byAdding: .day, value: -7, to: .now)!
         ),
         Letter(
             authorID: "previewUser1",
-            text: "Ще один лист того ж дня",
+            subject: "i love you 3", text: "Ще один лист того ж дня",
             createdAt: Calendar.current.date(byAdding: .day, value: -7, to: .now)!
         )
     ]

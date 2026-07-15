@@ -11,12 +11,13 @@ import FirebaseFirestore
 class LetterServices{
     let db = Firestore.firestore()
     
-    func sendLetter(pairID: String, authorID: String, text: String) async throws {
-        let letter = Letter(authorID: authorID, text: text, createdAt: Date())
+    func sendLetter(authorID: String, subject: String, text: String, photoURL: String?, reference: DocumentReference) async throws {
+        let letter = Letter(authorID: authorID, subject: subject, text: text, createdAt: .now, photoURL: photoURL)
         let encodedLetter = try Firestore.Encoder().encode(letter)
 
-        try await db.collection("pairs").document(pairID).collection("letters")
-            .document()
-            .setData(encodedLetter)
+        try await reference.setData(encodedLetter)
+    }
+    func newLetterReference(pairID: String) -> DocumentReference {
+        return db.collection("pairs").document(pairID).collection("letters").document()
     }
 }

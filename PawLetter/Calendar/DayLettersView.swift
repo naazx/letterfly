@@ -25,7 +25,7 @@ struct DayLettersView: View {
     let sampleLetters: [Letter] = [
         Letter(
             authorID: "previewUser1",
-            text: "Привіт, любий! Як твій день?",
+            subject: "how are you?", text: "Привіт, любий! Як твій день?",
             createdAt: .now
         ),
     ]
