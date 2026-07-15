@@ -12,9 +12,10 @@ import FirebaseFirestore
 class HomeViewModel {
     var letters: [Letter] = []
     let db = Firestore.firestore()
+    var listener: ListenerRegistration?
     
     func startListening(pairID: String) {
-        db.collection("pairs").document(pairID).collection("letters")
+       listener = db.collection("pairs").document(pairID).collection("letters")
             .addSnapshotListener { [weak self] snapshot, error in
                 guard  error == nil else {
                     print("ERROR: \(error!.localizedDescription)")
@@ -28,5 +29,8 @@ class HomeViewModel {
                     try? $0.data(as: Letter.self)
                 }
             }
+    }
+    func stopListening() {
+        listener?.remove()
     }
 }

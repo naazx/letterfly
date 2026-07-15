@@ -17,37 +17,39 @@ struct NewLetterView: View {
     @State private var text: String = ""
     @FocusState private var isInputActive: Bool
     
+    @State private var marker = ""
+    
     var body: some View {
         NavigationStack{
             Form{
                 TextEditor(text: $text)
                     .focused($isInputActive)
-                    .toolbar {
-                        ToolbarItemGroup(placement: .keyboard) {
-                            Spacer()
-                            Button("Done") {
-                                isInputActive = false
-                            }
-                        }
-                        ToolbarItem(placement: .confirmationAction){
-                            Button("Send"){
-                                Task{
-                                    do{
-                                        try await letterServices.sendLetter(pairID: pairID, authorID: authorID, text: text)
-                                        dismiss()
-                                    } catch {
-                                        showError = true
-                                    }
-                                }
-                            }
-                            .disabled(text.isEmpty)
-                        }
-                    }
                     .alert("Error", isPresented: $showError) {
                         Button("OK") {}
                     } message: {
                         Text("Something went wrong. Your message was not sent.")
                     }
+            }
+            .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Done") {
+                        isInputActive = false
+                    }
+                }
+                ToolbarItem(placement: .confirmationAction){
+                    Button("Send"){
+                        Task{
+                            do{
+                                try await letterServices.sendLetter(pairID: pairID, authorID: authorID, text: text)
+                                dismiss()
+                            } catch {
+                                showError = true
+                            }
+                        }
+                    }
+                    .disabled(text.isEmpty)
+                }
             }
         }
     }

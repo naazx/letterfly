@@ -12,28 +12,30 @@ struct MainTabView: View {
     var viewModel: AuthViewModel
     
     var body: some View {
-        guard let pairID = viewModel.pairID else {
-                return AnyView(ProgressView())
-            }
-        return AnyView(
-            TabView{
+        if let pairID = viewModel.pairID {
+            TabView {
                 HomeView(homeViewModel: homeViewModel, pairID: pairID)
-                    .tabItem{
+                    .tabItem {
                         Label("Home", systemImage: "house")
                     }
                 CalendarView(letters: homeViewModel.letters)
-                    .tabItem{
+                    .tabItem {
                         Label("Calendar", systemImage: "calendar")
                     }
                 ProfileView(authViewModel: viewModel)
-                    .tabItem{
+                    .tabItem {
                         Label("Profile", systemImage: "person")
                     }
             }
             .onAppear {
                 homeViewModel.startListening(pairID: pairID)
+            }
+            .onDisappear {
+                homeViewModel.stopListening()
+            }
+        } else {
+            ProgressView()
         }
-            )
     }
 }
 

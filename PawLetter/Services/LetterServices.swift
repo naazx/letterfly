@@ -13,8 +13,10 @@ class LetterServices{
     
     func sendLetter(pairID: String, authorID: String, text: String) async throws {
         let letter = Letter(authorID: authorID, text: text, createdAt: Date())
-        try db.collection("pairs").document(pairID).collection("letters")
+        let encodedLetter = try Firestore.Encoder().encode(letter)
+
+        try await db.collection("pairs").document(pairID).collection("letters")
             .document()
-            .setData(from: letter)
+            .setData(encodedLetter)
     }
 }
