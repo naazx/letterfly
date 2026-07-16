@@ -23,6 +23,15 @@ class NewLetterViewModel {
     var errorMessage: String = ""
     var isSuccess: Bool = false
     
+    var existingLetter: Letter?
+    var didRemovePhoto: Bool = false
+    
+    init(existingLetter: Letter? = nil) {
+        self.existingLetter = existingLetter
+        self.subject = existingLetter?.subject ?? ""
+        self.text = existingLetter?.text ?? ""
+    }
+    
     func uploadPhoto(item: PhotosPickerItem, pairID: String, letterID: String) async throws -> String? {
         isLoading = true
         defer {isLoading = false}
@@ -48,15 +57,30 @@ class NewLetterViewModel {
         isLoading = true
         defer{ isLoading = false }
         
-        var photoURL: String?
-        
         do{
-            let reference = letterServices.newLetterReference(pairID: pairID)
-            
-            if let selectedItem {
-                photoURL = try await uploadPhoto(item: selectedItem, pairID: pairID, letterID: reference.documentID)
+            if let existingLetter {
+                guard let letterID = existingLetter.id else {return}
+                var photoURL = existingLetter.photoURL
+                
+                if didRemovePhoto == true{
+                    try await storageService.deleteImage(path: "letterPhotos/\(pairID)/\(letterID).jpg")
+                    try await letterServices.updateLetter(pairID: pairID, letterID: letterID, subject: subject, text: text, photoURL: nil)
+                    
+                } else if let selectedItem{
+                    photoURL = try await uploadPhoto(item: selectedItem, pairID: pairID, letterID: letterID)
+                    try await letterServices.updateLetter(pairID: pairID, letterID: letterID, subject: subject, text: text, photoURL: photoURL)
+                } else{
+                    try await letterServices.updateLetter(pairID: pairID, letterID: letterID, subject: subject, text: text, photoURL: photoURL)
+                }
+                
+            } else {
+                let reference = letterServices.newLetterReference(pairID: pairID)
+                
+                if let selectedItem {
+                    let photoURL = try await uploadPhoto(item: selectedItem, pairID: pairID, letterID: reference.documentID)
+                    try await letterServices.sendLetter(authorID: authorID, subject: subject, text: text, photoURL: photoURL, reference: reference)
+                }
             }
-            try await letterServices.sendLetter(authorID: authorID, subject: subject, text: text, photoURL: photoURL, reference: reference)
             isSuccess = true
             
         } catch let error as UploadError{
@@ -83,6 +107,15 @@ class NewLetterViewModel {
             errorMessage = "Something went wrong"
             showError = true
         }
+    }
+    func loadExistingPhoto() async {
+        guard let photoURLString = existingLetter?.photoURL,
+              let url = URL(string: photoURLString) else { return }
+        do {
+            let (data, _) = try await URLSession.shared.data(from: url)
+            guard let image = UIImage(data: data) else { return }
+            previewImage = image
+        } catch {}
     }
 }
 enum UploadError : Error{

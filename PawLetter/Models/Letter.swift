@@ -15,6 +15,7 @@ struct Letter : Codable, Identifiable, Equatable, Hashable{
     var createdAt: Date
     var photoURL: String?
     var isRead: Bool = false
+    var editedAt: Date? = nil
 }
 extension Letter {
     var formattedDate: String {

@@ -33,4 +33,14 @@ class LetterServices{
         }
         try await db.collection("pairs").document(pairID).collection("letters").document(letterID).delete()
     }
+    func updateLetter(pairID: String, letterID: String, subject: String, text: String, photoURL: String?) async throws {
+        try await db.collection("pairs").document(pairID).collection("letters")
+            .document(letterID)
+            .updateData([
+                "subject": subject,
+                "text": text,
+                "photoURL": photoURL as Any,
+                "editedAt": Date()
+            ])
+    }
 }

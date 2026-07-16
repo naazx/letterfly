@@ -10,52 +10,29 @@ import SwiftUI
 struct HomeView: View {
     @State private var isShowingNewLetter: Bool = false
     @State private var currentUserID: String?
+    @State private var letterServices = LetterServices()
     var homeViewModel: HomeViewModel
     var pairID: String
     
     var body: some View {
         NavigationStack{
-            List(homeViewModel.letters) { letter in
-                NavigationLink(value: letter) {
-                HStack {
-                    Group {
-                        if let id = letter.id, let image = homeViewModel.loadedImages[id] {
-                            Image(uiImage: image)
-                                .resizable()
-                                .scaledToFill()
-                        } else {
-                            Image(systemName: letter.authorID == currentUserID ? "paperplane.fill" : "envelope.fill")
-                                .foregroundStyle(.secondary)
-                        }
+            List {
+                ForEach(homeViewModel.letters) { letter in
+                    NavigationLink(value: letter) {
+                        letterRow(letter)
                     }
-                    .frame(width: 44, height: 44)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                    
-                    VStack(alignment: .leading) {
-                        Text(letter.subject)
-                            .fontWeight(letter.isRead ? .regular : .bold)
-                        Text(letter.text)
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                            .lineLimit(1)
-                    }
-                    
-                    Spacer()
-                    
-                    VStack(alignment: .trailing) {
-                        if letter.authorID == currentUserID {
-                            Text("You")
-                                .font(.caption2)
-                                .foregroundStyle(.secondary)
-                        }
-                        Text(letter.formattedDate)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                    .onAppear {
+                        Task { await homeViewModel.loadImageIfNeeded(for: letter) }
                     }
                 }
-            }
-                .onAppear {
-                    Task { await homeViewModel.loadImageIfNeeded(for: letter) }
+                .onDelete{ indexSet in
+                    for index in indexSet {
+                        let letter = homeViewModel.letters[index]
+                        guard let id = letter.id else { continue }
+                        Task {
+                            try? await letterServices.deleteLetter(pairID: pairID, letterID: id, photoURL: letter.photoURL)
+                        }
+                    }
                 }
             }
             .toolbar{
@@ -65,7 +42,7 @@ struct HomeView: View {
             }
             .sheet(isPresented: $isShowingNewLetter) {
                 if let  currentUserID {
-                    NewLetterView(pairID: pairID, authorID: currentUserID)
+                    NewLetterView(existingLetter: nil, pairID: pairID, authorID: currentUserID)
                 }
             }
             .task {
@@ -77,8 +54,46 @@ struct HomeView: View {
             .navigationTitle("Your lists")
         }
     }
-}
+    @ViewBuilder
+    private func letterRow(_ letter: Letter) -> some View {
+        HStack {
+            Group {
+                if let id = letter.id, let image = homeViewModel.loadedImages[id] {
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFill()
+                } else {
+                    Image(systemName: letter.authorID == currentUserID ? "paperplane.fill" : "envelope.fill")
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .frame(width: 44, height: 44)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
 
+            VStack(alignment: .leading) {
+                Text(letter.subject)
+                    .fontWeight(letter.isRead ? .regular : .bold)
+                Text(letter.text)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+            }
+
+            Spacer()
+
+            VStack(alignment: .trailing) {
+                if letter.authorID == currentUserID {
+                    Text("You")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+                Text(letter.formattedDate)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
+    }
+}
 #Preview {
     HomeView(homeViewModel: HomeViewModel(), pairID: "qJ23Kdi6EMFLYmtnWgiD")
 }

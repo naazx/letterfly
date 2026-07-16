@@ -11,6 +11,7 @@ struct LetterDetailView: View {
     @Environment(\.dismiss) var dismiss
     @State private var showDeleteConfirmation: Bool = false
     @State private var showError: Bool = false
+    @State private var isShowingEdit: Bool = false
     let letter: Letter
     let pairID: String
     var letterServices = LetterServices()
@@ -61,6 +62,12 @@ struct LetterDetailView: View {
                 }
                 .tint(.red)
             }
+            ToolbarItem(placement: .topBarTrailing) {
+                Button("Edit", systemImage: "pencil"){
+                    isShowingEdit = true
+                }
+                .tint(.orange)
+            }
         }
         .confirmationDialog("Options", isPresented: $showDeleteConfirmation) {
             Button("Delete", role: .destructive) {
@@ -80,6 +87,9 @@ struct LetterDetailView: View {
             Button("Ok") {}
         } message:{
             Text("Something went wrong")
+        }
+        .sheet(isPresented: $isShowingEdit) {
+            NewLetterView(existingLetter: letter, pairID: pairID, authorID: letter.authorID)
         }
     }
     private var photoView: some View {

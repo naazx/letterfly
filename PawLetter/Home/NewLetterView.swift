@@ -13,8 +13,16 @@ struct NewLetterView: View {
     @State private var viewModel = NewLetterViewModel()
     @State private var selectedItem: PhotosPickerItem?
     @FocusState private var isInputActive: Bool
+    let existingLetter: Letter?
     var pairID: String
     var authorID: String
+    
+    init(existingLetter: Letter?, pairID: String, authorID: String){
+        self.existingLetter = existingLetter
+        self.pairID = pairID
+        self.authorID = authorID
+        _viewModel = State(initialValue: NewLetterViewModel(existingLetter: existingLetter))
+    }
     
     var body: some View {
         NavigationStack{
@@ -29,6 +37,13 @@ struct NewLetterView: View {
                                 .clipShape(RoundedRectangle(cornerRadius: 12))
                         } else {
                             Label("Add Photo", systemImage: "photo.badge.plus")
+                        }
+                    }
+                    if existingLetter?.photoURL != nil || viewModel.previewImage != nil{
+                        Button("Remove Photo", role: .destructive){
+                            viewModel.didRemovePhoto = true
+                            selectedItem = nil
+                            viewModel.previewImage = nil
                         }
                     }
                 }
@@ -48,7 +63,7 @@ struct NewLetterView: View {
                     }
                 }
                 ToolbarItem(placement: .confirmationAction){
-                    Button("Send"){
+                    Button(existingLetter == nil ? "Send" : "Save"){
                         Task { await viewModel.send(pairID: pairID, authorID: authorID, selectedItem: selectedItem) }
                     }
                     .disabled(viewModel.text.isEmpty)
@@ -62,11 +77,14 @@ struct NewLetterView: View {
             .onChange(of: viewModel.isSuccess){ _, _ in
                 dismiss()
             }
-            .navigationTitle("New letter")
+            .task {
+                await viewModel.loadExistingPhoto()
+            }
+            .navigationTitle(existingLetter == nil ? "New letter" : "Edit letter")
         }
     }
 }
 
 #Preview {
-    NewLetterView(pairID: "qJ23Kdi6EMFLYmtnWgiD", authorID: "3z34vv")
+    NewLetterView(existingLetter: nil, pairID: "qJ23Kdi6EMFLYmtnWgiD", authorID: "3z34vv")
 }
