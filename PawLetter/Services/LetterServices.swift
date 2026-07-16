@@ -10,6 +10,7 @@ import FirebaseFirestore
 
 class LetterServices{
     let db = Firestore.firestore()
+    let storageService = StorageService()
     
     func sendLetter(authorID: String, subject: String, text: String, photoURL: String?, reference: DocumentReference) async throws {
         let letter = Letter(authorID: authorID, subject: subject, text: text, createdAt: .now, photoURL: photoURL)
@@ -26,7 +27,10 @@ class LetterServices{
         ])
     }
     
-    func deleteLetter(pairID: String, letterID: String ) async throws {
+    func deleteLetter(pairID: String, letterID: String, photoURL: String? ) async throws {
+        if photoURL != nil{
+            try await storageService.deleteImage(path: "letterPhotos/\(pairID)/\(letterID).jpg")
+        }
         try await db.collection("pairs").document(pairID).collection("letters").document(letterID).delete()
     }
 }

@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct LetterDetailView: View {
+    @Environment(\.dismiss) var dismiss
+    @State private var showDeleteConfirmation: Bool = false
+    @State private var showError: Bool = false
     let letter: Letter
     let pairID: String
     var letterServices = LetterServices()
@@ -41,6 +44,7 @@ struct LetterDetailView: View {
                     Text(letter.text)
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
             .padding()
         }
         .navigationTitle("Letter details")
@@ -49,6 +53,33 @@ struct LetterDetailView: View {
             if !letter.isRead {
                 try? await letterServices.markAsRead(pairID: pairID, letterID: id)
             }
+        }
+        .toolbar{
+            ToolbarItem(placement: .topBarTrailing) {
+                Button("Delete", systemImage: "trash"){
+                    showDeleteConfirmation = true
+                }
+                .tint(.red)
+            }
+        }
+        .confirmationDialog("Options", isPresented: $showDeleteConfirmation) {
+            Button("Delete", role: .destructive) {
+                guard let id = letter.id else { return }
+                Task {
+                    do{
+                        try await letterServices.deleteLetter(pairID: pairID, letterID: id, photoURL: letter.photoURL)
+                        dismiss()
+                    }catch{
+                        showError = true
+                    }
+                }
+            }
+            Button("Cancel", role: .cancel) {}
+        }
+        .alert("Your letter was not deleted", isPresented: $showError) {
+            Button("Ok") {}
+        } message:{
+            Text("Something went wrong")
         }
     }
     private var photoView: some View {

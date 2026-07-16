@@ -75,6 +75,8 @@ class NewLetterViewModel {
                 errorMessage = "Could not upload photo"
             case .fileTooLarge:
                 errorMessage = "Photo is too big"
+            case .deletionFailed:
+                errorMessage = "Could not delete photo"
             }
             showError = true
         } catch {

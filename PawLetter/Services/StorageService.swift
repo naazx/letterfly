@@ -23,8 +23,17 @@ class StorageService {
             throw StorageError.uploadFailed
         }
     }
+    func deleteImage(path: String) async throws {
+        do {
+            let storageRef = Storage.storage().reference(withPath: path)
+            try await storageRef.delete()
+        } catch {
+            throw StorageError.deletionFailed
+        }
+    }
 }
 enum StorageError: Error {
     case fileTooLarge
     case uploadFailed
+    case deletionFailed
 }
