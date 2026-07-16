@@ -75,11 +75,12 @@ class NewLetterViewModel {
                 
             } else {
                 let reference = letterServices.newLetterReference(pairID: pairID)
-                
+                var photoURL: String? = nil
+
                 if let selectedItem {
-                    let photoURL = try await uploadPhoto(item: selectedItem, pairID: pairID, letterID: reference.documentID)
-                    try await letterServices.sendLetter(authorID: authorID, subject: subject, text: text, photoURL: photoURL, reference: reference)
+                    photoURL = try await uploadPhoto(item: selectedItem, pairID: pairID, letterID: reference.documentID)
                 }
+                try await letterServices.sendLetter(authorID: authorID, subject: subject, text: text, photoURL: photoURL, reference: reference)
             }
             isSuccess = true
             
@@ -91,7 +92,7 @@ class NewLetterViewModel {
                    errorMessage = "Image recognition failed"
                case .imageCompression:
                    errorMessage = "Could not compress photo"
-               }
+            }
                showError = true
         } catch let error as StorageError{
             switch error {

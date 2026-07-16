@@ -87,9 +87,15 @@ struct HomeView: View {
                         .font(.caption2)
                         .foregroundStyle(.secondary)
                 }
-                Text(letter.formattedDate)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                HStack(spacing: 2) {
+                    if letter.editedAt != nil {
+                        Image(systemName: "pencil")
+                            .font(.caption2)
+                    }
+                    Text(letter.formattedDate)
+                        .font(.caption)
+                }
+                .foregroundStyle(.secondary)
             }
         }
     }

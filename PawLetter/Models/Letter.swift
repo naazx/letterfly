@@ -18,22 +18,27 @@ struct Letter : Codable, Identifiable, Equatable, Hashable{
     var editedAt: Date? = nil
 }
 extension Letter {
-    var formattedDate: String {
+    private func formatted(_ date: Date) -> String {
         let calendar = Calendar.current
         let now = Date()
         
-        if calendar.isDateInToday(createdAt) {
-            // Сьогодні - тільки час
-            return createdAt.formatted(date: .omitted, time: .shortened)
-        } else if calendar.isDate(createdAt, equalTo: now, toGranularity: .weekOfYear) {
-            // Цей тиждень - день тижня
-            return createdAt.formatted(.dateTime.weekday(.wide))
-        } else if calendar.isDate(createdAt, equalTo: now, toGranularity: .year) {
-            // Цей рік - день і місяць, без року
-            return createdAt.formatted(.dateTime.day().month(.wide))
+        if calendar.isDateInToday(date) {
+            return date.formatted(date: .omitted, time: .shortened)
+        } else if calendar.isDate(date, equalTo: now, toGranularity: .weekOfYear) {
+            return date.formatted(.dateTime.weekday(.wide))
+        } else if calendar.isDate(date, equalTo: now, toGranularity: .year) {
+            return date.formatted(.dateTime.day().month(.wide))
         } else {
-            // Більше року - повна дата з роком
-            return createdAt.formatted(.dateTime.day().month(.wide).year())
+            return date.formatted(.dateTime.day().month(.wide).year())
         }
+    }
+    
+    var formattedDate: String {
+        formatted(createdAt)
+    }
+    
+    var formattedEditedDate: String? {
+        guard let editedAt else { return nil }
+        return formatted(editedAt)
     }
 }

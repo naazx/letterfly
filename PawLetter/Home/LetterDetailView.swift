@@ -30,6 +30,12 @@ struct LetterDetailView: View {
                 )
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
+                
+                if let formattedEditedDate = letter.formattedEditedDate {
+                    Text("Edited \(formattedEditedDate)")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Subject")
