@@ -20,4 +20,13 @@ class LetterServices{
     func newLetterReference(pairID: String) -> DocumentReference {
         return db.collection("pairs").document(pairID).collection("letters").document()
     }
+    func markAsRead(pairID: String, letterID: String ) async throws {
+        try await db.collection("pairs").document(pairID).collection("letters").document(letterID).updateData([
+            "isRead": true
+        ])
+    }
+    
+    func deleteLetter(pairID: String, letterID: String ) async throws {
+        try await db.collection("pairs").document(pairID).collection("letters").document(letterID).delete()
+    }
 }

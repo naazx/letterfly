@@ -16,6 +16,7 @@ struct HomeView: View {
     var body: some View {
         NavigationStack{
             List(homeViewModel.letters) { letter in
+                NavigationLink(value: letter) {
                 HStack {
                     Group {
                         if let id = letter.id, let image = homeViewModel.loadedImages[id] {
@@ -29,7 +30,7 @@ struct HomeView: View {
                     }
                     .frame(width: 44, height: 44)
                     .clipShape(RoundedRectangle(cornerRadius: 8))
-
+                    
                     VStack(alignment: .leading) {
                         Text(letter.subject)
                             .fontWeight(letter.isRead ? .regular : .bold)
@@ -38,9 +39,9 @@ struct HomeView: View {
                             .foregroundStyle(.secondary)
                             .lineLimit(1)
                     }
-
+                    
                     Spacer()
-
+                    
                     VStack(alignment: .trailing) {
                         if letter.authorID == currentUserID {
                             Text("You")
@@ -52,6 +53,7 @@ struct HomeView: View {
                             .foregroundStyle(.secondary)
                     }
                 }
+            }
                 .onAppear {
                     Task { await homeViewModel.loadImageIfNeeded(for: letter) }
                 }
@@ -68,6 +70,9 @@ struct HomeView: View {
             }
             .task {
                 currentUserID = Auth.auth().currentUser?.uid
+            }
+            .navigationDestination(for: Letter.self) { letter in
+                LetterDetailView(letter: letter, pairID: pairID)
             }
             .navigationTitle("Your lists")
         }
