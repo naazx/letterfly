@@ -14,7 +14,7 @@ struct MainTabView: View {
     var body: some View {
         if let pairID = viewModel.pairID {
             TabView {
-                HomeView(homeViewModel: homeViewModel, pairID: pairID)
+                HomeView(homeViewModel: homeViewModel, pairID: pairID, currentUserID: viewModel.userID)
                     .tabItem {
                         Label("Home", systemImage: "house")
                     }

@@ -4,15 +4,15 @@
 //
 //  Created by Nazar Dydyn on 10.07.2026.
 //
-import FirebaseAuth
+
 import SwiftUI
 
 struct HomeView: View {
     @State private var isShowingNewLetter: Bool = false
-    @State private var currentUserID: String?
     @State private var letterServices = LetterServices()
     var homeViewModel: HomeViewModel
     var pairID: String
+    var currentUserID: String?
     
     var body: some View {
         NavigationStack{
@@ -44,9 +44,6 @@ struct HomeView: View {
                 if let  currentUserID {
                     NewLetterView(existingLetter: nil, pairID: pairID, authorID: currentUserID)
                 }
-            }
-            .task {
-                currentUserID = Auth.auth().currentUser?.uid
             }
             .navigationDestination(for: Letter.self) { letter in
                 LetterDetailView(letter: letter, pairID: pairID)
@@ -101,5 +98,5 @@ struct HomeView: View {
     }
 }
 #Preview {
-    HomeView(homeViewModel: HomeViewModel(), pairID: "qJ23Kdi6EMFLYmtnWgiD")
+    HomeView(homeViewModel: HomeViewModel(), pairID: "qJ23Kdi6EMFLYmtnWgiD", currentUserID: nil)
 }

@@ -18,22 +18,25 @@ class AuthViewModel {
     var isLoadingPairID: Bool = false
     var partnerNickname: String?
     var partnerDisplayName: String?
+    var userID: String?
     
     init(){
         if let currentUser = Auth.auth().currentUser {
             isLogged = true
-            let userID = currentUser.uid
+            let userIDlocal = currentUser.uid
+            self.userID = userIDlocal
             isLoadingPairID = true
             Task{
-                await loadUserData(uid: userID)
+                await loadUserData(uid: userIDlocal)
             }
         }
     }
     func signIn(email: String, password: String) async {
         do{
             try await Auth.auth().signIn(withEmail: email , password:password)
-            let userID = Auth.auth().currentUser!.uid
-            await loadUserData(uid: userID)
+            let userIDlocal = Auth.auth().currentUser!.uid
+            self.userID = userIDlocal
+            await loadUserData(uid: userIDlocal)
         }
         catch{
             print("Error: \(error.localizedDescription)")
@@ -46,8 +49,9 @@ class AuthViewModel {
            let createUser = try await Auth.auth().createUser(withEmail: email, password: password)
             let code =  try await userServices.generateUniqueInviteCode()
             
-            let userID = createUser.user.uid
-            try await userServices.createUserDocument(uid: userID, inviteCode: code)
+            let userIDlocal = createUser.user.uid
+            self.userID = userIDlocal
+            try await userServices.createUserDocument(uid: userIDlocal, inviteCode: code)
         }
         catch{
             print("Error: \(error.localizedDescription)")

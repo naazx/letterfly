@@ -64,14 +64,20 @@ class NewLetterViewModel {
                 
                 if didRemovePhoto == true{
                     try await storageService.deleteImage(path: "letterPhotos/\(pairID)/\(letterID).jpg")
-                    try await letterServices.updateLetter(pairID: pairID, letterID: letterID, subject: subject, text: text, photoURL: nil)
+                    photoURL = nil
                     
                 } else if let selectedItem{
                     photoURL = try await uploadPhoto(item: selectedItem, pairID: pairID, letterID: letterID)
-                    try await letterServices.updateLetter(pairID: pairID, letterID: letterID, subject: subject, text: text, photoURL: photoURL)
-                } else{
-                    try await letterServices.updateLetter(pairID: pairID, letterID: letterID, subject: subject, text: text, photoURL: photoURL)
+                    
                 }
+                
+                let hasChanges = subject != existingLetter.subject
+                        || text != existingLetter.text
+                        || photoURL != existingLetter.photoURL
+
+                    if hasChanges {
+                        try await letterServices.updateLetter(pairID: pairID, letterID: letterID, subject: subject, text: text, photoURL: photoURL)
+                    }
                 
             } else {
                 let reference = letterServices.newLetterReference(pairID: pairID)
