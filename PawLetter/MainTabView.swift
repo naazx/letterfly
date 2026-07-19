@@ -18,7 +18,7 @@ struct MainTabView: View {
                     .tabItem {
                         Label("Home", systemImage: "house")
                     }
-                CalendarView(letters: homeViewModel.letters)
+                CalendarView(letters: homeViewModel.letters, pairID: pairID, currentUserID: viewModel.userID, homeViewModel: homeViewModel)
                     .tabItem {
                         Label("Calendar", systemImage: "calendar")
                     }

@@ -15,6 +15,10 @@ struct CalendarView: View {
     let months: [Date]
     let currentMonth: Date
     
+    var pairID: String
+    var currentUserID: String?
+    var homeViewModel: HomeViewModel
+    
     var body: some View {
         let grouped = viewModel.groupedLetters(letters)
         
@@ -78,10 +82,10 @@ struct CalendarView: View {
             }
         }
         .sheet(isPresented: $isShowingDayDetail) {
-            DayLettersView(date: viewModel.selectedDate! , letters: grouped[viewModel.selectedDate!] ?? [])
+            DayLettersView(date: viewModel.selectedDate!, letters: grouped[viewModel.selectedDate!] ?? [], pairID: pairID, currentUserID: currentUserID, homeViewModel: homeViewModel)
         }
     }
-    init(letters: [Letter]){
+    init(letters: [Letter], pairID: String, currentUserID: String?, homeViewModel: HomeViewModel){
         let calendar = Calendar.current
         let currentFirstDay = CalendarGridHelper.firstDayOfMonth(containing: .now)
                 
@@ -93,6 +97,9 @@ struct CalendarView: View {
                 }
         self.currentMonth = currentFirstDay
         self.letters = letters
+        self.pairID = pairID
+        self.currentUserID = currentUserID
+        self.homeViewModel = homeViewModel
     }
 }
 #Preview {
@@ -114,5 +121,5 @@ struct CalendarView: View {
         )
     ]
 
-    CalendarView(letters: sampleLetters)
+    CalendarView(letters: sampleLetters, pairID: "123456789", currentUserID: nil, homeViewModel: HomeViewModel())
 }

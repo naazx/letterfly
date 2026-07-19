@@ -19,7 +19,7 @@ struct HomeView: View {
             List {
                 ForEach(homeViewModel.letters) { letter in
                     NavigationLink(value: letter) {
-                        letterRow(letter)
+                        LetterRowView(letter: letter, currentUserID: currentUserID, loadedImage: homeViewModel.loadedImages[letter.id ?? ""])
                     }
                     .onAppear {
                         Task { await homeViewModel.loadImageIfNeeded(for: letter) }
@@ -49,51 +49,6 @@ struct HomeView: View {
                 LetterDetailView(letter: letter, pairID: pairID)
             }
             .navigationTitle("Your lists")
-        }
-    }
-    @ViewBuilder
-    private func letterRow(_ letter: Letter) -> some View {
-        HStack {
-            Group {
-                if let id = letter.id, let image = homeViewModel.loadedImages[id] {
-                    Image(uiImage: image)
-                        .resizable()
-                        .scaledToFill()
-                } else {
-                    Image(systemName: letter.authorID == currentUserID ? "paperplane.fill" : "envelope.fill")
-                        .foregroundStyle(.secondary)
-                }
-            }
-            .frame(width: 44, height: 44)
-            .clipShape(RoundedRectangle(cornerRadius: 8))
-
-            VStack(alignment: .leading) {
-                Text(letter.subject)
-                    .fontWeight(letter.isRead ? .regular : .bold)
-                Text(letter.text)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
-            }
-
-            Spacer()
-
-            VStack(alignment: .trailing) {
-                if letter.authorID == currentUserID {
-                    Text("You")
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                }
-                HStack(spacing: 2) {
-                    if letter.editedAt != nil {
-                        Image(systemName: "pencil")
-                            .font(.caption2)
-                    }
-                    Text(letter.formattedDate)
-                        .font(.caption)
-                }
-                .foregroundStyle(.secondary)
-            }
         }
     }
 }

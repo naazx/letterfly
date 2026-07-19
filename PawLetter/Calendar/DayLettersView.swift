@@ -11,10 +11,24 @@ struct DayLettersView: View {
     var date: Date
     var letters: [Letter]
     
+    var pairID: String
+    var currentUserID: String?
+    var homeViewModel: HomeViewModel
+    
     var body: some View {
         NavigationStack{
             List(letters){ letter in
-                Text(letter.text)
+                NavigationLink(value: letter){
+                    LetterRowView(letter: letter, currentUserID: currentUserID, loadedImage: homeViewModel.loadedImages[letter.id ?? ""])
+                }
+                .onAppear {
+                    Task {
+                        await homeViewModel.loadImageIfNeeded(for: letter)
+                    }
+                }
+            }
+            .navigationDestination(for: Letter.self) { letter in
+                LetterDetailView(letter: letter, pairID: pairID)
             }
             .navigationTitle(date.formatted(.dateTime.day().month().year()))
         }
@@ -30,5 +44,5 @@ struct DayLettersView: View {
         ),
     ]
     
-    DayLettersView(date: .now, letters: sampleLetters)
+    DayLettersView(date: .now, letters: sampleLetters, pairID: "123456789", currentUserID: nil , homeViewModel: HomeViewModel())
 }
