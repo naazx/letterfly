@@ -8,6 +8,7 @@
 import PhotosUI
 import FirebaseAuth
 import SwiftUI
+import UIKit
 
 struct ProfileView: View {
     @State private var profileViewModel = ProfileViewModel()
@@ -20,6 +21,8 @@ struct ProfileView: View {
     
     @State private var isEditingPartnerNickname: Bool = false
     @State private var editedPartnerNickname: String = ""
+    
+    @State private var codeCopied: Bool = false
 
     var authViewModel: AuthViewModel
 
@@ -140,8 +143,34 @@ struct ProfileView: View {
                 Text("Your code")
 
                 Spacer()
-
-                Text(profileViewModel.inviteCode ?? "Loading...")
+                
+                HStack(spacing: 4){
+                    Text(profileViewModel.inviteCode ?? "Loading...")
+                        .font(.system(.body, design: .monospaced))
+                    
+                    Image(systemName: codeCopied ? "checkmark" : "doc.on.doc")
+                        .font(.caption)
+                        .foregroundStyle(codeCopied ? .green : .secondary)
+                       
+                }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 4)
+                .background(Color.secondary.opacity(0.15), in: Capsule())
+                .onTapGesture {
+                    guard let code = profileViewModel.inviteCode else { return }
+                    UIPasteboard.general.string = code
+                    
+                    withAnimation {
+                        codeCopied = true
+                    }
+                    
+                    Task{
+                        try? await Task.sleep(for: .seconds(1.5))
+                        withAnimation {
+                            codeCopied = false
+                        }
+                    }
+                }
             }
         }
     }
@@ -150,7 +179,9 @@ struct ProfileView: View {
             Button("Logout", role: .destructive) {
                 showLogoutDialog = true
             }
+            .frame(maxWidth: .infinity, alignment: .center)
         }
+        .listRowBackground(Color.red.opacity(0.15))
     }
     private var avatarSection: some View {
         Section {
@@ -161,7 +192,7 @@ struct ProfileView: View {
                 }
                 .fullScreenCover(isPresented: $showFullScreenAvatar) {
                     fullScreenAvatar
-                }
+            }
         }
         .listRowBackground(Color.clear)
     }
@@ -173,6 +204,8 @@ struct ProfileView: View {
                     .scaledToFill()
                     .frame(width: 100, height: 100)
                     .clipShape(Circle())
+                    .overlay(Circle().stroke(.blue.opacity(0.4), lineWidth: 2))
+                    .shadow(color: .blue.opacity(0.25), radius: 8)
                     .onTapGesture {
                         showFullScreenAvatar = true
                     }
@@ -187,9 +220,12 @@ struct ProfileView: View {
                 }
                 .frame(width: 100, height: 100)
                 .clipShape(Circle())
+                .overlay(Circle().stroke(.blue.opacity(0.4), lineWidth: 2))
+                .shadow(color: .blue.opacity(0.25), radius: 8)
                 .onTapGesture {
                     showFullScreenAvatar = true
                 }
+                
 
             } else {
                 Image(systemName: "person.circle.fill")
@@ -198,6 +234,8 @@ struct ProfileView: View {
                     .foregroundStyle(.blue)
                     .frame(width: 100, height: 100)
                     .clipShape(Circle())
+                    .overlay(Circle().stroke(.blue.opacity(0.4), lineWidth: 2))
+                    .shadow(color: .blue.opacity(0.25), radius: 8)
                     .onTapGesture {
                         showFullScreenAvatar = true
                     }
