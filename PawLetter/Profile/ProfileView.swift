@@ -11,6 +11,7 @@ import SwiftUI
 import UIKit
 
 struct ProfileView: View {
+    @AppStorage("appTheme") private var appTheme: Int = 0
     @State private var profileViewModel = ProfileViewModel()
     @State private var selectedItem: PhotosPickerItem?
     @State private var showFullScreenAvatar = false
@@ -171,6 +172,27 @@ struct ProfileView: View {
                         }
                     }
                 }
+            }
+            
+            HStack{
+                Image(systemName: "circle.lefthalf.filled")
+                Text("Appearance")
+                    .font(.body)
+                
+                Spacer()
+                
+                Picker("Appearance", selection: $appTheme){
+                    Image(systemName: "desktopcomputer")
+                        .tag(0) // system
+                    
+                    Image(systemName: "sun.max")
+                        .tag(1) // light
+                    
+                    Image(systemName: "moon")
+                        .tag(2) // dark
+                }
+                .pickerStyle(.segmented)
+                .frame(width: 120)
             }
         }
     }
