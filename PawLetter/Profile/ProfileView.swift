@@ -24,8 +24,10 @@ struct ProfileView: View {
     @State private var editedPartnerNickname: String = ""
     
     @State private var codeCopied: Bool = false
+    
 
     var authViewModel: AuthViewModel
+    var homeViewModel: HomeViewModel
 
     var body: some View {
         NavigationStack {
@@ -58,17 +60,19 @@ struct ProfileView: View {
                 .task {
                     await profileViewModel.loadProfile()
                     await profileViewModel.loadFullImage()
+                    await profileViewModel.loadPair(pairID: authViewModel.pairID)
                 }
         }
     }
     private var profileForm: some View {
         Form {
             avatarSection
-            infoSection
+            userInfoSection
+            pairInfoSection
             logoutSection
         }
     }
-    private var infoSection: some View {
+    private var userInfoSection: some View {
         Section {
             HStack {
                 Image(systemName: "person.fill")
@@ -101,41 +105,6 @@ struct ProfileView: View {
                     }
                     .foregroundStyle(.green)
                     .disabled(editedName.trimmingCharacters(in: .whitespaces).isEmpty)
-                }
-            }
-            
-            HStack {
-                Image(systemName: "heart.fill")
-                
-                if isEditingPartnerNickname  == false{
-                    Text(authViewModel.partnerNickname ?? authViewModel.partnerDisplayName ??
-                         "—")
-                    
-                    Spacer()
-
-                    Button("Edit") {
-                        editedPartnerNickname = authViewModel.partnerNickname ?? ""
-                        isEditingPartnerNickname = true
-                    }
-                }
-                else{
-                    TextField("Name", text: $editedPartnerNickname)
-                    
-                    Spacer()
-                    
-                    Button("Cancel"){
-                        isEditingPartnerNickname = false
-                    }
-                    .foregroundStyle(.red)
-                    
-                    Button("Confirm") {
-                        Task{
-                            await authViewModel.savePartnerNickname(editedPartnerNickname)
-                            isEditingPartnerNickname = false
-                        }
-                    }
-                    .foregroundStyle(.green)
-                    .disabled(editedPartnerNickname.trimmingCharacters(in: .whitespaces).isEmpty)
                 }
             }
 
@@ -193,6 +162,55 @@ struct ProfileView: View {
                 }
                 .pickerStyle(.segmented)
                 .frame(width: 120)
+            }
+        }
+    }
+    private var pairInfoSection: some View {
+        Section{
+            HStack {
+                Image(systemName: "heart.fill")
+                           
+            if isEditingPartnerNickname  == false{
+                Text(authViewModel.partnerNickname ?? authViewModel.partnerDisplayName ??
+                     "—")
+                               
+            Spacer()
+
+            Button("Edit") {
+                editedPartnerNickname = authViewModel.partnerNickname ?? ""
+                    isEditingPartnerNickname = true
+            }
+        }
+            else{
+                TextField("Name", text: $editedPartnerNickname)
+                               
+                Spacer()
+                               
+                Button("Cancel"){
+                    isEditingPartnerNickname = false
+                }
+                .foregroundStyle(.red)
+                               
+                Button("Confirm") {
+                    Task{
+                        await authViewModel.savePartnerNickname(editedPartnerNickname)
+                        isEditingPartnerNickname = false
+                    }
+                }
+                .foregroundStyle(.green)
+                .disabled(editedPartnerNickname.trimmingCharacters(in: .whitespaces).isEmpty)
+            }
+        }
+            if let pair = profileViewModel.pair {
+                HStack {
+                    let daysTogether = Calendar.current.dateComponents([.day], from: pair.startDate, to: Date()).day ?? 0
+                    Image(systemName: "calendar.badge.clock")
+                    Text("\(pair.startDate.formatted(.dateTime.day().month(.abbreviated).year())) (\(daysTogether) days together)")
+                }
+                HStack {
+                    Image(systemName: "envelope.fill")
+                    Text("Total letters: \(homeViewModel.letters.count)")
+                }
             }
         }
     }
@@ -306,5 +324,5 @@ struct ProfileView: View {
     }
 }
 #Preview {
-    ProfileView(authViewModel: AuthViewModel())
+    ProfileView(authViewModel: AuthViewModel(), homeViewModel: HomeViewModel())
 }

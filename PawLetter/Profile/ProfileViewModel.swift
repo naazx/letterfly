@@ -22,6 +22,9 @@ class ProfileViewModel{
     
     var inviteCode: String?
     var userServices = UserServices()
+    var pairServices = PairServices()
+    
+    var pair: Pair?
     
     func loadAndUpload(item: PhotosPickerItem) async {
         isLoading = true
@@ -95,5 +98,14 @@ class ProfileViewModel{
             let (data, _) = try await URLSession.shared.data(from: avatarURL)
             previewImage = UIImage(data: data)
         } catch {}
+    }
+    func loadPair(pairID: String?) async {
+        guard let pID = pairID else { return }
+        do{
+            pair = try await pairServices.fetchPair(pairID: pID)
+        } catch {
+            errorMessage = "ERROR: \(error.localizedDescription)"
+            showError = true
+        }
     }
 }
