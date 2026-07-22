@@ -272,8 +272,8 @@ struct ProfileView: View {
                     .scaledToFill()
                     .frame(width: 130, height: 130)
                     .clipShape(Circle())
-                    .overlay(Circle().stroke(.blue.opacity(0.4), lineWidth: 2))
-                    .shadow(color: .blue.opacity(0.25), radius: 8)
+                    .overlay(Circle().stroke(Color.accentColor.opacity(0.4), lineWidth: 2))
+                    .shadow(color: .accentColor.opacity(0.25), radius: 8)
                     .onTapGesture {
                         showFullScreenAvatar = true
                     }
@@ -288,8 +288,8 @@ struct ProfileView: View {
                 }
                 .frame(width: 130, height: 130)
                 .clipShape(Circle())
-                .overlay(Circle().stroke(.blue.opacity(0.4), lineWidth: 2))
-                .shadow(color: .blue.opacity(0.25), radius: 8)
+                .overlay(Circle().stroke(Color.accentColor.opacity(0.4), lineWidth: 2))
+                .shadow(color: .accentColor.opacity(0.25), radius: 8)
                 .onTapGesture {
                     showFullScreenAvatar = true
                 }
@@ -302,8 +302,8 @@ struct ProfileView: View {
                     .foregroundStyle(.blue)
                     .frame(width: 130, height: 130)
                     .clipShape(Circle())
-                    .overlay(Circle().stroke(.blue.opacity(0.4), lineWidth: 2))
-                    .shadow(color: .blue.opacity(0.25), radius: 8)
+                    .overlay(Circle().stroke(Color.accentColor.opacity(0.4), lineWidth: 2))
+                    .shadow(color: .accentColor.opacity(0.25), radius: 8)
                     .onTapGesture {
                         showFullScreenAvatar = true
                     }

@@ -40,7 +40,7 @@ struct AuthView: View {
                              await viewModel.signIn(email: email, password: password)
                         }
                     }
-                    Button("Sing up"){
+                    Button("Sign up"){
                         Task{
                              await viewModel.signUp(email: email, password: password)
                         }
