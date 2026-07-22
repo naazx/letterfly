@@ -73,7 +73,7 @@ struct ProfileView: View {
         }
     }
     private var userInfoSection: some View {
-        Section {
+        Section("Account") {
             HStack {
                 Image(systemName: "person.fill")
                 
@@ -166,9 +166,10 @@ struct ProfileView: View {
         }
     }
     private var pairInfoSection: some View {
-        Section{
+        Section("Partner"){
             HStack {
                 Image(systemName: "heart.fill")
+                    .foregroundStyle(.red)
                            
             if isEditingPartnerNickname  == false{
                 Text(authViewModel.partnerNickname ?? authViewModel.partnerDisplayName ??
@@ -204,12 +205,36 @@ struct ProfileView: View {
             if let pair = profileViewModel.pair {
                 HStack {
                     let daysTogether = Calendar.current.dateComponents([.day], from: pair.startDate, to: Date()).day ?? 0
+                    Image(systemName: "figure.2")
+
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Together")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+
+                        Text("\(daysTogether) days")
+                    }
+                }
+                HStack {
                     Image(systemName: "calendar.badge.clock")
-                    Text("\(pair.startDate.formatted(.dateTime.day().month(.abbreviated).year())) (\(daysTogether) days together)")
+
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Together Since")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+
+                        Text(pair.startDate.formatted(.dateTime.day().month(.abbreviated).year()))
+                    }
                 }
                 HStack {
                     Image(systemName: "envelope.fill")
-                    Text("Total letters: \(homeViewModel.letters.count)")
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Total letters")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+
+                        Text("\(homeViewModel.letters.count)")
+                    }
                 }
             }
         }
@@ -224,16 +249,19 @@ struct ProfileView: View {
         .listRowBackground(Color.red.opacity(0.15))
     }
     private var avatarSection: some View {
-        Section {
+        VStack {
             avatarView
                 .frame(maxWidth: .infinity)
-                .overlay(alignment: .bottomTrailing) {
-                    avatarPicker
-                }
                 .fullScreenCover(isPresented: $showFullScreenAvatar) {
                     fullScreenAvatar
+                }
+            HStack{
+                Spacer()
+                avatarPicker
+                Spacer()
             }
         }
+        .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
         .listRowBackground(Color.clear)
     }
     private var avatarView: some View {
@@ -242,7 +270,7 @@ struct ProfileView: View {
                 Image(uiImage: previewImage)
                     .resizable()
                     .scaledToFill()
-                    .frame(width: 100, height: 100)
+                    .frame(width: 130, height: 130)
                     .clipShape(Circle())
                     .overlay(Circle().stroke(.blue.opacity(0.4), lineWidth: 2))
                     .shadow(color: .blue.opacity(0.25), radius: 8)
@@ -258,7 +286,7 @@ struct ProfileView: View {
                 } placeholder: {
                     ProgressView()
                 }
-                .frame(width: 100, height: 100)
+                .frame(width: 130, height: 130)
                 .clipShape(Circle())
                 .overlay(Circle().stroke(.blue.opacity(0.4), lineWidth: 2))
                 .shadow(color: .blue.opacity(0.25), radius: 8)
@@ -272,7 +300,7 @@ struct ProfileView: View {
                     .resizable()
                     .scaledToFit()
                     .foregroundStyle(.blue)
-                    .frame(width: 100, height: 100)
+                    .frame(width: 130, height: 130)
                     .clipShape(Circle())
                     .overlay(Circle().stroke(.blue.opacity(0.4), lineWidth: 2))
                     .shadow(color: .blue.opacity(0.25), radius: 8)
@@ -284,7 +312,7 @@ struct ProfileView: View {
             if profileViewModel.isLoading {
                 Circle()
                     .fill(.black.opacity(0.35))
-                    .frame(width: 100, height: 100)
+                    .frame(width: 130, height: 130)
 
                 ProgressView()
             }
@@ -292,10 +320,10 @@ struct ProfileView: View {
     }
     private var avatarPicker: some View {
         PhotosPicker(selection: $selectedItem, matching: .images) {
-            Image(systemName: "camera.circle.fill")
-                .font(.title2)
-                .foregroundStyle(.blue)
+            Label("Change Photo", systemImage: "photo.badge.plus")
+                .font(.subheadline)
         }
+        .buttonStyle(.plain)
         .disabled(profileViewModel.isLoading)
     }
     private var fullScreenAvatar: some View {
