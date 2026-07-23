@@ -28,7 +28,15 @@ struct CalendarView: View {
                     LazyVStack(alignment: .leading, spacing: 0) {
                         ForEach(months, id: \.self) { month in
                             VStack(alignment: .leading, spacing: 8) {
-                                Text(month.formatted(.dateTime.month(.wide).year()))
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(month.formatted(.dateTime.month(.wide)))
+                                        .font(.title2.bold())
+
+                                    Text(month.formatted(.dateTime.year()))
+                                        .font(.subheadline)
+                                        .foregroundStyle(.secondary)
+                                }
+                                .padding(.horizontal)
                                 
                                 LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7)) {
                                     ForEach(CalendarGridHelper.weekdaySymbols, id: \.self) { symbol in
@@ -54,15 +62,37 @@ struct CalendarView: View {
                                             let dayLetters = grouped[dayKey] ?? []
                                             let hasContent = !dayLetters.isEmpty
                                             
+                                            let isToday = Calendar.current.isDateInToday(dayDate)
+                                            
                                             VStack {
                                                 Text("\(day)")
-                                                if hasContent {
-                                                    Circle().frame(width: 4, height: 4)
-                                                }
+                                                    .font(.headline)
+                                                    .foregroundStyle(isToday ? .white : .primary)
+                                                    .frame(width: 32, height: 32)
+                                                    .background {
+                                                        if isToday {
+                                                            Circle().fill(.pink)
+                                                        }
+                                                    }
+                                                    .overlay(alignment: .bottomTrailing) {
+                                                        if hasContent {
+                                                            Text(dayLetters.count > 9 ? "9+" : "\(dayLetters.count)")
+                                                                .font(.system(size: 9, weight: .bold))
+                                                                .foregroundStyle(.white)
+                                                                .padding(3)
+                                                                .background(.pink)
+                                                                .clipShape(Circle())
+                                                                .offset(x: 4, y: 4)
+                                                        }
+                                                    }
                                             }
                                             .frame(height: 40)
                                             .onTapGesture {
-                                                viewModel.selectedDate = dayKey
+                                                guard hasContent else { return }
+                                                
+                                                withAnimation(.snappy) {
+                                                        viewModel.selectedDate = dayKey
+                                                    }
                                                 isShowingDayDetail = true
                                             }
                                         }
@@ -76,7 +106,9 @@ struct CalendarView: View {
                 .navigationTitle("Calendar")
                 .onAppear {
                     DispatchQueue.main.async {
-                        proxy.scrollTo(currentMonth, anchor: .center)
+                        withAnimation(.snappy(duration: 0.5)){
+                            proxy.scrollTo(currentMonth, anchor: .center)
+                        }
                     }
                 }
             }
@@ -84,6 +116,9 @@ struct CalendarView: View {
         .sheet(isPresented: $isShowingDayDetail) {
             DayLettersView(date: viewModel.selectedDate!, letters: grouped[viewModel.selectedDate!] ?? [], pairID: pairID, currentUserID: currentUserID, homeViewModel: homeViewModel)
         }
+        .presentationDetents([.medium, .large])
+        .presentationDragIndicator(.visible)
+        .presentationCornerRadius(28)
     }
     init(letters: [Letter], pairID: String, currentUserID: String?, homeViewModel: HomeViewModel){
         let calendar = Calendar.current
