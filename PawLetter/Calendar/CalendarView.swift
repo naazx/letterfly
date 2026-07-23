@@ -77,11 +77,12 @@ struct CalendarView: View {
                                                     .overlay(alignment: .bottomTrailing) {
                                                         if hasContent {
                                                             Text(dayLetters.count > 9 ? "9+" : "\(dayLetters.count)")
-                                                                .font(.system(size: 9, weight: .bold))
+                                                                .font(.system(size: 8, weight: .bold))
                                                                 .foregroundStyle(.white)
-                                                                .padding(3)
+                                                                .frame(minWidth: 13, minHeight: 13)
+                                                                .padding(1)
                                                                 .background(.pink)
-                                                                .clipShape(Circle())
+                                                                .clipShape(Capsule())
                                                                 .offset(x: 4, y: 4)
                                                         }
                                                     }
@@ -115,10 +116,10 @@ struct CalendarView: View {
         }
         .sheet(isPresented: $isShowingDayDetail) {
             DayLettersView(date: viewModel.selectedDate!, letters: grouped[viewModel.selectedDate!] ?? [], pairID: pairID, currentUserID: currentUserID, homeViewModel: homeViewModel)
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.visible)
+                .presentationCornerRadius(28)
         }
-        .presentationDetents([.medium, .large])
-        .presentationDragIndicator(.visible)
-        .presentationCornerRadius(28)
     }
     init(letters: [Letter], pairID: String, currentUserID: String?, homeViewModel: HomeViewModel){
         let calendar = Calendar.current
