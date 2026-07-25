@@ -18,43 +18,47 @@ struct LetterDetailView: View {
     
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: 24) {
+
                 if letter.photoURL != nil {
                     photoView
-                        .padding(.bottom, 8)
                 }
 
-                Label(
-                    letter.createdAt.formatted(date: .long, time: .omitted),
-                    systemImage: "calendar"
-                )
+                Text(letter.subject)
+                    .font(.largeTitle.bold())
+
+                Divider()
+
+                VStack(alignment: .leading, spacing: 8) {
+
+                    Label(
+                        letter.createdAt.formatted(date: .long, time: .omitted),
+                        systemImage: "calendar"
+                    )
+
+                    if let formattedEditedDate = letter.formattedEditedDate {
+                        Label(
+                            "Edited \(formattedEditedDate)",
+                            systemImage: "pencil"
+                        )
+                    }
+
+                }
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
-                
-                if let formattedEditedDate = letter.formattedEditedDate {
-                    Text("Edited \(formattedEditedDate)")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
 
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Subject")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                    Text(letter.subject)
-                        .font(.headline)
-                }
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Description")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                    Text(letter.text)
-                }
+                Divider()
+
+                Text(letter.text)
+                    .font(.body)
+                    .lineSpacing(6)
+                    .textSelection(.enabled)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding()
+            .padding(20)
         }
-        .navigationTitle("Letter details")
+        .navigationTitle("Letter")
+        .navigationBarTitleDisplayMode(.inline)
         .task {
             guard let id = letter.id else { return }
             if !letter.isRead {
@@ -63,16 +67,19 @@ struct LetterDetailView: View {
         }
         .toolbar{
             ToolbarItem(placement: .topBarTrailing) {
-                Button("Delete", systemImage: "trash"){
-                    showDeleteConfirmation = true
+                Menu {
+
+                    Button("Edit", systemImage: "pencil") {
+                        isShowingEdit = true
+                    }
+
+                    Button("Delete", systemImage: "trash", role: .destructive) {
+                        showDeleteConfirmation = true
+                    }
+
+                } label: {
+                    Image(systemName: "ellipsis.circle")
                 }
-                .tint(.red)
-            }
-            ToolbarItem(placement: .topBarTrailing) {
-                Button("Edit", systemImage: "pencil"){
-                    isShowingEdit = true
-                }
-                .tint(.orange)
             }
         }
         .confirmationDialog("Options", isPresented: $showDeleteConfirmation) {
@@ -112,16 +119,14 @@ struct LetterDetailView: View {
                 }
 
             } else {
-                ContentUnavailableView(
-                    "No Photo",
-                    systemImage: "photo"
-                )
+                EmptyView()
             }
         }
         .frame(maxWidth: .infinity)
-        .frame(height: 250)
+        .frame(height: 280)
         .clipped()
-        .clipShape(RoundedRectangle(cornerRadius: 20))
+        .clipShape(RoundedRectangle(cornerRadius: 24))
+        .shadow(color: .black.opacity(0.15), radius: 12, y: 6)
     }
 }
 
