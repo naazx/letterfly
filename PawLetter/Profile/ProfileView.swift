@@ -102,7 +102,7 @@ struct ProfileView: View {
 
             statItem(
                 title: "Photos",
-                value: "--"
+                value: "\(photosCount)"
             )
 
         }
@@ -612,6 +612,10 @@ private var pairInfoSection: some View {
     }
     private var lettersCount: Int {
         homeViewModel.letters.count
+    }
+    private var photosCount : Int {
+        let array = homeViewModel.letters.filter {$0.photoURL != nil }
+        return array.count
     }
 }
 #Preview {
