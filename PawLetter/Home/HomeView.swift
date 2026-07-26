@@ -15,42 +15,70 @@ struct HomeView: View {
     var currentUserID: String?
     
     var body: some View {
-        NavigationStack{
-            List {
-                ForEach(homeViewModel.letters) { letter in
-                    NavigationLink(value: letter) {
-                        LetterRowView(letter: letter, currentUserID: currentUserID, loadedImage: homeViewModel.loadedImages[letter.id ?? ""])
+        NavigationStack {
+            if homeViewModel.letters.isEmpty {
+                emptyState
+            } else {
+                List {
+                    ForEach(homeViewModel.letters) { letter in
+                        NavigationLink(value: letter) {
+                            LetterRowView(letter: letter, currentUserID: currentUserID, loadedImage: homeViewModel.loadedImages[letter.id ?? ""])
+                        }
+                        .onAppear {
+                            Task {
+                                await homeViewModel.loadImageIfNeeded(for: letter)
+                            }
+                        }
+                        .listRowSeparator(.hidden)
+                        .listRowInsets(
+                            EdgeInsets(
+                                top: 8,
+                                leading: 20,
+                                bottom: 8,
+                                trailing: 20
+                            )
+                        )
                     }
-                    .onAppear {
-                        Task {
-                            await homeViewModel.loadImageIfNeeded(for: letter)
+                    .onDelete{ indexSet in
+                        for index in indexSet {
+                            let letter = homeViewModel.letters[index]
+                            guard let id = letter.id else { continue }
+                            Task {
+                                try? await letterServices.deleteLetter(pairID: pairID, letterID: id, photoURL: letter.photoURL)
+                            }
                         }
                     }
                 }
-                .onDelete{ indexSet in
-                    for index in indexSet {
-                        let letter = homeViewModel.letters[index]
-                        guard let id = letter.id else { continue }
-                        Task {
-                            try? await letterServices.deleteLetter(pairID: pairID, letterID: id, photoURL: letter.photoURL)
-                        }
-                    }
-                }
+                .scrollContentBackground(.hidden)
+                .background(Color(.systemGroupedBackground))
             }
-            .toolbar{
-                Button("Add new list", systemImage: "plus"){
-                    isShowingNewLetter = true
-                }
+        }
+        .toolbar{
+            Button("New Letter", systemImage: "square.and.pencil"){
+                isShowingNewLetter = true
             }
-            .sheet(isPresented: $isShowingNewLetter) {
-                if let  currentUserID {
-                    NewLetterView(existingLetter: nil, pairID: pairID, authorID: currentUserID)
-                }
+        }
+        .sheet(isPresented: $isShowingNewLetter) {
+            if let  currentUserID {
+                NewLetterView(existingLetter: nil, pairID: pairID, authorID: currentUserID)
             }
-            .navigationDestination(for: Letter.self) { letter in
-                LetterDetailView(letter: letter, pairID: pairID)
+        }
+        .navigationDestination(for: Letter.self) { letter in
+            LetterDetailView(letter: letter, pairID: pairID)
+        }
+        .navigationTitle("Letters")
+        .navigationBarTitleDisplayMode(.large)
+    }
+    private var emptyState: some View {
+        ContentUnavailableView {
+            Label("No Letters Yet", systemImage: "envelope")
+        } description: {
+            Text("Write your first letter and start creating memories together.")
+        } actions: {
+            Button("Write First Letter") {
+                isShowingNewLetter = true
             }
-            .navigationTitle("Your lists")
+            .buttonStyle(.borderedProminent)
         }
     }
 }
