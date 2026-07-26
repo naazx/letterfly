@@ -22,7 +22,9 @@ struct HomeView: View {
                         LetterRowView(letter: letter, currentUserID: currentUserID, loadedImage: homeViewModel.loadedImages[letter.id ?? ""])
                     }
                     .onAppear {
-                        Task { await homeViewModel.loadImageIfNeeded(for: letter) }
+                        Task {
+                            await homeViewModel.loadImageIfNeeded(for: letter)
+                        }
                     }
                 }
                 .onDelete{ indexSet in

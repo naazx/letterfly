@@ -20,12 +20,11 @@ struct LetterRowView: View {
                             .resizable()
                             .scaledToFill()
                     } else {
-                        Image(systemName: letter.authorID == currentUserID ? "paperplane.fill" : "envelope.fill")
-                            .foregroundStyle(.secondary)
+                        placeholderView
                     }
                 }
-                .frame(width: 44, height: 44)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .frame(width: 60, height: 60)
+                .clipShape(RoundedRectangle(cornerRadius: 16))
 
                 VStack(alignment: .leading) {
                     Text(letter.subject)
@@ -55,7 +54,26 @@ struct LetterRowView: View {
                     .foregroundStyle(.secondary)
                 }
             }
-        }
+            .padding(.vertical, 6)
+    }
+    private var placeholderView: some View {
+        RoundedRectangle(cornerRadius: 16)
+            .fill(Color.accentColor.opacity(0.2))
+            .frame(width: 60, height: 60)
+            .overlay {
+                Text(letterPlaceholder)
+                    .font(.title.weight(.bold))
+                    .foregroundStyle(.accent)
+            }
+    }
+
+    private var letterPlaceholder: String {
+        let trimmed = letter.subject.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        return trimmed.first.map {
+            String($0).uppercased()
+        } ?? "✉️"
+    }
 }
 
 #Preview {
