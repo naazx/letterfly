@@ -51,23 +51,23 @@ struct HomeView: View {
                 }
                 .scrollContentBackground(.hidden)
                 .background(Color(.systemGroupedBackground))
+                .toolbar{
+                    Button("New Letter", systemImage: "square.and.pencil"){
+                        isShowingNewLetter = true
+                    }
+                }
+                .sheet(isPresented: $isShowingNewLetter) {
+                    if let  currentUserID {
+                        NewLetterView(existingLetter: nil, pairID: pairID, authorID: currentUserID)
+                    }
+                }
+                .navigationDestination(for: Letter.self) { letter in
+                    LetterDetailView(letter: letter, pairID: pairID)
+                }
+                .navigationTitle("Letters")
+                .navigationBarTitleDisplayMode(.large)
             }
         }
-        .toolbar{
-            Button("New Letter", systemImage: "square.and.pencil"){
-                isShowingNewLetter = true
-            }
-        }
-        .sheet(isPresented: $isShowingNewLetter) {
-            if let  currentUserID {
-                NewLetterView(existingLetter: nil, pairID: pairID, authorID: currentUserID)
-            }
-        }
-        .navigationDestination(for: Letter.self) { letter in
-            LetterDetailView(letter: letter, pairID: pairID)
-        }
-        .navigationTitle("Letters")
-        .navigationBarTitleDisplayMode(.large)
     }
     private var emptyState: some View {
         ContentUnavailableView {
