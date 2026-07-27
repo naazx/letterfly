@@ -115,7 +115,7 @@ struct LetterDetailView: View {
                         .resizable()
                         .scaledToFill()
                 } placeholder: {
-                    ProgressView()
+                    PawLoadingView()
                 }
 
             } else {

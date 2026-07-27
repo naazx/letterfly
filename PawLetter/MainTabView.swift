@@ -34,7 +34,7 @@ struct MainTabView: View {
                 homeViewModel.stopListening()
             }
         } else {
-            ProgressView()
+            PawLoadingView()
         }
     }
 }

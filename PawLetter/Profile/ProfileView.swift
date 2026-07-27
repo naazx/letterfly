@@ -505,7 +505,7 @@ private var pairInfoSection: some View {
                         .resizable()
                         .scaledToFill()
                 } placeholder: {
-                    ProgressView()
+                    PawLoadingView()
                 }
                 .frame(width: 150, height: 150)
                 .clipShape(Circle())
@@ -547,7 +547,7 @@ private var pairInfoSection: some View {
                     .fill(.black.opacity(0.35))
                     .frame(width: 150, height: 150)
 
-                ProgressView()
+                PawLoadingView()
             }
         }
     }
@@ -577,7 +577,7 @@ private var pairInfoSection: some View {
                         .resizable()
                         .scaledToFit()
                 } placeholder: {
-                    ProgressView()
+                    PawLoadingView()
                 }
             }
         }

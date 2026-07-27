@@ -14,7 +14,7 @@ struct ContentView: View {
     var body: some View {
         
         if authViewModel.isLoadingPairID{
-            ProgressView()
+            PawLoadingView()
         }
         else if authViewModel.isLogged == false{
             AuthView(viewModel: authViewModel)
