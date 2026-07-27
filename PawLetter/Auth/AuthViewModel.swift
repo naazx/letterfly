@@ -7,6 +7,7 @@
 
 import Foundation
 import FirebaseAuth
+import AuthenticationServices
 
 @Observable
 class AuthViewModel {
@@ -19,7 +20,8 @@ class AuthViewModel {
     var partnerNickname: String?
     var partnerDisplayName: String?
     var userID: String?
-    
+    var currentNonce: String?
+
     init(){
         if let currentUser = Auth.auth().currentUser {
             isLogged = true
@@ -31,35 +33,61 @@ class AuthViewModel {
             }
         }
     }
-    func signIn(email: String, password: String) async {
-        do{
-            try await Auth.auth().signIn(withEmail: email , password:password)
-            let userIDlocal = Auth.auth().currentUser!.uid
-            self.userID = userIDlocal
-            await loadUserData(uid: userIDlocal)
-        }
-        catch{
-            print("Error: \(error.localizedDescription)")
-                    return
-        }
-        isLogged = true
+
+    func prepareAppleRequest(_ request: ASAuthorizationAppleIDRequest) {
+        let nonce = randomNonceString()
+        currentNonce = nonce
+        request.requestedScopes = [.fullName]
+        request.nonce = sha256(nonce)
     }
-    func signUp(email: String, password: String) async {
-        do{
-           let createUser = try await Auth.auth().createUser(withEmail: email, password: password)
-            let code =  try await userServices.generateUniqueInviteCode()
-            
-            let userIDlocal = createUser.user.uid
-            self.userID = userIDlocal
-            try await userServices.createUserDocument(uid: userIDlocal, inviteCode: code)
+
+    func signInWithApple(result: Result<ASAuthorization, Error>) async {
+        switch result {
+        case .success(let authorization):
+            guard let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential else {
+                print("error: не вдалося отримати ASAuthorizationAppleIDCredential")
+                return
+            }
+            guard let nonce = currentNonce else {
+                print("error: відсутній currentNonce — prepareAppleRequest не був викликаний")
+                return
+            }
+            guard let appleIDToken = appleIDCredential.identityToken else {
+                print("error: Apple не повернув identityToken")
+                return
+            }
+            guard let idTokenString = String(data: appleIDToken, encoding: .utf8) else {
+                print("error: не вдалося декодувати identityToken як UTF-8")
+                return
+            }
+
+            let credential = OAuthProvider.credential(
+                providerID: .apple,
+                idToken: idTokenString,
+                rawNonce: nonce
+            )
+
+            do {
+                let authResult = try await Auth.auth().signIn(with: credential)
+                let userIDlocal = authResult.user.uid
+                self.userID = userIDlocal
+
+                if authResult.additionalUserInfo?.isNewUser == true {
+                    let code = try await userServices.generateUniqueInviteCode()
+                    try await userServices.createUserDocument(uid: userIDlocal, inviteCode: code)
+                }
+
+                await loadUserData(uid: userIDlocal)
+                isLogged = true
+            } catch {
+                print("error: \(error.localizedDescription)")
+            }
+
+        case .failure(let error):
+            print("error: \(error.localizedDescription)")
         }
-        catch{
-            print("Error: \(error.localizedDescription)")
-            // TODO: обробити випадок, коли Auth-юзер створений, а Firestore-документ - ні
-            return
-        }
-        isLogged = true
     }
+
     func signOut(){
         do{
             try  Auth.auth().signOut()
@@ -72,22 +100,14 @@ class AuthViewModel {
             print("error: \(error.localizedDescription)")
         }
     }
-    func resetPassword(email: String) async {
-        do{
-            try await Auth.auth().sendPasswordReset(withEmail: email)
-        }
-        catch{
-            print("Error: \(error.localizedDescription)")
-                    return
-        }
-    }
+
     func loadUserData(uid: String) async {
         do {
             let profile = try await userServices.fetchUserProfile(uid: uid)
             pairID = profile.pairID
             displayName = profile.displayName
             partnerNickname = profile.partnerNickname
-            
+
             if let pairID = profile.pairID {
                 if let partnerID = try await pairServices.fetchPartnerID(pairID: pairID, myUID: uid) {
                     let partnerProfile = try await userServices.fetchUserProfile(uid: partnerID)
@@ -99,6 +119,7 @@ class AuthViewModel {
         }
         isLoadingPairID = false
     }
+
     func saveDisplayName(_ name: String) async {
         guard let uid = Auth.auth().currentUser?.uid else { return }
         do {
@@ -108,6 +129,7 @@ class AuthViewModel {
             print("error: \(error.localizedDescription)")
         }
     }
+
     func savePartnerNickname(_ nickname: String) async {
         guard let uid = Auth.auth().currentUser?.uid else { return }
         do {
