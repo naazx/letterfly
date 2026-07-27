@@ -8,6 +8,9 @@
 import Foundation
 import FirebaseAuth
 import AuthenticationServices
+import GoogleSignIn
+import UIKit
+import FirebaseCore
 
 @Observable
 class AuthViewModel {
@@ -33,7 +36,69 @@ class AuthViewModel {
             }
         }
     }
-
+    func signInWithGoogle() async {
+            guard let clientID = FirebaseApp.app()?.options.clientID else {
+                print("error: відсутній clientID у Firebase-конфігурації")
+                return
+            }
+    
+            let config = GIDConfiguration(clientID: clientID)
+            GIDSignIn.sharedInstance.configuration = config
+    
+            guard let rootViewController = Self.topViewController() else {
+                print("error: не вдалося знайти root view controller для презентації Google Sign-In")
+                return
+            }
+    
+            do {
+                let googleResult = try await GIDSignIn.sharedInstance.signIn(withPresenting: rootViewController)
+    
+                guard let idToken = googleResult.user.idToken?.tokenString else {
+                    print("error: Google не повернув idToken")
+                    return
+                }
+                let accessToken = googleResult.user.accessToken.tokenString
+    
+                let credential = GoogleAuthProvider.credential(
+                    withIDToken: idToken,
+                    accessToken: accessToken
+                )
+    
+                let authResult = try await Auth.auth().signIn(with: credential)
+                let userIDlocal = authResult.user.uid
+                self.userID = userIDlocal
+    
+                if authResult.additionalUserInfo?.isNewUser == true {
+                    let code = try await userServices.generateUniqueInviteCode()
+                    try await userServices.createUserDocument(uid: userIDlocal, inviteCode: code)
+                }
+    
+                await loadUserData(uid: userIDlocal)
+                isLogged = true
+            } catch {
+                print("error: \(error.localizedDescription)")
+            }
+        }
+    
+        @MainActor
+        private static func topViewController(_ base: UIViewController? = nil) -> UIViewController? {
+            let base = base ?? UIApplication.shared.connectedScenes
+                .compactMap { $0 as? UIWindowScene }
+                .flatMap { $0.windows }
+                .first { $0.isKeyWindow }?
+                .rootViewController
+    
+            if let nav = base as? UINavigationController {
+                return topViewController(nav.visibleViewController)
+            }
+            if let tab = base as? UITabBarController, let selected = tab.selectedViewController {
+                return topViewController(selected)
+            }
+            if let presented = base?.presentedViewController {
+                return topViewController(presented)
+            }
+            return base
+        }
     func prepareAppleRequest(_ request: ASAuthorizationAppleIDRequest) {
         let nonce = randomNonceString()
         currentNonce = nonce

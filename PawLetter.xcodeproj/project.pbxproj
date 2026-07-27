@@ -9,8 +9,10 @@
 /* Begin PBXBuildFile section */
 		D9E00EEB2FEFE7100074F0E3 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = D9E00EEA2FEFE7100074F0E3 /* FirebaseAuth */; };
 		D9E00EED2FEFE7100074F0E3 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = D9E00EEC2FEFE7100074F0E3 /* FirebaseFirestore */; };
-		D9E00EEF2FEFE74C0074F0E3 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D9E00EEE2FEFE74C0074F0E3 /* GoogleService-Info.plist */; };
 		D9ECDA9F3005326D005244BE /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = D9ECDA9E3005326D005244BE /* FirebaseStorage */; };
+		D9F230813017F020000D7DA2 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = D9F230803017F020000D7DA2 /* GoogleSignIn */; };
+		D9F230833017F020000D7DA2 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = D9F230823017F020000D7DA2 /* GoogleSignInSwift */; };
+		D9F230873017F094000D7DA2 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D9F230863017F094000D7DA2 /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -34,12 +36,25 @@
 		D9E00EBF2FEFE5C20074F0E3 /* PawLetter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PawLetter.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D9E00ECC2FEFE5C30074F0E3 /* PawLetterTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PawLetterTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D9E00ED62FEFE5C30074F0E3 /* PawLetterUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PawLetterUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		D9E00EEE2FEFE74C0074F0E3 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		D9F230863017F094000D7DA2 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		D9F230893017F0FD000D7DA2 /* Exceptions for "PawLetter" folder in "PawLetter" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = D9E00EBE2FEFE5C20074F0E3 /* PawLetter */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		D9E00EC12FEFE5C20074F0E3 /* PawLetter */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				D9F230893017F0FD000D7DA2 /* Exceptions for "PawLetter" folder in "PawLetter" target */,
+			);
 			path = PawLetter;
 			sourceTree = "<group>";
 		};
@@ -60,7 +75,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D9F230833017F020000D7DA2 /* GoogleSignInSwift in Frameworks */,
 				D9E00EEB2FEFE7100074F0E3 /* FirebaseAuth in Frameworks */,
+				D9F230813017F020000D7DA2 /* GoogleSignIn in Frameworks */,
 				D9E00EED2FEFE7100074F0E3 /* FirebaseFirestore in Frameworks */,
 				D9ECDA9F3005326D005244BE /* FirebaseStorage in Frameworks */,
 			);
@@ -90,7 +107,7 @@
 				D9E00ECF2FEFE5C30074F0E3 /* PawLetterTests */,
 				D9E00ED92FEFE5C30074F0E3 /* PawLetterUITests */,
 				D9E00EC02FEFE5C20074F0E3 /* Products */,
-				D9E00EEE2FEFE74C0074F0E3 /* GoogleService-Info.plist */,
+				D9F230863017F094000D7DA2 /* GoogleService-Info.plist */,
 				D9ECDA9D3005326D005244BE /* Frameworks */,
 			);
 			sourceTree = "<group>";
@@ -135,6 +152,8 @@
 				D9E00EEA2FEFE7100074F0E3 /* FirebaseAuth */,
 				D9E00EEC2FEFE7100074F0E3 /* FirebaseFirestore */,
 				D9ECDA9E3005326D005244BE /* FirebaseStorage */,
+				D9F230803017F020000D7DA2 /* GoogleSignIn */,
+				D9F230823017F020000D7DA2 /* GoogleSignInSwift */,
 			);
 			productName = PawLetter;
 			productReference = D9E00EBF2FEFE5C20074F0E3 /* PawLetter.app */;
@@ -220,6 +239,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				D9E00EE92FEFE7100074F0E3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				D9F2307F3017F020000D7DA2 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = D9E00EC02FEFE5C20074F0E3 /* Products */;
@@ -238,7 +258,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D9E00EEF2FEFE74C0074F0E3 /* GoogleService-Info.plist in Resources */,
+				D9F230873017F094000D7DA2 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -428,6 +448,7 @@
 				DEVELOPMENT_TEAM = XF9VRNPAKX;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = PawLetter/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -461,6 +482,7 @@
 				DEVELOPMENT_TEAM = XF9VRNPAKX;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = PawLetter/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -617,6 +639,14 @@
 				minimumVersion = 12.15.0;
 			};
 		};
+		D9F2307F3017F020000D7DA2 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 9.2.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -634,6 +664,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = D9E00EE92FEFE7100074F0E3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseStorage;
+		};
+		D9F230803017F020000D7DA2 /* GoogleSignIn */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D9F2307F3017F020000D7DA2 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignIn;
+		};
+		D9F230823017F020000D7DA2 /* GoogleSignInSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D9F2307F3017F020000D7DA2 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignInSwift;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

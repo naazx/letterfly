@@ -1,12 +1,6 @@
-//
-//  AuthView.swift
-//  PawLetter
-//
-//  Created by Nazar Dydyn on 27.06.2026.
-//
-
 import SwiftUI
 import AuthenticationServices
+import GoogleSignInSwift
 
 struct AuthView: View {
     var viewModel: AuthViewModel
@@ -16,18 +10,25 @@ struct AuthView: View {
             VStack {
                 Spacer()
 
-//                SignInWithAppleButton(.signIn) { request in
-//                    viewModel.prepareAppleRequest(request)
-//                } onCompletion: { result in
-//                    Task {
-//                        await viewModel.signInWithApple(result: result)
-//                    }
-//                }
-//                .signInWithAppleButtonStyle(.black)
-//                .frame(height: 50)
-//                .padding(.horizontal)
-//
-//                 TODO: Google Sign-In кнопка — додати після підключення GoogleSignIn SDK
+                // TODO: повернути після оформлення Apple Developer Program
+                // SignInWithAppleButton(.signIn) { request in
+                //     viewModel.prepareAppleRequest(request)
+                // } onCompletion: { result in
+                //     Task {
+                //         await viewModel.signInWithApple(result: result)
+                //     }
+                // }
+                // .signInWithAppleButtonStyle(.black)
+                // .frame(height: 50)
+                // .padding(.horizontal)
+
+                GoogleSignInButton {
+                    Task {
+                        await viewModel.signInWithGoogle()
+                    }
+                }
+                .frame(height: 50)
+                .padding(.horizontal)
 
                 Spacer()
             }
