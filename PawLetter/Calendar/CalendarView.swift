@@ -71,7 +71,7 @@ struct CalendarView: View {
                                                     .frame(width: 32, height: 32)
                                                     .background {
                                                         if isToday {
-                                                            Circle().fill(.pink)
+                                                            Circle().fill(Color.accentColor)
                                                         }
                                                     }
                                                     .overlay(alignment: .bottomTrailing) {
@@ -81,7 +81,7 @@ struct CalendarView: View {
                                                                 .foregroundStyle(.white)
                                                                 .frame(minWidth: 13, minHeight: 13)
                                                                 .padding(1)
-                                                                .background(.pink)
+                                                                .background(Color.accentColor)
                                                                 .clipShape(Capsule())
                                                                 .offset(x: 4, y: 4)
                                                         }

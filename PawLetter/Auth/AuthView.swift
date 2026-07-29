@@ -3,6 +3,7 @@ import AuthenticationServices
 import GoogleSignInSwift
 
 struct AuthView: View {
+    @State private var showError: Bool = false
     var viewModel: AuthViewModel
 
     var body: some View {
@@ -10,7 +11,6 @@ struct AuthView: View {
             VStack {
                 Spacer()
 
-                // TODO: повернути після оформлення Apple Developer Program
                 // SignInWithAppleButton(.signIn) { request in
                 //     viewModel.prepareAppleRequest(request)
                 // } onCompletion: { result in
@@ -31,6 +31,16 @@ struct AuthView: View {
                 .padding(.horizontal)
 
                 Spacer()
+            }
+            .onChange(of: viewModel.authError){
+                showError = true
+            }
+            .alert("Error", isPresented: $showError) {
+                Button("OK") {
+                    viewModel.authError = nil
+                }
+            } message: {
+                Text(viewModel.authError?.errorDescription ?? "")
             }
             .navigationTitle("Login")
         }

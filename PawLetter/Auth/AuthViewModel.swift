@@ -24,6 +24,33 @@ class AuthViewModel {
     var partnerDisplayName: String?
     var userID: String?
     var currentNonce: String?
+    
+    var authError: AuthError?
+    
+    enum AuthError: LocalizedError, Equatable{
+        case noInternet, unknown(String)
+        
+        var errorDescription: String? {
+            switch self {
+            case .noInternet:
+                return "No Internet connection"
+            case .unknown(let message):
+                return message
+            }
+        }
+    }
+    
+    func mapError(_ error: Error) -> AuthError? {
+        if (error as? ASAuthorizationError)?.code == .canceled {
+            return nil
+        } else if (error as NSError).code == GIDSignInError.canceled.rawValue{
+            return nil
+        } else if (error as NSError).domain == NSURLErrorDomain && (error as NSError).code == NSURLErrorNotConnectedToInternet {
+            return .noInternet
+        } else {
+            return .unknown(error.localizedDescription)
+        }
+    }
 
     init(){
         if let currentUser = Auth.auth().currentUser {
@@ -76,7 +103,10 @@ class AuthViewModel {
                 await loadUserData(uid: userIDlocal)
                 isLogged = true
             } catch {
-                print("error: \(error.localizedDescription)")
+                let mapError = mapError(error)
+                if let mapError{
+                    authError = mapError
+                }
             }
         }
     
@@ -145,11 +175,17 @@ class AuthViewModel {
                 await loadUserData(uid: userIDlocal)
                 isLogged = true
             } catch {
-                print("error: \(error.localizedDescription)")
+                let mapError = mapError(error)
+                if let mapError{
+                    authError = mapError
+                }
             }
 
         case .failure(let error):
-            print("error: \(error.localizedDescription)")
+            let mapError = mapError(error)
+            if let mapError{
+                authError = mapError
+            }
         }
     }
 

@@ -144,7 +144,7 @@ struct ProfileView: View {
             Image(systemName: "person.fill")
                 .font(.title3)
                 .frame(width: 26)
-                .foregroundStyle(.pink)
+                .foregroundStyle(Color.accentColor)
 
             VStack(alignment: .leading, spacing: 3) {
 
@@ -177,7 +177,8 @@ struct ProfileView: View {
 
                     Button("Save") {
                         Task{
-                            await authViewModel.saveDisplayName(editedName);                    isEditingName = false
+                            await authViewModel.saveDisplayName(editedName);
+                            isEditingName = false
                         }
                     }
                     .fontWeight(.semibold)
@@ -205,7 +206,7 @@ struct ProfileView: View {
             Image(systemName: "link")
                 .font(.title3)
                 .frame(width: 26)
-                .foregroundStyle(.pink)
+                .foregroundStyle(Color.accentColor)
 
             VStack(alignment: .leading, spacing: 3) {
 
@@ -259,7 +260,7 @@ struct ProfileView: View {
             Image(systemName: "paintbrush.fill")
                 .font(.title3)
                 .frame(width: 28)
-                .foregroundStyle(.pink)
+                .foregroundStyle(Color.accentColor)
 
             Text("Appearance")
                 .font(.body)
@@ -316,7 +317,7 @@ private var pairInfoSection: some View {
         HStack(spacing: 16) {
 
             Image(systemName: "heart.fill")
-                .foregroundStyle(.red)
+                .foregroundStyle(Color.accentColor)
                 .font(.title3)
                 .frame(width: 26)
 
@@ -381,7 +382,7 @@ private var pairInfoSection: some View {
             Image(systemName: "figure.2")
                 .font(.title3)
                 .frame(width: 26)
-                .foregroundStyle(.pink)
+                .foregroundStyle(Color.accentColor)
 
             VStack(alignment: .leading, spacing: 2) {
 
@@ -404,7 +405,7 @@ private var pairInfoSection: some View {
             Image(systemName: "calendar")
                 .font(.title3)
                 .frame(width: 26)
-                .foregroundStyle(.pink)
+                .foregroundStyle(Color.accentColor)
 
             VStack(alignment: .leading, spacing: 2) {
 
@@ -431,7 +432,7 @@ private var pairInfoSection: some View {
             Image(systemName: "envelope.fill")
                 .font(.title3)
                 .frame(width: 26)
-                .foregroundStyle(.pink)
+                .foregroundStyle(Color.accentColor)
 
             VStack(alignment: .leading, spacing: 2) {
 
@@ -526,7 +527,7 @@ private var pairInfoSection: some View {
                 Image(systemName: "person.circle.fill")
                     .resizable()
                     .scaledToFit()
-                    .foregroundStyle(.blue)
+                    .foregroundStyle(Color.accentColor)
                     .frame(width: 150, height: 150)
                     .clipShape(Circle())
                     .overlay {
