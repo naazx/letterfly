@@ -12,12 +12,33 @@ struct CalendarView: View {
     @State private var isShowingDayDetail: Bool = false
     
     var letters: [Letter]
-    let months: [Date]
-    let currentMonth: Date
-    
     var pairID: String
     var currentUserID: String?
     var homeViewModel: HomeViewModel
+    
+    private var currentMonth: Date {
+        CalendarGridHelper.firstDayOfMonth(containing: .now)
+    }
+    
+    private var months: [Date] {
+        let calendar = Calendar.current
+        let defaultPastBound = calendar.date(byAdding: .month, value: -12, to: currentMonth)!
+        let earliestLetterMonth = letters.map(\.createdAt).min().map {
+            CalendarGridHelper.firstDayOfMonth(containing: $0)
+        }
+        
+        let pastBound = [defaultPastBound, earliestLetterMonth].compactMap { $0 }.min()!
+        let futureBound = calendar.date(byAdding: .month, value: 12, to: currentMonth)!
+        
+        var result: [Date] = []
+        var cursor = pastBound
+        while cursor <= futureBound {
+            result.append(cursor)
+            guard let next = calendar.date(byAdding: .month, value: 1, to: cursor) else { break }
+            cursor = next
+        }
+        return result
+    }
     
     var body: some View {
         let grouped = viewModel.groupedLetters(letters)
@@ -120,22 +141,6 @@ struct CalendarView: View {
                 .presentationDragIndicator(.visible)
                 .presentationCornerRadius(28)
         }
-    }
-    init(letters: [Letter], pairID: String, currentUserID: String?, homeViewModel: HomeViewModel){
-        let calendar = Calendar.current
-        let currentFirstDay = CalendarGridHelper.firstDayOfMonth(containing: .now)
-                
-                self.months = (-12...12).compactMap { offset -> Date? in
-                    guard let movedDate = calendar.date(byAdding: .month, value: offset, to: currentFirstDay) else {
-                        return nil
-                    }
-                    return CalendarGridHelper.firstDayOfMonth(containing: movedDate)
-                }
-        self.currentMonth = currentFirstDay
-        self.letters = letters
-        self.pairID = pairID
-        self.currentUserID = currentUserID
-        self.homeViewModel = homeViewModel
     }
 }
 #Preview {
