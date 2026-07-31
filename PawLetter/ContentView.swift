@@ -13,25 +13,24 @@ struct ContentView: View {
     
     var body: some View {
         
-        if authViewModel.isLoadingPairID{
-            PawLoadingView()
+        Group{
+            if authViewModel.isLoadingPairID{
+                PawLoadingView()
+            }
+            else if authViewModel.isLogged == false{
+                AuthView(viewModel: authViewModel)
+            }
+            else if authViewModel.displayName == nil{
+                NameSetupView(authViewModel: authViewModel)
+            }
+            else if authViewModel.pairID == nil{
+                PairView(viewModel: authViewModel)
+            }
+            else{
+                MainTabView(viewModel: authViewModel)
+            }
         }
-        else if authViewModel.isLogged == false{
-            AuthView(viewModel: authViewModel)
-                .preferredColorScheme(selectedColorScheme)
-        }
-        else if authViewModel.displayName == nil{
-            NameSetupView(authViewModel: authViewModel)
-                .preferredColorScheme(selectedColorScheme)
-        }
-        else if authViewModel.pairID == nil{
-            PairView(viewModel: authViewModel)
-                .preferredColorScheme(selectedColorScheme)
-        }
-        else{
-            MainTabView(viewModel: authViewModel)
-                .preferredColorScheme(selectedColorScheme)
-        }
+        .preferredColorScheme(selectedColorScheme)
     }
     private var selectedColorScheme: ColorScheme? {
         switch appTheme{
