@@ -12,8 +12,8 @@ class LetterServices{
     let db = Firestore.firestore()
     let storageService = StorageService()
     
-    func sendLetter(authorID: String, subject: String, text: String, photoURL: String?, reference: DocumentReference) async throws {
-        let letter = Letter(authorID: authorID, subject: subject, text: text, createdAt: .now, photoURL: photoURL)
+    func sendLetter(authorID: String, subject: String, text: String, photoURL: String?, reference: DocumentReference, mood: MoodType?, surprise: SurpriseType?) async throws {
+        let letter = Letter(authorID: authorID, subject: subject, text: text, createdAt: .now, photoURL: photoURL, mood: mood, surprise: surprise)
         let encodedLetter = try Firestore.Encoder().encode(letter)
 
         try await reference.setData(encodedLetter)
@@ -33,14 +33,16 @@ class LetterServices{
         }
         try await db.collection("pairs").document(pairID).collection("letters").document(letterID).delete()
     }
-    func updateLetter(pairID: String, letterID: String, subject: String, text: String, photoURL: String?) async throws {
+    func updateLetter(pairID: String, letterID: String, subject: String, text: String, photoURL: String?, mood: MoodType?, surprise: SurpriseType?) async throws {
         try await db.collection("pairs").document(pairID).collection("letters")
             .document(letterID)
             .updateData([
                 "subject": subject,
                 "text": text,
                 "photoURL": photoURL as Any,
-                "editedAt": Date()
+                "editedAt": Date(),
+                "mood": mood?.rawValue as Any,
+                "surprise": surprise?.rawValue as Any
             ])
     }
 }

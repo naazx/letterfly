@@ -26,10 +26,15 @@ class NewLetterViewModel {
     var existingLetter: Letter?
     var didRemovePhoto: Bool = false
     
+    var mood: MoodType?
+    var surprise: SurpriseType?
+    
     init(existingLetter: Letter? = nil) {
         self.existingLetter = existingLetter
         self.subject = existingLetter?.subject ?? ""
         self.text = existingLetter?.text ?? ""
+        self.mood = existingLetter?.mood
+        self.surprise = existingLetter?.surprise
     }
     
     func uploadPhoto(item: PhotosPickerItem, pairID: String, letterID: String) async throws -> String? {
@@ -74,9 +79,11 @@ class NewLetterViewModel {
                 let hasChanges = subject != existingLetter.subject
                         || text != existingLetter.text
                         || photoURL != existingLetter.photoURL
+                        || mood != existingLetter.mood
+                        || surprise != existingLetter.surprise
 
                     if hasChanges {
-                        try await letterServices.updateLetter(pairID: pairID, letterID: letterID, subject: subject, text: text, photoURL: photoURL)
+                        try await letterServices.updateLetter(pairID: pairID, letterID: letterID, subject: subject, text: text, photoURL: photoURL, mood: mood, surprise: surprise)
                     }
                 
             } else {
@@ -86,7 +93,7 @@ class NewLetterViewModel {
                 if let selectedItem {
                     photoURL = try await uploadPhoto(item: selectedItem, pairID: pairID, letterID: reference.documentID)
                 }
-                try await letterServices.sendLetter(authorID: authorID, subject: subject, text: text, photoURL: photoURL, reference: reference)
+                try await letterServices.sendLetter(authorID: authorID, subject: subject, text: text, photoURL: photoURL, reference: reference, mood: mood, surprise: surprise)
             }
             isSuccess = true
             

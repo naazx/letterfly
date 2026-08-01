@@ -49,7 +49,7 @@ struct LetterDetailView: View {
 
                 Divider()
 
-                Text(letter.text)
+                Text(letter.text ?? "")
                     .font(.body)
                     .lineSpacing(6)
                     .textSelection(.enabled)
