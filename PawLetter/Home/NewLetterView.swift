@@ -80,6 +80,22 @@ struct NewLetterView: View {
                                 .autocorrectionDisabled(false)
                         }
                     }
+                        
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text("MOOD")
+                                .font(.caption2.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                            
+                            ChipPicker<MoodType>(selection: $viewModel.mood)
+                        }
+                        
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text("GIFTS")
+                                .font(.caption2.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                            
+                            ChipPicker<SurpriseType>(selection: $viewModel.surprise)
+                        }
                 }
                     .padding(20)
             }

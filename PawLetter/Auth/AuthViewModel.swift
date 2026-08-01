@@ -190,7 +190,7 @@ class AuthViewModel {
     }
 
     func signOut(){
-        do{
+        do {
             try  Auth.auth().signOut()
             isLogged = false
             pairID = nil

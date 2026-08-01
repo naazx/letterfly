@@ -67,7 +67,7 @@ struct HomeView: View {
                 }
             }
             .navigationDestination(for: Letter.self) { letter in
-                LetterDetailView(letter: letter, pairID: pairID)
+                LetterDetailView(letter: letter, pairID: pairID, currentUserID: currentUserID)
             }
         }
     }

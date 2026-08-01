@@ -12,9 +12,12 @@ struct LetterDetailView: View {
     @State private var showDeleteConfirmation: Bool = false
     @State private var showError: Bool = false
     @State private var isShowingEdit: Bool = false
+    @State private var selectedReaction: ReactionType?
+    
     let letter: Letter
     let pairID: String
     var letterServices = LetterServices()
+    var currentUserID: String?
     
     var body: some View {
         ScrollView {
@@ -26,6 +29,35 @@ struct LetterDetailView: View {
 
                 Text(letter.subject)
                     .font(.largeTitle.bold())
+                
+                if letter.mood != nil || letter.surprise != nil {
+                    HStack(spacing: 10) {
+                        if let mood = letter.mood {
+                            HStack(spacing: 4) {
+                                Text(mood.emoji)
+                                Text(mood.title)
+                            }
+                            .font(.subheadline.weight(.medium))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background(Color.accentColor)
+                            .clipShape(Capsule())
+                        }
+                        if let surprise = letter.surprise {
+                            HStack(spacing: 4) {
+                                Text(surprise.emoji)
+                                Text(surprise.title)
+                            }
+                            .font(.subheadline.weight(.medium))
+                            .foregroundStyle(.secondary)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background(Color(.secondarySystemBackground))
+                            .clipShape(Capsule())
+                        }
+                    }
+                }
 
                 Divider()
 
@@ -42,7 +74,6 @@ struct LetterDetailView: View {
                             systemImage: "pencil"
                         )
                     }
-
                 }
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
@@ -53,6 +84,39 @@ struct LetterDetailView: View {
                     .font(.body)
                     .lineSpacing(6)
                     .textSelection(.enabled)
+                
+                if let currentUserID {
+                    Divider()
+                    
+                    if letter.authorID == currentUserID {
+                        if let reaction = letter.reaction {
+                            VStack(alignment: .leading, spacing: 10) {
+                                Text("REACTION")
+                                    .font(.caption2.weight(.semibold))
+                                    .foregroundStyle(.secondary)
+                                
+                                HStack(spacing: 4) {
+                                    Text(reaction.emoji)
+                                    Text(reaction.title)
+                                }
+                                .font(.subheadline.weight(.medium))
+                                .foregroundStyle(.white)
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 6)
+                                .background(Color.accentColor)
+                                .clipShape(Capsule())
+                            }
+                        }
+                    } else {
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text("YOUR REACTION")
+                                .font(.caption2.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                            
+                            ChipPicker<ReactionType>(selection: $selectedReaction)
+                        }
+                    }
+                }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(20)
@@ -64,6 +128,7 @@ struct LetterDetailView: View {
             if !letter.isRead {
                 try? await letterServices.markAsRead(pairID: pairID, letterID: id)
             }
+            selectedReaction = letter.reaction
         }
         .toolbar{
             ToolbarItem(placement: .topBarTrailing) {
@@ -103,6 +168,12 @@ struct LetterDetailView: View {
         }
         .sheet(isPresented: $isShowingEdit) {
             NewLetterView(existingLetter: letter, pairID: pairID, authorID: letter.authorID)
+        }
+        .onChange(of: selectedReaction) { _, newValue in
+            guard let id = letter.id else { return }
+            Task {
+                try? await letterServices.setReaction(pairID: pairID, letterID: id, reaction: newValue)
+            }
         }
     }
     private var photoView: some View {

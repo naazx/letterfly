@@ -46,7 +46,7 @@ extension Letter {
         return formatted(editedAt)
     }
 }
-enum MoodType: String, CaseIterable, Codable {
+enum MoodType: String, CaseIterable, Codable, ChipDisplayable {
     case love
     case happy
     case thankful
@@ -79,7 +79,7 @@ enum MoodType: String, CaseIterable, Codable {
     }
 }
 
-enum SurpriseType: String, CaseIterable, Codable {
+enum SurpriseType: String, CaseIterable, Codable, ChipDisplayable {
     case flower
     case chocolate
     case coffee
@@ -112,7 +112,7 @@ enum SurpriseType: String, CaseIterable, Codable {
     }
 }
 
-enum ReactionType: String, CaseIterable, Codable {
+enum ReactionType: String, CaseIterable, Codable, ChipDisplayable {
     case love
     case hug
     case touched
@@ -143,4 +143,8 @@ enum ReactionType: String, CaseIterable, Codable {
             return "🐾"
         }
     }
+}
+protocol ChipDisplayable {
+    var emoji: String { get }
+    var title: String { get }
 }

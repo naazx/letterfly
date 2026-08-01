@@ -26,6 +26,11 @@ class LetterServices{
             "isRead": true
         ])
     }
+    func setReaction(pairID: String, letterID: String, reaction: ReactionType?) async throws {
+        try await db.collection("pairs").document(pairID).collection("letters").document(letterID).updateData([
+            "reaction": reaction?.rawValue as Any
+        ])
+    }
     
     func deleteLetter(pairID: String, letterID: String, photoURL: String? ) async throws {
         if photoURL != nil{

@@ -7,12 +7,35 @@
 
 import SwiftUI
 
-struct ChipPicker: View {
+struct ChipPicker<T: CaseIterable & Hashable & ChipDisplayable>: View {
+    @Binding var selection: T?
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack{
+                ForEach(Array(T.allCases), id: \.self) { option in
+                    HStack(spacing: 4){
+                        Text(option.emoji)
+                        Text(option.title)
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .foregroundStyle(selection == option ? .white : .primary)
+                    .background(selection == option ? Color.accentColor : Color(.secondarySystemBackground))
+                    .clipShape(Capsule())
+                    .onTapGesture {
+                        if selection == option {
+                            selection = nil
+                        } else {
+                            selection = option
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
 #Preview {
-    ChipPicker()
+    ChipPicker<MoodType>(selection: .constant(.happy))
 }
