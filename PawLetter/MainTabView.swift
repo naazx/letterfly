@@ -14,11 +14,11 @@ struct MainTabView: View {
     var body: some View {
         if let pairID = viewModel.pairID {
             TabView {
-                HomeView(homeViewModel: homeViewModel, pairID: pairID, currentUserID: viewModel.userID)
+                HomeView(homeViewModel: homeViewModel, pairID: pairID, currentUserID: viewModel.userID, partnerName: viewModel.partnerNickname ?? viewModel.partnerDisplayName)
                     .tabItem {
                         Label("Home", systemImage: "house")
                     }
-                CalendarView(letters: homeViewModel.letters, pairID: pairID, currentUserID: viewModel.userID, homeViewModel: homeViewModel)
+                CalendarView(letters: homeViewModel.letters, pairID: pairID, currentUserID: viewModel.userID, partnerName: viewModel.partnerNickname ?? viewModel.partnerDisplayName, homeViewModel: homeViewModel)
                     .tabItem {
                         Label("Calendar", systemImage: "calendar")
                     }

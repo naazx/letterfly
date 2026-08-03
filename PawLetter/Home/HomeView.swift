@@ -13,6 +13,7 @@ struct HomeView: View {
     var homeViewModel: HomeViewModel
     var pairID: String
     var currentUserID: String?
+    var partnerName: String?
     
     var body: some View {
         NavigationStack {
@@ -67,7 +68,7 @@ struct HomeView: View {
                 }
             }
             .navigationDestination(for: Letter.self) { letter in
-                LetterDetailView(letter: letter, pairID: pairID, currentUserID: currentUserID)
+                LetterDetailView(letter: letter, pairID: pairID, currentUserID: currentUserID, partnerName: partnerName)
             }
         }
     }

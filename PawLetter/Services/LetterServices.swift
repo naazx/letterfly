@@ -26,12 +26,21 @@ class LetterServices{
             "isRead": true
         ])
     }
-    func setReaction(pairID: String, letterID: String, reaction: ReactionType?) async throws {
-        try await db.collection("pairs").document(pairID).collection("letters").document(letterID).updateData([
-            "reaction": reaction?.rawValue as Any
-        ])
+    func setReaction(pairID: String, letterID: String, reaction: ReactionType?, previousReaction: ReactionType?) async throws {
+        var data: [String: Any] = ["reaction": reaction?.rawValue as Any]
+        
+        if reaction == nil {
+            data["reactedAt"] = NSNull()
+            data["reactionEditedAt"] = NSNull()
+        } else if previousReaction == nil {
+            data["reactedAt"] = Date()
+            data["reactionEditedAt"] = NSNull()
+        } else {
+            data["reactionEditedAt"] = Date()
+        }
+        
+        try await db.collection("pairs").document(pairID).collection("letters").document(letterID).updateData(data)
     }
-    
     func deleteLetter(pairID: String, letterID: String, photoURL: String? ) async throws {
         if photoURL != nil{
             try await storageService.deleteImage(path: "letterPhotos/\(pairID)/\(letterID).jpg")

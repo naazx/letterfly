@@ -14,6 +14,7 @@ struct DayLettersView: View {
     var pairID: String
     var currentUserID: String?
     var homeViewModel: HomeViewModel
+    var partnerName: String?
     
     var body: some View {
         NavigationStack{
@@ -28,7 +29,7 @@ struct DayLettersView: View {
                 }
             }
             .navigationDestination(for: Letter.self) { letter in
-                LetterDetailView(letter: letter, pairID: pairID, currentUserID: currentUserID)
+                LetterDetailView(letter: letter, pairID: pairID, currentUserID: currentUserID, partnerName: partnerName)
             }
             .navigationTitle(date.formatted(.dateTime.day().month().year()))
         }
@@ -44,5 +45,5 @@ struct DayLettersView: View {
         ),
     ]
     
-    DayLettersView(date: .now, letters: sampleLetters, pairID: "123456789", currentUserID: nil , homeViewModel: HomeViewModel())
+    DayLettersView(date: .now, letters: sampleLetters, pairID: "123456789", currentUserID: nil , homeViewModel: HomeViewModel(), partnerName: "Nastia")
 }

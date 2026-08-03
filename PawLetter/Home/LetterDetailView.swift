@@ -18,6 +18,7 @@ struct LetterDetailView: View {
     let pairID: String
     var letterServices = LetterServices()
     var currentUserID: String?
+    var partnerName: String?
     
     var body: some View {
         ScrollView {
@@ -105,6 +106,16 @@ struct LetterDetailView: View {
                                 .padding(.vertical, 6)
                                 .background(Color.accentColor)
                                 .clipShape(Capsule())
+                                
+                                if let formattedReactionEditedAt = letter.formattedReactionEditedAt {
+                                    Text("\(partnerName ?? "Partner") changed their reaction \(formattedReactionEditedAt)")
+                                        .font(.caption2)
+                                        .foregroundStyle(.secondary)
+                                } else if let formattedReactedAt = letter.formattedReactedAt {
+                                    Text("\(partnerName ?? "Partner") reacted \(formattedReactedAt)")
+                                        .font(.caption2)
+                                        .foregroundStyle(.secondary)
+                                }
                             }
                         }
                     } else {
@@ -169,10 +180,10 @@ struct LetterDetailView: View {
         .sheet(isPresented: $isShowingEdit) {
             NewLetterView(existingLetter: letter, pairID: pairID, authorID: letter.authorID)
         }
-        .onChange(of: selectedReaction) { _, newValue in
+        .onChange(of: selectedReaction) { oldValue, newValue in
             guard let id = letter.id else { return }
             Task {
-                try? await letterServices.setReaction(pairID: pairID, letterID: id, reaction: newValue)
+                try? await letterServices.setReaction(pairID: pairID, letterID: id, reaction: newValue, previousReaction: oldValue)
             }
         }
     }

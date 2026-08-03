@@ -14,6 +14,7 @@ struct CalendarView: View {
     var letters: [Letter]
     var pairID: String
     var currentUserID: String?
+    var partnerName: String?
     var homeViewModel: HomeViewModel
     
     private var currentMonth: Date {
@@ -136,7 +137,7 @@ struct CalendarView: View {
             }
         }
         .sheet(isPresented: $isShowingDayDetail) {
-            DayLettersView(date: viewModel.selectedDate!, letters: grouped[viewModel.selectedDate!] ?? [], pairID: pairID, currentUserID: currentUserID, homeViewModel: homeViewModel)
+            DayLettersView(date: viewModel.selectedDate!, letters: grouped[viewModel.selectedDate!] ?? [], pairID: pairID, currentUserID: currentUserID, homeViewModel: homeViewModel, partnerName: partnerName)
                 .presentationDetents([.medium, .large])
                 .presentationDragIndicator(.visible)
                 .presentationCornerRadius(28)
@@ -162,5 +163,5 @@ struct CalendarView: View {
         )
     ]
 
-    CalendarView(letters: sampleLetters, pairID: "123456789", currentUserID: nil, homeViewModel: HomeViewModel())
+    CalendarView(letters: sampleLetters, pairID: "123456789", currentUserID: nil, partnerName: "Nastia", homeViewModel: HomeViewModel())
 }

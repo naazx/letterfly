@@ -20,6 +20,9 @@ struct Letter : Codable, Identifiable, Equatable, Hashable{
     var mood: MoodType?
     var surprise: SurpriseType?
     var reaction: ReactionType?
+    
+    var reactedAt: Date? = nil
+    var reactionEditedAt: Date? = nil
 }
 extension Letter {
     private func formatted(_ date: Date) -> String {
@@ -40,10 +43,17 @@ extension Letter {
     var formattedDate: String {
         formatted(createdAt)
     }
-    
     var formattedEditedDate: String? {
         guard let editedAt else { return nil }
         return formatted(editedAt)
+    }
+    var formattedReactedAt: String? {
+        guard let reactedAt else { return nil }
+        return formatted(reactedAt)
+    }
+    var formattedReactionEditedAt: String? {
+        guard let reactionEditedAt else { return nil }
+        return formatted(reactionEditedAt)
     }
 }
 enum MoodType: String, CaseIterable, Codable, ChipDisplayable {

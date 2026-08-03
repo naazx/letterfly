@@ -114,7 +114,6 @@ struct ProfileView: View {
     private var userInfoSection: some View {
         VStack(alignment: .leading, spacing: 14) {
 
-            // MARK: Header
             Text("ACCOUNT")
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(.secondary)
@@ -187,7 +186,6 @@ struct ProfileView: View {
             } else {
 
                 Button {
-
                     editedName = authViewModel.displayName ?? ""
                     isEditingName = true
 
