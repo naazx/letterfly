@@ -56,7 +56,7 @@ class ProfileViewModel{
                         showError = true
                         return
                     }
-                    let uploadedURL = try await storageService.uploadImage(data: compression, path: "avatars/\(id).jpg")
+                    let uploadedURL = try await storageService.uploadFile(data: compression, path: "avatars/\(id).jpg")
                     avatarURL = uploadedURL
                     try await userServices.updateAvatarURL(uid: id, url: uploadedURL.absoluteString)
                     errorMessage = ""

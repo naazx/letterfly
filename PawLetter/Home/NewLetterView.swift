@@ -13,6 +13,7 @@ struct NewLetterView: View {
     @State private var viewModel = NewLetterViewModel()
     @State private var audioRecorder = AudioRecorderService()
     @State private var selectedItem: PhotosPickerItem?
+    @State private var pulseScale: CGFloat = 1.0
     let existingLetter: Letter?
     var pairID: String
     var authorID: String
@@ -123,6 +124,9 @@ struct NewLetterView: View {
                 }
                 .task {
                     await viewModel.loadExistingPhoto()
+                    if let audioURLString = existingLetter?.audioURL {
+                        await audioRecorder.loadRemoteRecording(from: audioURLString)
+                    }
                 }
                 .scrollDismissesKeyboard(.interactively)
                 .navigationTitle(existingLetter == nil ? "New letter" : "Edit letter")
@@ -213,60 +217,99 @@ struct NewLetterView: View {
             
             VStack(spacing: 16) {
                 if audioRecorder.isRecording {
-                    Button{
-                        audioRecorder.stopRecording()
-                    } label: {
-                        HStack {
-                            Text("Recording...")
-                            Circle().fill(.red).frame(width: 10, height: 10)
-                        }
-                    }
+                    recordingState
                 } else if audioRecorder.recordingURL != nil {
-                    VStack {
-                        if audioRecorder.isPlaying{
-                            Button {
-                                audioRecorder.stopPlayback()
-                            } label: {
-                                Text("Stop")
-                            }
-                        } else {
-                            Button{
-                                audioRecorder.startPlayback()
-                            } label: {
-                                Text("Play")
-                            }
-                        }
-                        
-                        Button {
-                            audioRecorder.deleteRecording()
-                            audioRecorder.startRecording()
-                        } label: {
-                            Text("Record again")
-                        }
-                        
-                        Button {
-                            audioRecorder.deleteRecording()
-                        } label: {
-                            Text("Delete")
-                        }
-                    }
+                    playbackState
                 } else {
-                    Button{
-                        audioRecorder.startRecording()
-                    } label: {
-                        HStack {
-                            Image(systemName: "mic.fill")
-                            Text("Start recording")
-                        }
-                        .font(.headline)
-                        .foregroundStyle(Color.accentColor)
-                    }
+                    startState
                 }
             }
             .frame(maxWidth: .infinity)
             .padding()
             .background(Color(.secondarySystemBackground))
             .clipShape(RoundedRectangle(cornerRadius: 16))
+        }
+    }
+
+    private var startState: some View {
+        Button {
+            audioRecorder.startRecording()
+        } label: {
+            HStack {
+                Image(systemName: "mic.fill")
+                Text("Start Recording")
+            }
+            .font(.headline)
+            .foregroundStyle(.white)
+            .padding(.vertical, 10)
+            .padding(.horizontal, 20)
+            .background(Color.accentColor)
+            .clipShape(Capsule())
+        }
+    }
+
+    private var recordingState: some View {
+        VStack(spacing: 12) {
+            HStack(spacing: 8) {
+                Circle()
+                    .fill(.red)
+                    .frame(width: 10, height: 10)
+                    .scaleEffect(pulseScale)
+                    .animation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true), value: pulseScale)
+                    .onAppear { pulseScale = 1.4 }
+                
+                Text(audioRecorder.formattedDuration)
+                    .font(.headline.monospacedDigit())
+            }
+            
+            Button {
+                audioRecorder.stopRecording()
+            } label: {
+                Image(systemName: "stop.fill")
+                    .font(.title2)
+                    .foregroundStyle(.white)
+                    .padding(16)
+                    .background(Color.red)
+                    .clipShape(Circle())
+            }
+        }
+    }
+
+    private var playbackState: some View {
+        VStack(spacing: 14) {
+            HStack(spacing: 16) {
+                Button {
+                    audioRecorder.isPlaying ? audioRecorder.stopPlayback() : audioRecorder.startPlayback()
+                } label: {
+                    Image(systemName: audioRecorder.isPlaying ? "pause.fill" : "play.fill")
+                        .font(.title2)
+                        .foregroundStyle(.white)
+                        .padding(14)
+                        .background(Color.accentColor)
+                        .clipShape(Circle())
+                }
+                
+                Text(audioRecorder.formattedDuration)
+                    .font(.headline.monospacedDigit())
+                    .foregroundStyle(.secondary)
+            }
+            
+            HStack(spacing: 20) {
+                Button {
+                    audioRecorder.deleteRecording()
+                    audioRecorder.startRecording()
+                } label: {
+                    Label("Record Again", systemImage: "arrow.counterclockwise")
+                        .font(.subheadline)
+                }
+                
+                Button(role: .destructive) {
+                    audioRecorder.deleteRecording()
+                } label: {
+                    Label("Delete", systemImage: "trash")
+                        .font(.subheadline)
+                }
+            }
         }
     }
 }

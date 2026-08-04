@@ -65,11 +65,11 @@ class NewLetterViewModel {
             guard let compression = image.jpegData(compressionQuality: 0.7)  else {
                 throw UploadError.imageCompression
             }
-            let uploadedURL = try await storageService.uploadImage(data: compression, path:                                     "letterPhotos/\(pairID)/\(letterID).jpg")
+            let uploadedURL = try await storageService.uploadFile(data: compression, path:                                     "letterPhotos/\(pairID)/\(letterID).jpg")
         
             return uploadedURL.absoluteString
     }
-    func send(pairID: String, authorID: String, selectedItem: PhotosPickerItem?) async {
+    func send(pairID: String, authorID: String, selectedItem: PhotosPickerItem?, recordingURL: URL?) async {
         isLoading = true
         defer{ isLoading = false }
         
@@ -77,34 +77,50 @@ class NewLetterViewModel {
             if let existingLetter {
                 guard let letterID = existingLetter.id else {return}
                 var photoURL = existingLetter.photoURL
+                var audioURL = existingLetter.audioURL
                 
                 if didRemovePhoto == true{
-                    try await storageService.deleteImage(path: "letterPhotos/\(pairID)/\(letterID).jpg")
+                    try await storageService.deleteFile(path: "letterPhotos/\(pairID)/\(letterID).jpg")
                     photoURL = nil
                     
                 } else if let selectedItem{
                     photoURL = try await uploadPhoto(item: selectedItem, pairID: pairID, letterID: letterID)
-                    
+                }
+                
+                if inputMode == .text && existingLetter.audioURL != nil {
+                    try await storageService.deleteFile(path: "letterAudio/\(pairID)/\(letterID).m4a")
+                    audioURL = nil
+                }
+                if inputMode == .voice, let recordingURL {
+                    if existingLetter.audioURL != nil {
+                        try await storageService.deleteFile(path: "letterAudio/\(pairID)/\(letterID).m4a")
+                    }
+                    audioURL = try await uploadAudio(url: recordingURL, pairID: pairID, letterID: letterID)
                 }
                 
                 let hasChanges = subject != existingLetter.subject
                         || text != existingLetter.text
                         || photoURL != existingLetter.photoURL
+                        || audioURL != existingLetter.audioURL
                         || mood != existingLetter.mood
                         || surprise != existingLetter.surprise
 
                     if hasChanges {
-                        try await letterServices.updateLetter(pairID: pairID, letterID: letterID, subject: subject, text: text, photoURL: photoURL, mood: mood, surprise: surprise)
+                        try await letterServices.updateLetter(pairID: pairID, letterID: letterID, subject: subject, text: text, photoURL: photoURL, audioURL: audioURL, mood: mood, surprise: surprise)
                     }
                 
             } else {
                 let reference = letterServices.newLetterReference(pairID: pairID)
                 var photoURL: String? = nil
+                var audioURL: String? = nil
 
                 if let selectedItem {
                     photoURL = try await uploadPhoto(item: selectedItem, pairID: pairID, letterID: reference.documentID)
                 }
-                try await letterServices.sendLetter(authorID: authorID, subject: subject, text: text, photoURL: photoURL, reference: reference, mood: mood, surprise: surprise)
+                if inputMode == .voice, let recordingURL {
+                    audioURL = try await uploadAudio(url: recordingURL, pairID: pairID, letterID: reference.documentID)
+                }
+                try await letterServices.sendLetter(authorID: authorID, subject: subject, text: text, photoURL: photoURL, audioURL: audioURL, reference: reference, mood: mood, surprise: surprise)
             }
             isSuccess = true
             
@@ -142,7 +158,16 @@ class NewLetterViewModel {
             previewImage = image
         } catch {}
     }
+    func uploadAudio(url: URL, pairID: String, letterID: String) async throws -> String? {
+        isLoading = true
+        defer { isLoading = false }
+        
+        let data = try Data(contentsOf: url)
+        let uploadedURL = try await storageService.uploadFile(data: data, path: "letterAudio/\(pairID)/\(letterID).m4a")
+        
+        return uploadedURL.absoluteString
+    }
 }
-enum UploadError : Error{
+enum UploadError : Error {
     case dataConvertation, imageConvertation, imageCompression
 }

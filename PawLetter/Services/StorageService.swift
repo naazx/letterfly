@@ -9,7 +9,7 @@ import Foundation
 import FirebaseStorage
 
 class StorageService {
-    func uploadImage(data: Data, path: String) async throws -> URL {
+    func uploadFile(data: Data, path: String) async throws -> URL {
         if data.count > 5 * 1024 * 1024 {
             throw StorageError.fileTooLarge
         }
@@ -23,7 +23,7 @@ class StorageService {
             throw StorageError.uploadFailed
         }
     }
-    func deleteImage(path: String) async throws {
+    func deleteFile(path: String) async throws {
         do {
             let storageRef = Storage.storage().reference(withPath: path)
             try await storageRef.delete()

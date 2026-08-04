@@ -46,7 +46,7 @@ struct HomeView: View {
                                 let letter = homeViewModel.letters[index]
                                 guard let id = letter.id else { continue }
                                 Task {
-                                    try? await letterServices.deleteLetter(pairID: pairID, letterID: id, photoURL: letter.photoURL)
+                                    try? await letterServices.deleteLetter(pairID: pairID, letterID: id, photoURL: letter.photoURL, audioURL: letter.audioURL)
                                 }
                             }
                         }

@@ -12,8 +12,8 @@ class LetterServices{
     let db = Firestore.firestore()
     let storageService = StorageService()
     
-    func sendLetter(authorID: String, subject: String, text: String, photoURL: String?, reference: DocumentReference, mood: MoodType?, surprise: SurpriseType?) async throws {
-        let letter = Letter(authorID: authorID, subject: subject, text: text, createdAt: .now, photoURL: photoURL, mood: mood, surprise: surprise)
+    func sendLetter(authorID: String, subject: String, text: String, photoURL: String?, audioURL: String?, reference: DocumentReference, mood: MoodType?, surprise: SurpriseType?) async throws {
+        let letter = Letter(authorID: authorID, subject: subject, text: text, createdAt: .now, photoURL: photoURL, mood: mood, surprise: surprise, audioURL: audioURL)
         let encodedLetter = try Firestore.Encoder().encode(letter)
 
         try await reference.setData(encodedLetter)
@@ -41,19 +41,23 @@ class LetterServices{
         
         try await db.collection("pairs").document(pairID).collection("letters").document(letterID).updateData(data)
     }
-    func deleteLetter(pairID: String, letterID: String, photoURL: String? ) async throws {
+    func deleteLetter(pairID: String, letterID: String, photoURL: String?, audioURL: String?) async throws {
         if photoURL != nil{
-            try await storageService.deleteImage(path: "letterPhotos/\(pairID)/\(letterID).jpg")
+            try await storageService.deleteFile(path: "letterPhotos/\(pairID)/\(letterID).jpg")
+        }
+        if audioURL != nil{
+            try await storageService.deleteFile(path: "letterAudio/\(pairID)/\(letterID).m4a")
         }
         try await db.collection("pairs").document(pairID).collection("letters").document(letterID).delete()
     }
-    func updateLetter(pairID: String, letterID: String, subject: String, text: String, photoURL: String?, mood: MoodType?, surprise: SurpriseType?) async throws {
+    func updateLetter(pairID: String, letterID: String, subject: String, text: String, photoURL: String?, audioURL: String?, mood: MoodType?, surprise: SurpriseType?) async throws {
         try await db.collection("pairs").document(pairID).collection("letters")
             .document(letterID)
             .updateData([
                 "subject": subject,
                 "text": text,
                 "photoURL": photoURL as Any,
+                "audioURL" : audioURL as Any,
                 "editedAt": Date(),
                 "mood": mood?.rawValue as Any,
                 "surprise": surprise?.rawValue as Any
