@@ -11,6 +11,7 @@ import SwiftUI
 struct NewLetterView: View {
     @Environment(\.dismiss) var dismiss
     @State private var viewModel = NewLetterViewModel()
+    @State private var audioRecorder = AudioRecorderService()
     @State private var selectedItem: PhotosPickerItem?
     let existingLetter: Letter?
     var pairID: String
@@ -55,31 +56,17 @@ struct NewLetterView: View {
                             
                         }
                         
-                        VStack(alignment: .leading, spacing: 10) {
-                            
-                            Text("LETTER")
-                                .font(.caption2.weight(.semibold))
-                                .foregroundStyle(.secondary)
-                            
-                            ZStack(alignment: .topLeading) {
-                                if viewModel.text.isEmpty {
-                                    Text("Write your letter...")
-                                        .foregroundStyle(.tertiary)
-                                        .padding(.top, 16)
-                                        .padding(.leading, 14)
-                                }
-                                
-                            TextEditor(text: $viewModel.text)
-                                .focused($focusedField, equals: .letter)
-                                .frame(minHeight: 260)
-                                .padding(12)
-                                .scrollContentBackground(.hidden)
-                                .background(Color(.secondarySystemBackground))
-                                .clipShape(RoundedRectangle(cornerRadius: 16))
-                                .textInputAutocapitalization(.sentences)
-                                .autocorrectionDisabled(false)
+                        Picker("Input Mode", selection: $viewModel.inputMode) {
+                            Text("Text").tag(NewLetterViewModel.InputMode.text)
+                            Text("Voice").tag(NewLetterViewModel.InputMode.voice)
                         }
-                    }
+                        .pickerStyle(.segmented)
+                    
+                        if viewModel.inputMode == .text {
+                            textSection
+                        } else {
+                            voiceSection
+                        }
                         
                         VStack(alignment: .leading, spacing: 10) {
                             Text("MOOD")
@@ -189,6 +176,97 @@ struct NewLetterView: View {
                         .foregroundStyle(.secondary)
                 }
             }
+        }
+    }
+    private var textSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            
+            Text("LETTER")
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(.secondary)
+            
+            ZStack(alignment: .topLeading) {
+                if viewModel.text.isEmpty {
+                    Text("Write your letter...")
+                        .foregroundStyle(.tertiary)
+                        .padding(.top, 16)
+                        .padding(.leading, 14)
+                }
+                
+            TextEditor(text: $viewModel.text)
+                .focused($focusedField, equals: .letter)
+                .frame(minHeight: 260)
+                .padding(12)
+                .scrollContentBackground(.hidden)
+                .background(Color(.secondarySystemBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 16))
+                .textInputAutocapitalization(.sentences)
+                .autocorrectionDisabled(false)
+            }
+        }
+    }
+    private var voiceSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("VOICE MESSAGE")
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(.secondary)
+            
+            VStack(spacing: 16) {
+                if audioRecorder.isRecording {
+                    Button{
+                        audioRecorder.stopRecording()
+                    } label: {
+                        HStack {
+                            Text("Recording...")
+                            Circle().fill(.red).frame(width: 10, height: 10)
+                        }
+                    }
+                } else if audioRecorder.recordingURL != nil {
+                    VStack {
+                        if audioRecorder.isPlaying{
+                            Button {
+                                audioRecorder.stopPlayback()
+                            } label: {
+                                Text("Stop")
+                            }
+                        } else {
+                            Button{
+                                audioRecorder.startPlayback()
+                            } label: {
+                                Text("Play")
+                            }
+                        }
+                        
+                        Button {
+                            audioRecorder.deleteRecording()
+                            audioRecorder.startRecording()
+                        } label: {
+                            Text("Record again")
+                        }
+                        
+                        Button {
+                            audioRecorder.deleteRecording()
+                        } label: {
+                            Text("Delete")
+                        }
+                    }
+                } else {
+                    Button{
+                        audioRecorder.startRecording()
+                    } label: {
+                        HStack {
+                            Image(systemName: "mic.fill")
+                            Text("Start recording")
+                        }
+                        .font(.headline)
+                        .foregroundStyle(Color.accentColor)
+                    }
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .padding()
+            .background(Color(.secondarySystemBackground))
+            .clipShape(RoundedRectangle(cornerRadius: 16))
         }
     }
 }
