@@ -23,111 +23,28 @@ struct LetterDetailView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
-
+                
                 if letter.photoURL != nil {
                     photoView
                 }
-
+                
                 Text(letter.subject)
                     .font(.largeTitle.bold())
                 
-                if letter.mood != nil || letter.surprise != nil {
-                    HStack(spacing: 10) {
-                        if let mood = letter.mood {
-                            HStack(spacing: 4) {
-                                Text(mood.emoji)
-                                Text(mood.title)
-                            }
-                            .font(.subheadline.weight(.medium))
-                            .foregroundStyle(.white)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 6)
-                            .background(Color.accentColor)
-                            .clipShape(Capsule())
-                        }
-                        if let surprise = letter.surprise {
-                            HStack(spacing: 4) {
-                                Text(surprise.emoji)
-                                Text(surprise.title)
-                            }
-                            .font(.subheadline.weight(.medium))
-                            .foregroundStyle(.secondary)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 6)
-                            .background(Color(.secondarySystemBackground))
-                            .clipShape(Capsule())
-                        }
-                    }
-                }
-
+                moodSurpriseBadges
+                
                 Divider()
-
-                VStack(alignment: .leading, spacing: 8) {
-
-                    Label(
-                        letter.createdAt.formatted(date: .long, time: .omitted),
-                        systemImage: "calendar"
-                    )
-
-                    if let formattedEditedDate = letter.formattedEditedDate {
-                        Label(
-                            "Edited \(formattedEditedDate)",
-                            systemImage: "pencil"
-                        )
-                    }
-                }
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-
+                
+                metaInfoSection
+                
                 Divider()
-
+                
                 Text(letter.text ?? "")
                     .font(.body)
                     .lineSpacing(6)
                     .textSelection(.enabled)
                 
-                if let currentUserID {
-                    Divider()
-                    
-                    if letter.authorID == currentUserID {
-                        if let reaction = letter.reaction {
-                            VStack(alignment: .leading, spacing: 10) {
-                                Text("REACTION")
-                                    .font(.caption2.weight(.semibold))
-                                    .foregroundStyle(.secondary)
-                                
-                                HStack(spacing: 4) {
-                                    Text(reaction.emoji)
-                                    Text(reaction.title)
-                                }
-                                .font(.subheadline.weight(.medium))
-                                .foregroundStyle(.white)
-                                .padding(.horizontal, 12)
-                                .padding(.vertical, 6)
-                                .background(Color.accentColor)
-                                .clipShape(Capsule())
-                                
-                                if let formattedReactionEditedAt = letter.formattedReactionEditedAt {
-                                    Text("\(partnerName ?? "Partner") changed their reaction \(formattedReactionEditedAt)")
-                                        .font(.caption2)
-                                        .foregroundStyle(.secondary)
-                                } else if let formattedReactedAt = letter.formattedReactedAt {
-                                    Text("\(partnerName ?? "Partner") reacted \(formattedReactedAt)")
-                                        .font(.caption2)
-                                        .foregroundStyle(.secondary)
-                                }
-                            }
-                        }
-                    } else {
-                        VStack(alignment: .leading, spacing: 10) {
-                            Text("YOUR REACTION")
-                                .font(.caption2.weight(.semibold))
-                                .foregroundStyle(.secondary)
-                            
-                            ChipPicker<ReactionType>(selection: $selectedReaction)
-                        }
-                    }
-                }
+                reactionSection
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(20)
@@ -144,15 +61,12 @@ struct LetterDetailView: View {
         .toolbar{
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
-
                     Button("Edit", systemImage: "pencil") {
                         isShowingEdit = true
                     }
-
                     Button("Delete", systemImage: "trash", role: .destructive) {
                         showDeleteConfirmation = true
                     }
-
                 } label: {
                     Image(systemName: "ellipsis.circle")
                 }
@@ -163,7 +77,7 @@ struct LetterDetailView: View {
                 guard let id = letter.id else { return }
                 Task {
                     do{
-                        try await letterServices.deleteLetter(pairID: pairID, letterID: id, photoURL: letter.photoURL)
+                        try await letterServices.deleteLetter(pairID: pairID, letterID: id, photoURL: letter.photoURL, audioURL: letter.audioURL)
                         dismiss()
                     }catch{
                         showError = true
@@ -184,6 +98,103 @@ struct LetterDetailView: View {
             guard let id = letter.id else { return }
             Task {
                 try? await letterServices.setReaction(pairID: pairID, letterID: id, reaction: newValue, previousReaction: oldValue)
+            }
+        }
+    }
+    
+    private var moodSurpriseBadges: some View {
+        Group {
+            if letter.mood != nil || letter.surprise != nil {
+                HStack(spacing: 10) {
+                    if let mood = letter.mood {
+                        HStack(spacing: 4) {
+                            Text(mood.emoji)
+                            Text(mood.title)
+                        }
+                        .font(.subheadline.weight(.medium))
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(Color.accentColor)
+                        .clipShape(Capsule())
+                    }
+                    if let surprise = letter.surprise {
+                        HStack(spacing: 4) {
+                            Text(surprise.emoji)
+                            Text(surprise.title)
+                        }
+                        .font(.subheadline.weight(.medium))
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(Color(.secondarySystemBackground))
+                        .clipShape(Capsule())
+                    }
+                }
+            }
+        }
+    }
+    
+    private var metaInfoSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Label(
+                letter.createdAt.formatted(date: .long, time: .omitted),
+                systemImage: "calendar"
+            )
+            if let formattedEditedDate = letter.formattedEditedDate {
+                Label(
+                    "Edited \(formattedEditedDate)",
+                    systemImage: "pencil"
+                )
+            }
+        }
+        .font(.subheadline)
+        .foregroundStyle(.secondary)
+    }
+    
+    private var reactionSection: some View {
+        Group {
+            if let currentUserID {
+                Divider()
+                
+                if letter.authorID == currentUserID {
+                    if let reaction = letter.reaction {
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text("REACTION")
+                                .font(.caption2.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                            
+                            HStack(spacing: 4) {
+                                Text(reaction.emoji)
+                                Text(reaction.title)
+                            }
+                            .font(.subheadline.weight(.medium))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background(Color.accentColor)
+                            .clipShape(Capsule())
+                            
+                            if let formattedReactionEditedAt = letter.formattedReactionEditedAt {
+                                Text("\(partnerName ?? "Partner") changed their reaction \(formattedReactionEditedAt)")
+                                    .font(.caption2)
+                                    .foregroundStyle(.secondary)
+                            } else if let formattedReactedAt = letter.formattedReactedAt {
+                                Text("\(partnerName ?? "Partner") reacted \(formattedReactedAt)")
+                                    .font(.caption2)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                    }
+                } else {
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("YOUR REACTION")
+                            .font(.caption2.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                        
+                        ChipPicker<ReactionType>(selection: $selectedReaction)
+                    }
+                }
             }
         }
     }
@@ -211,7 +222,6 @@ struct LetterDetailView: View {
         .shadow(color: .black.opacity(0.15), radius: 12, y: 6)
     }
 }
-
 #Preview {
     NavigationStack {
         LetterDetailView(

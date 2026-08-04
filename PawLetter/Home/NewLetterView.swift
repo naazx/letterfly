@@ -96,11 +96,12 @@ struct NewLetterView: View {
                     }
                     ToolbarItem(placement: .confirmationAction){
                         Button(existingLetter == nil ? "Send" : "Save"){
-                            Task { await viewModel.send(pairID: pairID, authorID: authorID, selectedItem: selectedItem) }
+                            Task { await viewModel.send(pairID: pairID, authorID: authorID, selectedItem: selectedItem, recordingURL: audioRecorder.recordingURL) }
                         }
                         .disabled(
                             viewModel.subject.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
-                            viewModel.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                            (viewModel.inputMode == .text && viewModel.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty) ||
+                            (viewModel.inputMode == .voice && audioRecorder.recordingURL == nil)
                         )
                         .animation(.easeInOut(duration: 0.2),
                                    value: viewModel.subject)
