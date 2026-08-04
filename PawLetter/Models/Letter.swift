@@ -23,6 +23,8 @@ struct Letter : Codable, Identifiable, Equatable, Hashable{
     
     var reactedAt: Date? = nil
     var reactionEditedAt: Date? = nil
+    
+    var audioURL: String?
 }
 extension Letter {
     private func formatted(_ date: Date) -> String {

@@ -29,12 +29,23 @@ class NewLetterViewModel {
     var mood: MoodType?
     var surprise: SurpriseType?
     
+    enum InputMode: CaseIterable{
+        case text
+        case voice
+    }
+    var inputMode: InputMode = .text
+    
     init(existingLetter: Letter? = nil) {
         self.existingLetter = existingLetter
         self.subject = existingLetter?.subject ?? ""
         self.text = existingLetter?.text ?? ""
         self.mood = existingLetter?.mood
         self.surprise = existingLetter?.surprise
+        if existingLetter?.audioURL != nil {
+            inputMode = .voice
+        } else {
+            inputMode = .text
+        }
     }
     
     func uploadPhoto(item: PhotosPickerItem, pairID: String, letterID: String) async throws -> String? {
