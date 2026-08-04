@@ -15,7 +15,7 @@ class NewLetterViewModel {
     var storageService = StorageService()
     var isLoading: Bool = false
     var subject: String = ""
-    var text: String = ""
+    var text: String? 
     var letterServices = LetterServices()
     var previewImage: UIImage?
     
@@ -120,7 +120,7 @@ class NewLetterViewModel {
                 if inputMode == .voice, let recordingURL {
                     audioURL = try await uploadAudio(url: recordingURL, pairID: pairID, letterID: reference.documentID)
                 }
-                try await letterServices.sendLetter(authorID: authorID, subject: subject, text: text, photoURL: photoURL, audioURL: audioURL, reference: reference, mood: mood, surprise: surprise)
+                try await letterServices.sendLetter(authorID: authorID, subject: subject, text: inputMode == .text ? text : nil, photoURL: photoURL, audioURL: audioURL, reference: reference, mood: mood, surprise: surprise)
             }
             isSuccess = true
             

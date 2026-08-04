@@ -100,7 +100,7 @@ struct NewLetterView: View {
                         }
                         .disabled(
                             viewModel.subject.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
-                            (viewModel.inputMode == .text && viewModel.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty) ||
+                            (viewModel.inputMode == .text && (viewModel.text ?? "") .trimmingCharacters(in: .whitespacesAndNewlines).isEmpty) ||
                             (viewModel.inputMode == .voice && audioRecorder.recordingURL == nil)
                         )
                         .animation(.easeInOut(duration: 0.2),
@@ -191,14 +191,17 @@ struct NewLetterView: View {
                 .foregroundStyle(.secondary)
             
             ZStack(alignment: .topLeading) {
-                if viewModel.text.isEmpty {
+                if (viewModel.text ?? "").isEmpty {
                     Text("Write your letter...")
                         .foregroundStyle(.tertiary)
                         .padding(.top, 16)
                         .padding(.leading, 14)
                 }
                 
-            TextEditor(text: $viewModel.text)
+                TextEditor(text: Binding(
+                    get: { viewModel.text ?? "" },
+                    set: { viewModel.text = $0 }
+                ))
                 .focused($focusedField, equals: .letter)
                 .frame(minHeight: 260)
                 .padding(12)

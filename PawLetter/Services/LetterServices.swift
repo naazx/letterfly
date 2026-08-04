@@ -12,7 +12,7 @@ class LetterServices{
     let db = Firestore.firestore()
     let storageService = StorageService()
     
-    func sendLetter(authorID: String, subject: String, text: String, photoURL: String?, audioURL: String?, reference: DocumentReference, mood: MoodType?, surprise: SurpriseType?) async throws {
+    func sendLetter(authorID: String, subject: String, text: String?, photoURL: String?, audioURL: String?, reference: DocumentReference, mood: MoodType?, surprise: SurpriseType?) async throws {
         let letter = Letter(authorID: authorID, subject: subject, text: text, createdAt: .now, photoURL: photoURL, mood: mood, surprise: surprise, audioURL: audioURL)
         let encodedLetter = try Firestore.Encoder().encode(letter)
 
@@ -50,12 +50,12 @@ class LetterServices{
         }
         try await db.collection("pairs").document(pairID).collection("letters").document(letterID).delete()
     }
-    func updateLetter(pairID: String, letterID: String, subject: String, text: String, photoURL: String?, audioURL: String?, mood: MoodType?, surprise: SurpriseType?) async throws {
+    func updateLetter(pairID: String, letterID: String, subject: String, text: String?, photoURL: String?, audioURL: String?, mood: MoodType?, surprise: SurpriseType?) async throws {
         try await db.collection("pairs").document(pairID).collection("letters")
             .document(letterID)
             .updateData([
                 "subject": subject,
-                "text": text,
+                "text": text as Any,
                 "photoURL": photoURL as Any,
                 "audioURL" : audioURL as Any,
                 "editedAt": Date(),
