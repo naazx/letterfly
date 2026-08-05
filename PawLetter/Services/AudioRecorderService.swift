@@ -69,6 +69,7 @@ class AudioRecorderService: NSObject, AVAudioRecorderDelegate, AVAudioPlayerDele
         do {
             player = try AVAudioPlayer(contentsOf: url)
             player?.delegate = self
+            recordingDuration = player?.duration ?? 0
             player?.play()
             isPlaying = true
         } catch {

@@ -13,6 +13,7 @@ struct LetterDetailView: View {
     @State private var showError: Bool = false
     @State private var isShowingEdit: Bool = false
     @State private var selectedReaction: ReactionType?
+    @State private var audioRecorder = AudioRecorderService()
     
     let letter: Letter
     let pairID: String
@@ -39,10 +40,14 @@ struct LetterDetailView: View {
                 
                 Divider()
                 
-                Text(letter.text ?? "")
-                    .font(.body)
-                    .lineSpacing(6)
-                    .textSelection(.enabled)
+                if let text = letter.text {
+                    Text(text)
+                        .font(.body)
+                        .lineSpacing(6)
+                        .textSelection(.enabled)
+                } else if letter.audioURL != nil {
+                    voicePlayerSection
+                }
                 
                 reactionSection
             }
@@ -57,6 +62,10 @@ struct LetterDetailView: View {
                 try? await letterServices.markAsRead(pairID: pairID, letterID: id)
             }
             selectedReaction = letter.reaction
+            
+            if let audioURLString = letter.audioURL {
+                await audioRecorder.loadRemoteRecording(from: audioURLString)
+            }
         }
         .toolbar{
             ToolbarItem(placement: .topBarTrailing) {
@@ -220,6 +229,24 @@ struct LetterDetailView: View {
         .clipped()
         .clipShape(RoundedRectangle(cornerRadius: 24))
         .shadow(color: .black.opacity(0.15), radius: 12, y: 6)
+    }
+    private var voicePlayerSection: some View {
+        HStack(spacing: 16) {
+            Button {
+                audioRecorder.isPlaying ? audioRecorder.stopPlayback() : audioRecorder.startPlayback()
+            } label: {
+                Image(systemName: audioRecorder.isPlaying ? "pause.fill" : "play.fill")
+                    .font(.title2)
+                    .foregroundStyle(.white)
+                    .padding(14)
+                    .background(Color.accentColor)
+                    .clipShape(Circle())
+            }
+            
+            Text(audioRecorder.formattedDuration)
+                .font(.headline.monospacedDigit())
+                .foregroundStyle(.secondary)
+        }
     }
 }
 #Preview {
