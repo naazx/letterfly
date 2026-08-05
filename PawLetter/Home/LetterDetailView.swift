@@ -14,6 +14,7 @@ struct LetterDetailView: View {
     @State private var isShowingEdit: Bool = false
     @State private var selectedReaction: ReactionType?
     @State private var audioRecorder = AudioRecorderService()
+    @State private var hasInitializedReaction = false
     
     let letter: Letter
     let pairID: String
@@ -62,6 +63,7 @@ struct LetterDetailView: View {
                 try? await letterServices.markAsRead(pairID: pairID, letterID: id)
             }
             selectedReaction = letter.reaction
+            hasInitializedReaction = true
             
             if let audioURLString = letter.audioURL {
                 await audioRecorder.loadRemoteRecording(from: audioURLString)
@@ -104,6 +106,7 @@ struct LetterDetailView: View {
             NewLetterView(existingLetter: letter, pairID: pairID, authorID: letter.authorID)
         }
         .onChange(of: selectedReaction) { oldValue, newValue in
+            guard hasInitializedReaction else { return }
             guard let id = letter.id else { return }
             Task {
                 try? await letterServices.setReaction(pairID: pairID, letterID: id, reaction: newValue, previousReaction: oldValue)

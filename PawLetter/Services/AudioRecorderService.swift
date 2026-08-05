@@ -107,6 +107,9 @@ class AudioRecorderService: NSObject, AVAudioRecorderDelegate, AVAudioPlayerDele
             let localURL = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString + ".m4a")
             try data.write(to: localURL)
             recordingURL = localURL
+            
+            let duration = try AVAudioPlayer(contentsOf: localURL).duration
+            recordingDuration = duration
         } catch {
             errorMessage = "Could not load existing recording"
         }
