@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct LetterDetailView: View {
+    @AppStorage("useHandwritingFont") var useHandwritingFont: Bool = true
     @Environment(\.dismiss) var dismiss
     @State private var showDeleteConfirmation: Bool = false
     @State private var showError: Bool = false
@@ -31,7 +32,7 @@ struct LetterDetailView: View {
                 }
                 
                 Text(letter.subject)
-                    .font(.largeTitle.bold())
+                    .font(.handwriting(size: 28, enabled: useHandwritingFont))
                 
                 moodSurpriseBadges
                 
@@ -43,7 +44,7 @@ struct LetterDetailView: View {
                 
                 if let text = letter.text {
                     Text(text)
-                        .font(.body)
+                        .font(.handwriting(size: 18, enabled: useHandwritingFont))
                         .lineSpacing(6)
                         .textSelection(.enabled)
                 } else if letter.audioURL != nil {
@@ -227,8 +228,7 @@ struct LetterDetailView: View {
                 EmptyView()
             }
         }
-        .frame(maxWidth: .infinity)
-        .frame(height: 280)
+        .frame(maxWidth: .infinity, maxHeight: 280)
         .clipped()
         .clipShape(RoundedRectangle(cornerRadius: 24))
         .shadow(color: .black.opacity(0.15), radius: 12, y: 6)

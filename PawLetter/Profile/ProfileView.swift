@@ -12,6 +12,7 @@ import UIKit
 
 struct ProfileView: View {
     @AppStorage("appTheme") private var appTheme: Int = 0
+    @AppStorage("useHandwritingFont") var useHandwritingFont: Bool = true
     @State private var profileViewModel = ProfileViewModel()
     @State private var selectedItem: PhotosPickerItem?
     @State private var showFullScreenAvatar = false
@@ -132,6 +133,11 @@ struct ProfileView: View {
                     .padding(.leading, 56)
 
                 appearanceRow
+                
+                Divider()
+                    .padding(.leading, 56)
+                
+                fontRow
             }
             .background(Color(.secondarySystemBackground))
             .clipShape(RoundedRectangle(cornerRadius: 22))
@@ -277,6 +283,30 @@ struct ProfileView: View {
             .labelsHidden()
             .pickerStyle(.segmented)
             .frame(width: 120)
+        }
+        .padding()
+    }
+    private var fontRow: some View {
+        HStack(spacing: 16) {
+
+            Image(systemName: "pencil.and.scribble")
+                .font(.title3)
+                .frame(width: 28)
+                .foregroundStyle(Color.accentColor)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Handwriting Font")
+                    .font(.body)
+
+                Text("Applies to letter subject and text")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+
+            Toggle("", isOn: $useHandwritingFont)
+                .labelsHidden()
         }
         .padding()
     }

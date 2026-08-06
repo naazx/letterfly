@@ -17,6 +17,15 @@ struct HomeView: View {
     
     var body: some View {
         NavigationStack {
+            Text(
+                UIFont.familyNames.sorted()
+                    .filter { $0.localizedCaseInsensitiveContains("patrick") }
+                    .map { family in
+                        "\(family): \(UIFont.fontNames(forFamilyName: family).joined(separator: ", "))"
+                    }
+                    .joined(separator: "\n")
+            )
+            
             Group{
                 if homeViewModel.letters.isEmpty {
                     emptyState
