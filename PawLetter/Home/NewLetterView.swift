@@ -12,8 +12,13 @@ struct NewLetterView: View {
     @Environment(\.dismiss) var dismiss
     @State private var viewModel = NewLetterViewModel()
     @State private var audioRecorder = AudioRecorderService()
+    @State private var locationService = LocationService()
+    @State private var editedLocationName: String?
+    @State private var isAddingLocation: Bool = false
+    @State private var selectedLocation: Letter.LetterLocation?
     @State private var selectedItem: PhotosPickerItem?
     @State private var pulseScale: CGFloat = 1.0
+    
     let existingLetter: Letter?
     var pairID: String
     var authorID: String
@@ -128,6 +133,16 @@ struct NewLetterView: View {
                     if let audioURLString = existingLetter?.audioURL {
                         await audioRecorder.loadRemoteRecording(from: audioURLString)
                     }
+                }
+                .confirmationDialog("Location Options", isPresented: isAddingLocation) {
+                    Button("Use current") {
+                        Task {
+                            locationService.requestPermission()
+                            locationService.requestCurrentLocation()
+                            // після отримання userLocation — записати в selectedLocation + викликати placeName(for:)
+                        }
+                    }
+                    Button("Choose on map") {}
                 }
                 .scrollDismissesKeyboard(.interactively)
                 .navigationTitle(existingLetter == nil ? "New letter" : "Edit letter")
@@ -314,6 +329,11 @@ struct NewLetterView: View {
                         .font(.subheadline)
                 }
             }
+        }
+    }
+    private var locationSection: some View {
+        Button("Add location"){
+            isAddingLocation = true
         }
     }
 }

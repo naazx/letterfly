@@ -39,5 +39,13 @@ class LocationService: NSObject, CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
            userLocation = locations.last?.coordinate
-       }
+    }
+    func placeName(for coordinate: CLLocationCoordinate2D) async -> String? {
+        let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+        do{
+            let geocodeLocation = try await CLGeocoder().reverseGeocodeLocation(location)
+            return geocodeLocation.first?.areasOfInterest?.first ?? geocodeLocation.first?.locality
+        } catch {}
+        return nil
+    }
 }

@@ -28,6 +28,7 @@ struct Letter : Codable, Identifiable, Equatable, Hashable{
     var location: LetterLocation?
     
     struct LetterLocation : Hashable, Codable{
+        var placeName: String?
         var latitude: Double
         var longitude: Double
     }
