@@ -10,28 +10,33 @@ import SwiftUI
 struct HomeView: View {
     @State private var isShowingNewLetter: Bool = false
     @State private var letterServices = LetterServices()
+    @State private var sortOption: SortOption = .dateSent
     var homeViewModel: HomeViewModel
     var pairID: String
     var currentUserID: String?
     var partnerName: String?
     
+    private var sortedLetters: [Letter] {
+        switch sortOption {
+        case .dateSent:
+            return  homeViewModel.letters.sorted { letter1, letter2 in
+                return letter1.createdAt > letter2.createdAt
+            }
+        case .name:
+            return homeViewModel.letters.sorted { letter1, letter2 in
+                return letter1.subject.lowercased() < letter2.subject.lowercased()
+            }
+        }
+    }
+    
     var body: some View {
         NavigationStack {
-            Text(
-                UIFont.familyNames.sorted()
-                    .filter { $0.localizedCaseInsensitiveContains("patrick") }
-                    .map { family in
-                        "\(family): \(UIFont.fontNames(forFamilyName: family).joined(separator: ", "))"
-                    }
-                    .joined(separator: "\n")
-            )
-            
             Group{
                 if homeViewModel.letters.isEmpty {
                     emptyState
                 } else {
                     List {
-                        ForEach(homeViewModel.letters) { letter in
+                        ForEach(sortedLetters) { letter in
                             NavigationLink(value: letter) {
                                 LetterRowView(letter: letter, currentUserID: currentUserID, loadedImage: homeViewModel.loadedImages[letter.id ?? ""])
                             }
@@ -52,7 +57,7 @@ struct HomeView: View {
                         }
                         .onDelete{ indexSet in
                             for index in indexSet {
-                                let letter = homeViewModel.letters[index]
+                                let letter = sortedLetters[index]
                                 guard let id = letter.id else { continue }
                                 Task {
                                     try? await letterServices.deleteLetter(pairID: pairID, letterID: id, photoURL: letter.photoURL, audioURL: letter.audioURL)
@@ -63,6 +68,24 @@ struct HomeView: View {
                     .scrollContentBackground(.hidden)
                     .background(Color(.systemGroupedBackground))
                     .toolbar{
+                        Menu {
+                            Section("Sort By") {
+                                ForEach(SortOption.allCases, id: \.self) { option in
+                                    Button {
+                                        sortOption = option
+                                    } label: {
+                                        if option == sortOption {
+                                            Label(option.title, systemImage: "checkmark")
+                                        } else {
+                                            Text(option.title)
+                                        }
+                                    }
+                                }
+                            }
+                        } label: {
+                            Image(systemName: "arrow.up.arrow.down")
+                        }
+                        
                         Button("New Letter", systemImage: "square.and.pencil"){
                             isShowingNewLetter = true
                         }
