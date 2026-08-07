@@ -11,6 +11,7 @@ struct HomeView: View {
     @State private var isShowingNewLetter: Bool = false
     @State private var letterServices = LetterServices()
     @State private var sortOption: SortOption = .dateSent
+    @State private var searchText: String = ""
     var homeViewModel: HomeViewModel
     var pairID: String
     var currentUserID: String?
@@ -29,14 +30,24 @@ struct HomeView: View {
         }
     }
     
+    private var displayedLetters: [Letter] {
+        if searchText.isEmpty {
+            sortedLetters
+        } else {
+            sortedLetters.filter { $0.subject.localizedCaseInsensitiveContains(searchText) }
+        }
+    }
+    
     var body: some View {
         NavigationStack {
             Group{
                 if homeViewModel.letters.isEmpty {
                     emptyState
+                } else if displayedLetters.isEmpty {
+                    ContentUnavailableView.search(text: searchText)
                 } else {
                     List {
-                        ForEach(sortedLetters) { letter in
+                        ForEach(displayedLetters) { letter in
                             NavigationLink(value: letter) {
                                 LetterRowView(letter: letter, currentUserID: currentUserID, loadedImage: homeViewModel.loadedImages[letter.id ?? ""])
                             }
@@ -57,7 +68,7 @@ struct HomeView: View {
                         }
                         .onDelete{ indexSet in
                             for index in indexSet {
-                                let letter = sortedLetters[index]
+                                let letter = displayedLetters[index]
                                 guard let id = letter.id else { continue }
                                 Task {
                                     try? await letterServices.deleteLetter(pairID: pairID, letterID: id, photoURL: letter.photoURL, audioURL: letter.audioURL)
@@ -94,6 +105,7 @@ struct HomeView: View {
                     .navigationBarTitleDisplayMode(.large)
                 }
             }
+            .searchable(text: $searchText, prompt: "Search...")
             .sheet(isPresented: $isShowingNewLetter) {
                 if let  currentUserID {
                     NewLetterView(existingLetter: nil, pairID: pairID, authorID: currentUserID)
@@ -104,7 +116,7 @@ struct HomeView: View {
             }
         }
     }
-    private var emptyState: some View {
+   private var emptyState: some View {
         ContentUnavailableView {
             Label("No Letters Yet", systemImage: "envelope")
         } description: {
