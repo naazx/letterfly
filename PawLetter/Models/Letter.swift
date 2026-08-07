@@ -25,6 +25,12 @@ struct Letter : Codable, Identifiable, Equatable, Hashable{
     var reactionEditedAt: Date? = nil
     
     var audioURL: String?
+    var location: LetterLocation?
+    
+    struct LetterLocation : Hashable, Codable{
+        var latitude: Double
+        var longitude: Double
+    }
 }
 extension Letter {
     private func formatted(_ date: Date) -> String {
