@@ -43,30 +43,9 @@ struct NewLetterView: View {
                         
                         photoSection
                         
-                        VStack(alignment: .leading, spacing: 10) {
-                            
-                            Text("TITLE")
-                                .font(.caption2.weight(.semibold))
-                                .foregroundStyle(.secondary)
-                            
-                            TextField("Birthday in the mountains", text: $viewModel.subject)
-                                .focused($focusedField, equals: .subject)
-                                .font(.title3.weight(.semibold))
-                                .padding()
-                                .background(Color(.secondarySystemBackground))
-                                .clipShape(RoundedRectangle(cornerRadius: 16))
-                                .submitLabel(.next)
-                                .onSubmit {
-                                    focusedField = .letter
-                                }
-                            
-                        }
+                        titleSection
                         
-                        Picker("Input Mode", selection: $viewModel.inputMode) {
-                            Text("Text").tag(NewLetterViewModel.InputMode.text)
-                            Text("Voice").tag(NewLetterViewModel.InputMode.voice)
-                        }
-                        .pickerStyle(.segmented)
+                        inputModePicker
                     
                         if viewModel.inputMode == .text {
                             textSection
@@ -74,51 +53,18 @@ struct NewLetterView: View {
                             voiceSection
                         }
                         
-                        VStack(alignment: .leading, spacing: 10) {
-                            Text("MOOD")
-                                .font(.caption2.weight(.semibold))
-                                .foregroundStyle(.secondary)
-                            
-                            ChipPicker<MoodType>(selection: $viewModel.mood)
-                        }
+                        locationSection
                         
-                        VStack(alignment: .leading, spacing: 10) {
-                            Text("GIFTS")
-                                .font(.caption2.weight(.semibold))
-                                .foregroundStyle(.secondary)
-                            
-                            ChipPicker<SurpriseType>(selection: $viewModel.surprise)
-                        }
+                        moodSection
+                        
+                        giftSection
                 }
                     .padding(20)
             }
                 .toolbar {
-                    ToolbarItemGroup(placement: .keyboard) {
-                        Spacer()
-                        Button("Done") {
-                            focusedField = nil
-                        }
-                    }
-                    ToolbarItem(placement: .confirmationAction){
-                        Button(existingLetter == nil ? "Send" : "Save"){
-                            Task { await viewModel.send(pairID: pairID, authorID: authorID, selectedItem: selectedItem, recordingURL: audioRecorder.recordingURL) }
-                        }
-                        .disabled(
-                            viewModel.subject.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
-                            (viewModel.inputMode == .text && (viewModel.text ?? "") .trimmingCharacters(in: .whitespacesAndNewlines).isEmpty) ||
-                            (viewModel.inputMode == .voice && audioRecorder.recordingURL == nil)
-                        )
-                        .animation(.easeInOut(duration: 0.2),
-                                   value: viewModel.subject)
-
-                        .animation(.easeInOut(duration: 0.2),
-                                   value: viewModel.text)
-                    }
-                    ToolbarItem(placement: .cancellationAction) {
-                        Button("Cancel") {
-                            dismiss()
-                        }
-                    }
+                    keyboardToolbar
+                    confirmationToolbarItem
+                    cancellationToolbarItem
                 }
                 .alert("Error", isPresented: $viewModel.showError) {
                     Button("OK") {}
@@ -134,15 +80,19 @@ struct NewLetterView: View {
                         await audioRecorder.loadRemoteRecording(from: audioURLString)
                     }
                 }
-                .confirmationDialog("Location Options", isPresented: isAddingLocation) {
+                .confirmationDialog("Location Options", isPresented: $isAddingLocation) {
                     Button("Use current") {
-                        Task {
                             locationService.requestPermission()
                             locationService.requestCurrentLocation()
-                            // після отримання userLocation — записати в selectedLocation + викликати placeName(for:)
-                        }
                     }
                     Button("Choose on map") {}
+                }
+                .onChange(of: locationService.userLocation) { oldValue, newLocation in
+                    guard let newLocation else { return }
+                    selectedLocation = Letter.LetterLocation(latitude: newLocation.latitude, longitude: newLocation.longitude)
+                    Task {
+                        editedLocationName = await locationService.placeName(for: newLocation)
+                    }
                 }
                 .scrollDismissesKeyboard(.interactively)
                 .navigationTitle(existingLetter == nil ? "New letter" : "Edit letter")
@@ -186,7 +136,6 @@ struct NewLetterView: View {
                     .overlay {
 
                         VStack(spacing: 12) {
-
                             Image(systemName: "photo.badge.plus")
                                 .font(.largeTitle)
 
@@ -197,6 +146,30 @@ struct NewLetterView: View {
                 }
             }
         }
+    }
+    private var titleSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("TITLE")
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(.secondary)
+            
+            TextField("Birthday in the mountains", text: $viewModel.subject)
+                .focused($focusedField, equals: .subject)
+                .font(.title3.weight(.semibold))
+                .padding()
+                .background(Color(.secondarySystemBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 16))
+                .submitLabel(.next)
+                .onSubmit { focusedField = .letter }
+        }
+    }
+
+    private var inputModePicker: some View {
+        Picker("Input Mode", selection: $viewModel.inputMode) {
+            Text("Text").tag(NewLetterViewModel.InputMode.text)
+            Text("Voice").tag(NewLetterViewModel.InputMode.voice)
+        }
+        .pickerStyle(.segmented)
     }
     private var textSection: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -332,8 +305,91 @@ struct NewLetterView: View {
         }
     }
     private var locationSection: some View {
-        Button("Add location"){
-            isAddingLocation = true
+        Group {
+            if selectedLocation == nil {
+                Button("Add location"){
+                    isAddingLocation = true
+                }
+            } else {
+                HStack {
+                    Text(editedLocationName ?? "Location added")
+                    
+                    Spacer()
+                    
+                    Button("Remove location"){
+                        selectedLocation = nil
+                        editedLocationName = nil
+                    }
+                }
+            }
+        }
+    }
+    private var moodSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("MOOD")
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(.secondary)
+            
+            ChipPicker<MoodType>(selection: $viewModel.mood)
+        }
+    }
+    private var giftSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("GIFTS")
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(.secondary)
+            
+            ChipPicker<SurpriseType>(selection: $viewModel.surprise)
+        }
+    }
+    private var isSendDisabled: Bool {
+        if viewModel.subject.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            return true
+        }
+        if viewModel.inputMode == .text {
+            return (viewModel.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        }
+        if viewModel.inputMode == .voice {
+            return audioRecorder.recordingURL == nil
+        }
+        return false
+    }
+    private var keyboardToolbar: some ToolbarContent {
+        ToolbarItemGroup(placement: .keyboard) {
+            Spacer()
+            Button("Done") {
+                focusedField = nil
+            }
+        }
+    }
+
+    private var sendButton: some View {
+        Button(existingLetter == nil ? "Send" : "Save") {
+            Task {
+                await viewModel.send(
+                    pairID: pairID,
+                    authorID: authorID,
+                    selectedItem: selectedItem,
+                    recordingURL: audioRecorder.recordingURL
+                )
+            }
+        }
+        .disabled(isSendDisabled)
+        .animation(.easeInOut(duration: 0.2), value: viewModel.subject)
+        .animation(.easeInOut(duration: 0.2), value: viewModel.text)
+    }
+
+    private var confirmationToolbarItem: some ToolbarContent {
+        ToolbarItem(placement: .confirmationAction) {
+            sendButton
+        }
+    }
+
+    private var cancellationToolbarItem: some ToolbarContent {
+        ToolbarItem(placement: .cancellationAction) {
+            Button("Cancel") {
+                dismiss()
+            }
         }
     }
 }
