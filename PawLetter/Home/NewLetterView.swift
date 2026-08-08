@@ -6,6 +6,7 @@
 //
 
 import PhotosUI
+import MapKit
 import SwiftUI
 
 struct NewLetterView: View {
@@ -18,6 +19,16 @@ struct NewLetterView: View {
     @State private var selectedLocation: Letter.LetterLocation?
     @State private var selectedItem: PhotosPickerItem?
     @State private var pulseScale: CGFloat = 1.0
+    
+    @State private var mapRegion = MKCoordinateRegion(
+        center: CLLocationCoordinate2D(latitude: 51.5074, longitude: -0.1278),
+        latitudinalMeters: 3000,
+        longitudinalMeters: 3000
+    )
+    @State private var isChoosingOnMap: Bool = false
+    @State private var tappedCoordinate: CLLocationCoordinate2D?
+    @State private var cameraPosition: MapCameraPosition = .automatic
+    @State private var isLoadingLocation: Bool = false
     
     let existingLetter: Letter?
     var pairID: String
@@ -85,14 +96,33 @@ struct NewLetterView: View {
                             locationService.requestPermission()
                             locationService.requestCurrentLocation()
                     }
-                    Button("Choose on map") {}
+                    Button("Choose on map") {
+                        isLoadingLocation = true
+                        isChoosingOnMap = true
+                        locationService.requestPermission()
+                        locationService.requestCurrentLocation()
+                        
+                        Task {
+                            try? await Task.sleep(for: .seconds(3))
+                            isLoadingLocation = false
+                        }
+                    }
                 }
                 .onChange(of: locationService.userLocation) { oldValue, newLocation in
                     guard let newLocation else { return }
-                    selectedLocation = Letter.LetterLocation(latitude: newLocation.latitude, longitude: newLocation.longitude)
-                    Task {
-                        editedLocationName = await locationService.placeName(for: newLocation)
+                    if isLoadingLocation {
+                        mapRegion = MKCoordinateRegion(center: newLocation, latitudinalMeters: 3000, longitudinalMeters: 3000)
+                        cameraPosition = .region(mapRegion)
+                        isLoadingLocation = false
+                    } else {
+                        selectedLocation = Letter.LetterLocation(latitude: newLocation.latitude, longitude: newLocation.longitude)
+                        Task {
+                            editedLocationName = await locationService.placeName(for: newLocation)
+                        }
                     }
+                }
+                .sheet(isPresented: $isChoosingOnMap) {
+                    chooseOnMapLocation
                 }
                 .scrollDismissesKeyboard(.interactively)
                 .navigationTitle(existingLetter == nil ? "New letter" : "Edit letter")
@@ -392,8 +422,48 @@ struct NewLetterView: View {
             }
         }
     }
+    private var chooseOnMapLocation: some View {
+        NavigationStack{
+            if isLoadingLocation {
+                PawLoadingView()
+            } else {
+                MapReader { proxy in
+                    Map(position: $cameraPosition) {
+                        if let tappedCoordinate {
+                            Marker("Selected Place", coordinate: tappedCoordinate)
+                                .tint(Color.accentColor)
+                        }
+                    }
+                    .onTapGesture { screenPoint in
+                        if let coordinate = proxy.convert(screenPoint, from: .local) {
+                            tappedCoordinate = coordinate
+                        }
+                    }
+                }
+                .navigationTitle("Select Location")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button("Confirm") {
+                            guard let tappedCoordinate else { return }
+                            selectedLocation = Letter.LetterLocation(latitude: tappedCoordinate.latitude, longitude: tappedCoordinate.longitude)
+                            isChoosingOnMap = false
+                            Task {
+                                editedLocationName = await locationService.placeName(for: tappedCoordinate)
+                            }
+                        }
+                    }
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Cancel") {
+                            tappedCoordinate = nil
+                            isChoosingOnMap = false
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
-
 #Preview {
     NewLetterView(existingLetter: nil, pairID: "qJ23Kdi6EMFLYmtnWgiD", authorID: "3z34vv")
 }
