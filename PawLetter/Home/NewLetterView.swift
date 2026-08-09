@@ -114,12 +114,12 @@ struct NewLetterView: View {
                         mapRegion = MKCoordinateRegion(center: newLocation, latitudinalMeters: 3000, longitudinalMeters: 3000)
                         cameraPosition = .region(mapRegion)
                         isLoadingLocation = false
-                    } else {
+                    } else if !isChoosingOnMap{
                         selectedLocation = Letter.LetterLocation(latitude: newLocation.latitude, longitude: newLocation.longitude)
                         Task {
                             editedLocationName = await locationService.placeName(for: newLocation)
                         }
-                    }
+                    } else {}
                 }
                 .sheet(isPresented: $isChoosingOnMap) {
                     chooseOnMapLocation
@@ -143,7 +143,6 @@ struct NewLetterView: View {
                     .contentShape(RoundedRectangle(cornerRadius: 22))
                     .shadow(color: .black.opacity(0.12), radius: 10, y: 5)
                     .overlay(alignment: .topTrailing) {
-
                         if viewModel.previewImage != nil || existingLetter?.photoURL != nil {
 
                             Button {
@@ -424,40 +423,42 @@ struct NewLetterView: View {
     }
     private var chooseOnMapLocation: some View {
         NavigationStack{
-            if isLoadingLocation {
-                PawLoadingView()
-            } else {
-                MapReader { proxy in
-                    Map(position: $cameraPosition) {
-                        if let tappedCoordinate {
-                            Marker("Selected Place", coordinate: tappedCoordinate)
-                                .tint(Color.accentColor)
+            Group {
+                if isLoadingLocation {
+                    PawLoadingView()
+                } else {
+                    MapReader { proxy in
+                        Map(position: $cameraPosition) {
+                            if let tappedCoordinate {
+                                Marker("Selected Place", coordinate: tappedCoordinate)
+                                    .tint(Color.accentColor)
+                            }
                         }
-                    }
-                    .onTapGesture { screenPoint in
-                        if let coordinate = proxy.convert(screenPoint, from: .local) {
-                            tappedCoordinate = coordinate
-                        }
-                    }
-                }
-                .navigationTitle("Select Location")
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .confirmationAction) {
-                        Button("Confirm") {
-                            guard let tappedCoordinate else { return }
-                            selectedLocation = Letter.LetterLocation(latitude: tappedCoordinate.latitude, longitude: tappedCoordinate.longitude)
-                            isChoosingOnMap = false
-                            Task {
-                                editedLocationName = await locationService.placeName(for: tappedCoordinate)
+                        .onTapGesture { screenPoint in
+                            if let coordinate = proxy.convert(screenPoint, from: .local) {
+                                tappedCoordinate = coordinate
                             }
                         }
                     }
-                    ToolbarItem(placement: .cancellationAction) {
-                        Button("Cancel") {
-                            tappedCoordinate = nil
-                            isChoosingOnMap = false
+                }
+            }
+            .navigationTitle("Select Location")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Confirm") {
+                        guard let tappedCoordinate else { return }
+                        selectedLocation = Letter.LetterLocation(latitude: tappedCoordinate.latitude, longitude: tappedCoordinate.longitude)
+                        isChoosingOnMap = false
+                        Task {
+                            editedLocationName = await locationService.placeName(for: tappedCoordinate)
                         }
+                    }
+                }
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        tappedCoordinate = nil
+                        isChoosingOnMap = false
                     }
                 }
             }
