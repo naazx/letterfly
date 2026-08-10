@@ -343,15 +343,25 @@ struct NewLetterView: View {
                 }
             } else {
                 HStack {
+                    Image(systemName: "mappin.circle.fill")
+                        .foregroundStyle(Color.accentColor)
+                    
                     Text(editedLocationName ?? "Location added")
+                        .font(.subheadline.weight(.medium))
                     
                     Spacer()
                     
-                    Button("Remove location"){
+                    Button {
                         selectedLocation = nil
                         editedLocationName = nil
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .foregroundStyle(.secondary)
                     }
                 }
+                .padding()
+                .background(Color(.secondarySystemBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 16))
             }
         }
     }
@@ -396,12 +406,16 @@ struct NewLetterView: View {
 
     private var sendButton: some View {
         Button(existingLetter == nil ? "Send" : "Save") {
+            let finalLocation: Letter.LetterLocation? = selectedLocation.map {
+                Letter.LetterLocation(placeName: editedLocationName, latitude: $0.latitude, longitude: $0.longitude)
+                }
             Task {
                 await viewModel.send(
                     pairID: pairID,
                     authorID: authorID,
                     selectedItem: selectedItem,
-                    recordingURL: audioRecorder.recordingURL
+                    recordingURL: audioRecorder.recordingURL,
+                    location: finalLocation
                 )
             }
         }

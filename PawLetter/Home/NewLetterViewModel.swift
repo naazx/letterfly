@@ -69,7 +69,7 @@ class NewLetterViewModel {
         
             return uploadedURL.absoluteString
     }
-    func send(pairID: String, authorID: String, selectedItem: PhotosPickerItem?, recordingURL: URL?) async {
+    func send(pairID: String, authorID: String, selectedItem: PhotosPickerItem?, recordingURL: URL?, location: Letter.LetterLocation?) async {
         isLoading = true
         defer{ isLoading = false }
         
@@ -104,9 +104,10 @@ class NewLetterViewModel {
                         || audioURL != existingLetter.audioURL
                         || mood != existingLetter.mood
                         || surprise != existingLetter.surprise
+                        || location != existingLetter.location
 
                     if hasChanges {
-                        try await letterServices.updateLetter(pairID: pairID, letterID: letterID, subject: subject, text: text, photoURL: photoURL, audioURL: audioURL, mood: mood, surprise: surprise)
+                        try await letterServices.updateLetter(pairID: pairID, letterID: letterID, subject: subject, text: text, photoURL: photoURL, audioURL: audioURL, mood: mood, surprise: surprise, location: location)
                     }
                 
             } else {
@@ -120,7 +121,7 @@ class NewLetterViewModel {
                 if inputMode == .voice, let recordingURL {
                     audioURL = try await uploadAudio(url: recordingURL, pairID: pairID, letterID: reference.documentID)
                 }
-                try await letterServices.sendLetter(authorID: authorID, subject: subject, text: inputMode == .text ? text : nil, photoURL: photoURL, audioURL: audioURL, reference: reference, mood: mood, surprise: surprise)
+                try await letterServices.sendLetter(authorID: authorID, subject: subject, text: inputMode == .text ? text : nil, photoURL: photoURL, audioURL: audioURL, reference: reference, mood: mood, surprise: surprise, location: location)
             }
             isSuccess = true
             
