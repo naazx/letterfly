@@ -92,11 +92,11 @@ struct NewLetterView: View {
                     }
                 }
                 .confirmationDialog("Location Options", isPresented: $isAddingLocation) {
-                    Button("Use current") {
+                    Button("Use current", systemImage: "location.fill") {
                             locationService.requestPermission()
                             locationService.requestCurrentLocation()
                     }
-                    Button("Choose on map") {
+                    Button("Choose on map", systemImage: "map") {
                         isLoadingLocation = true
                         isChoosingOnMap = true
                         locationService.requestPermission()
@@ -336,8 +336,10 @@ struct NewLetterView: View {
     private var locationSection: some View {
         Group {
             if selectedLocation == nil {
-                Button("Add location"){
+                Button {
                     isAddingLocation = true
+                } label: {
+                    Label("Add location", systemImage: "mappin.circle")
                 }
             } else {
                 HStack {
@@ -433,6 +435,11 @@ struct NewLetterView: View {
                                 Marker("Selected Place", coordinate: tappedCoordinate)
                                     .tint(Color.accentColor)
                             }
+                            UserAnnotation()
+                                .tint(.blue)
+                        }
+                        .mapControls {
+                            MapUserLocationButton()
                         }
                         .onTapGesture { screenPoint in
                             if let coordinate = proxy.convert(screenPoint, from: .local) {
