@@ -5,6 +5,7 @@
 //  Created by Nazar Dydyn on 16.07.2026.
 //
 
+import MapKit
 import SwiftUI
 
 struct LetterDetailView: View {
@@ -22,6 +23,7 @@ struct LetterDetailView: View {
     var letterServices = LetterServices()
     var currentUserID: String?
     var partnerName: String?
+    var onOpenLocationInMap: (CLLocationCoordinate2D) -> Void
     
     var body: some View {
         ScrollView {
@@ -50,6 +52,8 @@ struct LetterDetailView: View {
                 } else if letter.audioURL != nil {
                     voicePlayerSection
                 }
+                
+                locationDisplaySection
                 
                 reactionSection
             }
@@ -251,6 +255,36 @@ struct LetterDetailView: View {
                 .foregroundStyle(.secondary)
         }
     }
+    private var locationDisplaySection: some View {
+        Group {
+            if let location = letter.location {
+                Divider()
+                let coordinate = CLLocationCoordinate2D(latitude: location.latitude, longitude: location.longitude)
+                
+                VStack(alignment: .leading, spacing: 8) {
+                    Map(position: .constant(.region(
+                        MKCoordinateRegion(center: coordinate, latitudinalMeters: 1500, longitudinalMeters: 1500)
+                    ))) {
+                        Marker("", coordinate: coordinate)
+                            .tint(Color.accentColor)
+                    }
+                    .allowsHitTesting(false)
+                    .frame(height: 140)
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .contentShape(RoundedRectangle(cornerRadius: 16))
+                    .onTapGesture {
+                        onOpenLocationInMap(coordinate)
+                    }
+                    
+                    if let placeName = location.placeName {
+                        Label(placeName, systemImage: "mappin")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+        }
+    }
 }
 #Preview {
     NavigationStack {
@@ -263,7 +297,8 @@ struct LetterDetailView: View {
                 photoURL: nil,
                 isRead: false
             ),
-            pairID: "qJ23Kdi6EMFLYmtnWgiD"
+            pairID: "qJ23Kdi6EMFLYmtnWgiD",
+            onOpenLocationInMap: { _ in }
         )
     }
 }

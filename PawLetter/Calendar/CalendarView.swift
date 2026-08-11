@@ -5,6 +5,8 @@
 //  Created by Nazar Dydyn on 10.07.2026.
 //
 
+
+import MapKit
 import SwiftUI
 
 struct CalendarView: View {
@@ -16,6 +18,7 @@ struct CalendarView: View {
     var currentUserID: String?
     var partnerName: String?
     var homeViewModel: HomeViewModel
+    var onOpenLocationInMap: (CLLocationCoordinate2D) -> Void
     
     private var currentMonth: Date {
         CalendarGridHelper.firstDayOfMonth(containing: .now)
@@ -137,7 +140,7 @@ struct CalendarView: View {
             }
         }
         .sheet(isPresented: $isShowingDayDetail) {
-            DayLettersView(date: viewModel.selectedDate!, letters: grouped[viewModel.selectedDate!] ?? [], pairID: pairID, currentUserID: currentUserID, homeViewModel: homeViewModel, partnerName: partnerName)
+            DayLettersView(date: viewModel.selectedDate!, letters: grouped[viewModel.selectedDate!] ?? [], pairID: pairID, currentUserID: currentUserID, homeViewModel: homeViewModel, partnerName: partnerName, onOpenLocationInMap: onOpenLocationInMap)
                 .presentationDetents([.medium, .large])
                 .presentationDragIndicator(.visible)
                 .presentationCornerRadius(28)
@@ -163,5 +166,5 @@ struct CalendarView: View {
         )
     ]
 
-    CalendarView(letters: sampleLetters, pairID: "123456789", currentUserID: nil, partnerName: "Nastia", homeViewModel: HomeViewModel())
+    CalendarView(letters: sampleLetters, pairID: "123456789", currentUserID: nil, partnerName: "Nastia", homeViewModel: HomeViewModel(), onOpenLocationInMap: { _ in })
 }

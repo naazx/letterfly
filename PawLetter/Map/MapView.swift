@@ -9,6 +9,7 @@ import SwiftUI
 import MapKit
 
 struct MapView: View {
+    @Binding var focusCoordinate: CLLocationCoordinate2D?
     @State private var position: MapCameraPosition = .userLocation(
         fallback: .region(
             MKCoordinateRegion(
@@ -45,7 +46,9 @@ struct MapView: View {
                             )
                             
                             Annotation(letter.subject, coordinate: coordinate) {
-                                NavigationLink(destination:  LetterDetailView(letter: letter, pairID: pairID, currentUserID: currentUserID, partnerName: partnerName)) {
+                                NavigationLink(destination: LetterDetailView(letter: letter, pairID: pairID, currentUserID: currentUserID, partnerName: partnerName, onOpenLocationInMap: { coordinate in
+                                    focusCoordinate = coordinate
+                                })) {
                                     ZStack {
                                         Circle()
                                             .fill(.ultraThinMaterial)
@@ -111,11 +114,21 @@ struct MapView: View {
                     hasSetInitialPosition = true
                 }
             }
+            .onChange(of: focusCoordinate) { oldValue, newCoordinate in
+                guard let newCoordinate else { return }
+                position = .region(MKCoordinateRegion(center: newCoordinate, latitudinalMeters: 1500, longitudinalMeters: 1500))
+                focusCoordinate = nil
+            }
             .navigationBarHidden(true)
         }
     }
 }
 
 #Preview {
-    MapView(letters: [], homeViewModel: HomeViewModel(), pairID: "1234567890", currentUserID: "nazarLOX", partnerName: "nastia")
+    MapView( focusCoordinate: .constant(nil),
+             letters: [],
+             homeViewModel: HomeViewModel(),
+             pairID: "1234567890",
+             currentUserID: "nazarLOX",
+             partnerName: "nastia")
 }

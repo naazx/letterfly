@@ -5,6 +5,7 @@
 //  Created by Nazar Dydyn on 11.07.2026.
 //
 
+import MapKit
 import SwiftUI
 
 struct DayLettersView: View {
@@ -15,6 +16,7 @@ struct DayLettersView: View {
     var currentUserID: String?
     var homeViewModel: HomeViewModel
     var partnerName: String?
+    var onOpenLocationInMap: (CLLocationCoordinate2D) -> Void
     
     var body: some View {
         NavigationStack{
@@ -29,7 +31,7 @@ struct DayLettersView: View {
                 }
             }
             .navigationDestination(for: Letter.self) { letter in
-                LetterDetailView(letter: letter, pairID: pairID, currentUserID: currentUserID, partnerName: partnerName)
+                LetterDetailView(letter: letter, pairID: pairID, currentUserID: currentUserID, partnerName: partnerName, onOpenLocationInMap: onOpenLocationInMap)
             }
             .navigationTitle(date.formatted(.dateTime.day().month().year()))
         }
@@ -45,5 +47,5 @@ struct DayLettersView: View {
         ),
     ]
     
-    DayLettersView(date: .now, letters: sampleLetters, pairID: "123456789", currentUserID: nil , homeViewModel: HomeViewModel(), partnerName: "Nastia")
+    DayLettersView(date: .now, letters: sampleLetters, pairID: "123456789", currentUserID: nil , homeViewModel: HomeViewModel(), partnerName: "Nastia", onOpenLocationInMap: { _ in })
 }

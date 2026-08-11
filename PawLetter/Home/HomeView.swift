@@ -5,6 +5,7 @@
 //  Created by Nazar Dydyn on 10.07.2026.
 //
 
+import MapKit
 import SwiftUI
 
 struct HomeView: View {
@@ -16,6 +17,8 @@ struct HomeView: View {
     var pairID: String
     var currentUserID: String?
     var partnerName: String?
+    
+    var onOpenLocationInMap: (CLLocationCoordinate2D) -> Void
     
     private var sortedLetters: [Letter] {
         switch sortOption {
@@ -112,7 +115,7 @@ struct HomeView: View {
                 }
             }
             .navigationDestination(for: Letter.self) { letter in
-                LetterDetailView(letter: letter, pairID: pairID, currentUserID: currentUserID, partnerName: partnerName)
+                LetterDetailView(letter: letter, pairID: pairID, currentUserID: currentUserID, partnerName: partnerName, onOpenLocationInMap: onOpenLocationInMap)
             }
         }
     }
@@ -130,5 +133,8 @@ struct HomeView: View {
     }
 }
 #Preview {
-    HomeView(homeViewModel: HomeViewModel(), pairID: "qJ23Kdi6EMFLYmtnWgiD", currentUserID: nil)
+    HomeView(homeViewModel: HomeViewModel(),
+             pairID: "qJ23Kdi6EMFLYmtnWgiD",
+             currentUserID: nil,
+             onOpenLocationInMap: { _ in })
 }
