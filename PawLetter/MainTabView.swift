@@ -17,14 +17,22 @@ struct MainTabView: View {
                 HomeView(homeViewModel: homeViewModel, pairID: pairID, currentUserID: viewModel.userID, partnerName: viewModel.partnerNickname ?? viewModel.partnerDisplayName)
                     .tabItem {
                         Label("Home", systemImage: "house")
+                            .labelStyle(.iconOnly)
                     }
                 CalendarView(letters: homeViewModel.letters, pairID: pairID, currentUserID: viewModel.userID, partnerName: viewModel.partnerNickname ?? viewModel.partnerDisplayName, homeViewModel: homeViewModel)
                     .tabItem {
                         Label("Calendar", systemImage: "calendar")
+                            .labelStyle(.iconOnly)
+                    }
+                MapView(letters: homeViewModel.letters, homeViewModel: homeViewModel )
+                    .tabItem {
+                        Label("Memories", systemImage: "map")
+                            .labelStyle(.iconOnly)
                     }
                 ProfileView(authViewModel: viewModel, homeViewModel: homeViewModel)
                     .tabItem {
                         Label("Profile", systemImage: "person")
+                            .labelStyle(.iconOnly)
                     }
             }
             .onAppear {
