@@ -24,7 +24,7 @@ struct MainTabView: View {
                         Label("Calendar", systemImage: "calendar")
                             .labelStyle(.iconOnly)
                     }
-                MapView(letters: homeViewModel.letters, homeViewModel: homeViewModel )
+                MapView(letters: homeViewModel.letters, homeViewModel: homeViewModel, pairID: pairID, currentUserID: viewModel.userID, partnerName: viewModel.partnerNickname ?? viewModel.partnerDisplayName )
                     .tabItem {
                         Label("Memories", systemImage: "map")
                             .labelStyle(.iconOnly)
