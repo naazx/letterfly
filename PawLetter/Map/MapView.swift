@@ -19,6 +19,7 @@ struct MapView: View {
         )
     )
     @State private var isSatelliteStyle: Bool = false
+    @State private var hasSetInitialPosition = false
     
     var letters: [Letter]
     var homeViewModel: HomeViewModel
@@ -34,6 +35,8 @@ struct MapView: View {
         NavigationStack {
             ZStack(alignment: .bottomTrailing) {
                 Map(position: $position) {
+                    UserAnnotation()
+                    
                     ForEach(lettersWithLocation) { letter in
                         if let location = letter.location {
                             let coordinate = CLLocationCoordinate2D(
@@ -62,6 +65,13 @@ struct MapView: View {
                 .mapStyle(isSatelliteStyle ? .imagery(elevation: .realistic) : .standard(elevation: .realistic, pointsOfInterest: .excludingAll))
                 .mapControls {}
                 .ignoresSafeArea(edges: .all)
+                .safeAreaInset(edge: .top) {
+                        Text("Memories Map")
+                            .font(.largeTitle.bold())
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.horizontal, 15)
+                            .padding(.top, 25)
+                }
                 
                 VStack(spacing: 12) {
                     Button {
@@ -96,11 +106,12 @@ struct MapView: View {
                 .padding(.bottom, 50)
             }
             .onAppear {
-                if !lettersWithLocation.isEmpty {
+                if !hasSetInitialPosition && !lettersWithLocation.isEmpty {
                     position = .automatic
+                    hasSetInitialPosition = true
                 }
             }
-            .navigationTitle("Memories Map")
+            .navigationBarHidden(true)
         }
     }
 }
