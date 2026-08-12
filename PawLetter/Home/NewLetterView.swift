@@ -90,9 +90,13 @@ struct NewLetterView: View {
                     Text(viewModel.errorMessage)
                 }
                 .onChange(of: viewModel.isSuccess){ _, _ in
-                    isShowingSendAnimation = true
-                    Task {
-                        try? await Task.sleep(for: .seconds(3))
+                    if existingLetter == nil {
+                        isShowingSendAnimation = true
+                        Task {
+                            try? await Task.sleep(for: .seconds(3.0))
+                            dismiss()
+                        }
+                    } else {
                         dismiss()
                     }
                 }
@@ -159,13 +163,11 @@ struct NewLetterView: View {
                         .opacity(envelopeOpacity)
                     }
                     .task {
-                        // Стадія 1: поява
                         withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) {
                             envelopeScale = 1.0
                         }
                         try? await Task.sleep(for: .seconds(0.5))
 
-                        // Стадія 2: закривання (crossfade + пульс)
                         withAnimation(.easeInOut(duration: 0.25)) {
                             isEnvelopeOpen = false
                             envelopeScale = 0.85
@@ -176,7 +178,6 @@ struct NewLetterView: View {
                         }
                         try? await Task.sleep(for: .seconds(0.25))
 
-                        // Стадія 3: тремтіння перед стартом
                         withAnimation(.easeInOut(duration: 0.08)) { envelopeRotation = -6 }
                         try? await Task.sleep(for: .seconds(0.08))
                         withAnimation(.easeInOut(duration: 0.08)) { envelopeRotation = 6 }
@@ -184,10 +185,8 @@ struct NewLetterView: View {
                         withAnimation(.easeInOut(duration: 0.08)) { envelopeRotation = 0 }
                         try? await Task.sleep(for: .seconds(0.1))
 
-                        // Haptic одночасно зі стартом польоту
                         UIImpactFeedbackGenerator(style: .medium).impactOccurred()
 
-                        // Стадія 4: політ по "дузі" — два сегменти offset
                         withAnimation(.easeOut(duration: 0.3)) {
                             envelopeOffset = CGSize(width: 40, height: -160)
                             envelopeRotation = 15
@@ -203,6 +202,7 @@ struct NewLetterView: View {
                     }
             }
         }
+        .interactiveDismissDisabled(isShowingSendAnimation)
     }
     private var photoSection: some View {
         PhotosPicker(selection: $selectedItem, matching: .images) {
