@@ -19,6 +19,7 @@ struct NewLetterView: View {
     @State private var selectedLocation: Letter.LetterLocation?
     @State private var selectedItem: PhotosPickerItem?
     @State private var pulseScale: CGFloat = 1.0
+    @State private var isShowingSendAnimation: Bool = false
     
     @State private var mapRegion = MKCoordinateRegion(
         center: CLLocationCoordinate2D(latitude: 51.5074, longitude: -0.1278),
@@ -83,7 +84,11 @@ struct NewLetterView: View {
                     Text(viewModel.errorMessage)
                 }
                 .onChange(of: viewModel.isSuccess){ _, _ in
-                    dismiss()
+                    isShowingSendAnimation = true
+                    Task {
+                        try? await Task.sleep(for: .seconds(1.2))
+                        dismiss()
+                    }
                 }
                 .task {
                     await viewModel.loadExistingPhoto()
@@ -127,6 +132,11 @@ struct NewLetterView: View {
                 .scrollDismissesKeyboard(.interactively)
                 .navigationTitle(existingLetter == nil ? "New letter" : "Edit letter")
                 .navigationBarTitleDisplayMode(.inline)
+        }
+        .overlay {
+            if isShowingSendAnimation {
+                //
+            }
         }
     }
     private var photoSection: some View {
