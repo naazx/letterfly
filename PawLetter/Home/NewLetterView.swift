@@ -21,6 +21,12 @@ struct NewLetterView: View {
     @State private var pulseScale: CGFloat = 1.0
     @State private var isShowingSendAnimation: Bool = false
     
+    @State private var isEnvelopeOpen: Bool = true
+    @State private var envelopeScale: CGFloat = 0.3
+    @State private var envelopeOffset: CGSize = .zero
+    @State private var envelopeOpacity: Double = 1
+    @State private var envelopeRotation: Double = 0
+    
     @State private var mapRegion = MKCoordinateRegion(
         center: CLLocationCoordinate2D(latitude: 51.5074, longitude: -0.1278),
         latitudinalMeters: 3000,
@@ -86,7 +92,7 @@ struct NewLetterView: View {
                 .onChange(of: viewModel.isSuccess){ _, _ in
                     isShowingSendAnimation = true
                     Task {
-                        try? await Task.sleep(for: .seconds(1.2))
+                        try? await Task.sleep(for: .seconds(3))
                         dismiss()
                     }
                 }
@@ -135,7 +141,66 @@ struct NewLetterView: View {
         }
         .overlay {
             if isShowingSendAnimation {
-                //
+                Color(.systemBackground)
+                    .opacity(0.95)
+                    .ignoresSafeArea()
+                    .overlay {
+                        ZStack {
+                            Image(systemName: "envelope.open.fill")
+                                .opacity(isEnvelopeOpen ? 1 : 0)
+                            Image(systemName: "envelope.fill")
+                                .opacity(isEnvelopeOpen ? 0 : 1)
+                        }
+                        .font(.system(size: 70))
+                        .foregroundStyle(Color.accentColor)
+                        .scaleEffect(envelopeScale)
+                        .rotationEffect(.degrees(envelopeRotation))
+                        .offset(envelopeOffset)
+                        .opacity(envelopeOpacity)
+                    }
+                    .task {
+                        // Стадія 1: поява
+                        withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) {
+                            envelopeScale = 1.0
+                        }
+                        try? await Task.sleep(for: .seconds(0.5))
+
+                        // Стадія 2: закривання (crossfade + пульс)
+                        withAnimation(.easeInOut(duration: 0.25)) {
+                            isEnvelopeOpen = false
+                            envelopeScale = 0.85
+                        }
+                        try? await Task.sleep(for: .seconds(0.25))
+                        withAnimation(.spring(response: 0.25, dampingFraction: 0.5)) {
+                            envelopeScale = 1.0
+                        }
+                        try? await Task.sleep(for: .seconds(0.25))
+
+                        // Стадія 3: тремтіння перед стартом
+                        withAnimation(.easeInOut(duration: 0.08)) { envelopeRotation = -6 }
+                        try? await Task.sleep(for: .seconds(0.08))
+                        withAnimation(.easeInOut(duration: 0.08)) { envelopeRotation = 6 }
+                        try? await Task.sleep(for: .seconds(0.08))
+                        withAnimation(.easeInOut(duration: 0.08)) { envelopeRotation = 0 }
+                        try? await Task.sleep(for: .seconds(0.1))
+
+                        // Haptic одночасно зі стартом польоту
+                        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+
+                        // Стадія 4: політ по "дузі" — два сегменти offset
+                        withAnimation(.easeOut(duration: 0.3)) {
+                            envelopeOffset = CGSize(width: 40, height: -160)
+                            envelopeRotation = 15
+                            envelopeScale = 0.8
+                        }
+                        try? await Task.sleep(for: .seconds(0.3))
+                        withAnimation(.easeIn(duration: 0.35)) {
+                            envelopeOffset = CGSize(width: 180, height: -230)
+                            envelopeRotation = 30
+                            envelopeScale = 0.3
+                            envelopeOpacity = 0
+                        }
+                    }
             }
         }
     }
