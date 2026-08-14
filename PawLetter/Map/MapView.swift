@@ -126,7 +126,7 @@ struct MapView: View {
                         longitude: location.longitude
                     )
                     Annotation(letter.subject, coordinate: coordinate) {
-                        MemoryMapPin(isSelected: selectedLetter?.id == letter.id)
+                        MemoryMapPin(isSelected: selectedLetter?.id == letter.id, mood: letter.mood, surprise: letter.surprise)
                             .onTapGesture {
                                 withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
                                     if selectedLetter?.id == letter.id {
