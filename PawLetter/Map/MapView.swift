@@ -39,11 +39,16 @@ struct MapView: View {
                 mapContent
                     .ignoresSafeArea(edges: .all)
                     .safeAreaInset(edge: .top) {
-                        Text("Memories Map")
-                            .font(.largeTitle.bold())
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.horizontal, 15)
-                            .padding(.top, 25)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Memories Map")
+                                .font(.largeTitle.bold())
+                            Text("\(lettersWithLocation.count) memories with \(partnerName ?? "your partner")")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, 15)
+                        .padding(.top, 25)
                     }
                 
                 if let selectedLetter {
