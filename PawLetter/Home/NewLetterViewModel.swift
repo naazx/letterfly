@@ -172,3 +172,34 @@ class NewLetterViewModel {
 enum UploadError : Error {
     case dataConvertation, imageConvertation, imageCompression
 }
+class Solution {
+        func divide(_ dividend: Int, _ divisor: Int) -> Int {
+            var d1 = abs(dividend)
+            var d2 = abs(divisor)
+            var result: Int = 0
+    
+        if d1 - d2  < 0 {
+          return 0
+        }
+
+        while(d1-d2 >= 0) {
+           result += 1
+          d1 -= d2
+        }
+
+        let isDividendNegative = dividend < 0
+        let isDivisorNegative = divisor < 0
+
+        if isDividendNegative != isDivisorNegative {
+         result = -result
+        }
+            if result > Int32.max {
+                return Int(Int32.max)
+            }
+            if result < Int32.min {
+                return Int(Int32.min)
+            }
+            
+        return result
+    }
+}

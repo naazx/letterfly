@@ -21,6 +21,7 @@ struct MapView: View {
     )
     @State private var isSatelliteStyle: Bool = false
     @State private var hasSetInitialPosition = false
+    @State private var selectedLetter: Letter?
     
     var letters: [Letter]
     var homeViewModel: HomeViewModel
@@ -46,19 +47,11 @@ struct MapView: View {
                             )
                             
                             Annotation(letter.subject, coordinate: coordinate) {
-                                NavigationLink(destination: LetterDetailView(letter: letter, pairID: pairID, currentUserID: currentUserID, partnerName: partnerName, onOpenLocationInMap: { coordinate in
-                                    focusCoordinate = coordinate
-                                })) {
-                                    ZStack {
-                                        Circle()
-                                            .fill(.ultraThinMaterial)
-                                            .frame(width: 44, height: 44)
-                                            .shadow(color: .black.opacity(0.15), radius: 4, x: 0, y: 2)
-                                        
-                                        Image(systemName: "envelope.fill")
-                                            .font(.system(size: 18, weight: .bold))
-                                            .foregroundColor(.accentColor)
-                                    }
+                                MemoryMapPin(
+                                    isSelected: selectedLetter?.id == letter.id
+                                )
+                                .onTapGesture {
+                                    selectedLetter = letter
                                 }
                             }
                         }
