@@ -18,6 +18,7 @@ struct CalendarView: View {
     var currentUserID: String?
     var partnerName: String?
     var homeViewModel: HomeViewModel
+    var locationService: LocationService
     var onOpenLocationInMap: (CLLocationCoordinate2D) -> Void
     
     private var currentMonth: Date {
@@ -140,7 +141,16 @@ struct CalendarView: View {
             }
         }
         .sheet(isPresented: $isShowingDayDetail) {
-            DayLettersView(date: viewModel.selectedDate!, letters: grouped[viewModel.selectedDate!] ?? [], pairID: pairID, currentUserID: currentUserID, homeViewModel: homeViewModel, partnerName: partnerName, onOpenLocationInMap: onOpenLocationInMap)
+            DayLettersView(
+                date: viewModel.selectedDate!,
+                letters: grouped[viewModel.selectedDate!] ?? [],
+                pairID: pairID,
+                currentUserID: currentUserID,
+                homeViewModel: homeViewModel,
+                partnerName: partnerName,
+                locationService: locationService,
+                onOpenLocationInMap: onOpenLocationInMap
+            )
                 .presentationDetents([.medium, .large])
                 .presentationDragIndicator(.visible)
                 .presentationCornerRadius(28)
@@ -151,20 +161,27 @@ struct CalendarView: View {
     let sampleLetters: [Letter] = [
         Letter(
             authorID: "previewUser1",
-            subject: "i love you", text: "Привіт, любий! Як твій день?",
+            subject: "i love you", text: "Hi, dear! How are you?",
             createdAt: .now
         ),
         Letter(
             authorID: "previewUser2",
-            subject: "i love you 2", text: "Скучив за тобою",
+            subject: "i love you 2", text: "Miss you, my love",
             createdAt: Calendar.current.date(byAdding: .day, value: -7, to: .now)!
         ),
         Letter(
             authorID: "previewUser1",
-            subject: "i love you 3", text: "Ще один лист того ж дня",
+            subject: "i love you 3", text: "Another letter this day",
             createdAt: Calendar.current.date(byAdding: .day, value: -7, to: .now)!
         )
     ]
 
-    CalendarView(letters: sampleLetters, pairID: "123456789", currentUserID: nil, partnerName: "Nastia", homeViewModel: HomeViewModel(), onOpenLocationInMap: { _ in })
+    CalendarView(
+        letters: sampleLetters,
+        pairID: "123456789",
+        currentUserID: nil,
+        partnerName: "Nastia",
+        homeViewModel: HomeViewModel(),
+        locationService: LocationService(),
+        onOpenLocationInMap: { _ in })
 }

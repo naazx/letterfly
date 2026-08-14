@@ -23,6 +23,7 @@ struct LetterDetailView: View {
     var letterServices = LetterServices()
     var currentUserID: String?
     var partnerName: String?
+    var locationService: LocationService
     var onOpenLocationInMap: (CLLocationCoordinate2D) -> Void
     
     var body: some View {
@@ -108,7 +109,12 @@ struct LetterDetailView: View {
             Text("Something went wrong")
         }
         .sheet(isPresented: $isShowingEdit) {
-            NewLetterView(existingLetter: letter, pairID: pairID, authorID: letter.authorID)
+            NewLetterView(
+                existingLetter: letter,
+                pairID: pairID, authorID:
+                    letter.authorID,
+                locationService: locationService
+            )
         }
         .onChange(of: selectedReaction) { oldValue, newValue in
             guard hasInitializedReaction else { return }
@@ -298,6 +304,7 @@ struct LetterDetailView: View {
                 isRead: false
             ),
             pairID: "qJ23Kdi6EMFLYmtnWgiD",
+            locationService: LocationService(),
             onOpenLocationInMap: { _ in }
         )
     }

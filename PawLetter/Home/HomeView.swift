@@ -17,6 +17,7 @@ struct HomeView: View {
     var pairID: String
     var currentUserID: String?
     var partnerName: String?
+    var locationService: LocationService
     
     var onOpenLocationInMap: (CLLocationCoordinate2D) -> Void
     
@@ -111,11 +112,23 @@ struct HomeView: View {
             .searchable(text: $searchText, prompt: "Search...")
             .sheet(isPresented: $isShowingNewLetter) {
                 if let  currentUserID {
-                    NewLetterView(existingLetter: nil, pairID: pairID, authorID: currentUserID)
+                    NewLetterView(
+                        existingLetter: nil,
+                        pairID: pairID,
+                        authorID: currentUserID,
+                        locationService: locationService
+                    )
                 }
             }
             .navigationDestination(for: Letter.self) { letter in
-                LetterDetailView(letter: letter, pairID: pairID, currentUserID: currentUserID, partnerName: partnerName, onOpenLocationInMap: onOpenLocationInMap)
+                LetterDetailView(
+                    letter: letter,
+                    pairID: pairID,
+                    currentUserID: currentUserID,
+                    partnerName: partnerName,
+                    locationService: locationService,
+                    onOpenLocationInMap: onOpenLocationInMap
+                )
             }
         }
     }
@@ -136,5 +149,6 @@ struct HomeView: View {
     HomeView(homeViewModel: HomeViewModel(),
              pairID: "qJ23Kdi6EMFLYmtnWgiD",
              currentUserID: nil,
+             locationService: LocationService(),
              onOpenLocationInMap: { _ in })
 }

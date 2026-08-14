@@ -28,6 +28,7 @@ struct MapView: View {
     let pairID: String
     var currentUserID: String?
     var partnerName: String?
+    var locationService: LocationService
     
     var lettersWithLocation: [Letter] {
         letters.filter { $0.location != nil }
@@ -113,6 +114,7 @@ struct MapView: View {
                     pairID: pairID,
                     currentUserID: currentUserID,
                     partnerName: partnerName,
+                    locationService: locationService,
                     onOpenLocationInMap: { coordinate in
                         focusCoordinate = coordinate
                     }
@@ -161,6 +163,7 @@ struct MapView: View {
              letters: [],
              pairID: "1234567890",
              currentUserID: "nazarLOX",
-             partnerName: "nastia"
+             partnerName: "nastia",
+             locationService: LocationService()
     )
 }

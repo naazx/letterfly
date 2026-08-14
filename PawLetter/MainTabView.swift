@@ -12,6 +12,7 @@ struct MainTabView: View {
     @State private var homeViewModel = HomeViewModel()
     @State private var selectedTab: AppTab = .home
     @State private var mapFocusCoordinate: CLLocationCoordinate2D?
+    @State private var locationService = LocationService()
     var viewModel: AuthViewModel
     
     enum AppTab: Hashable {
@@ -21,9 +22,15 @@ struct MainTabView: View {
     var body: some View {
         if let pairID = viewModel.pairID {
             TabView(selection: $selectedTab) {
-                HomeView(homeViewModel: homeViewModel, pairID: pairID, currentUserID: viewModel.userID, partnerName: viewModel.partnerNickname ?? viewModel.partnerDisplayName, onOpenLocationInMap: { coordinate in
-                    mapFocusCoordinate = coordinate
-                    selectedTab = .memories
+                HomeView(
+                        homeViewModel: homeViewModel,
+                        pairID: pairID,
+                        currentUserID: viewModel.userID,
+                        partnerName: viewModel.partnerNickname ?? viewModel.partnerDisplayName,
+                        locationService: locationService,
+                        onOpenLocationInMap: { coordinate in
+                            mapFocusCoordinate = coordinate
+                            selectedTab = .memories
                 })
                     .tabItem {
                         Label("Home", systemImage: "house")
@@ -31,9 +38,16 @@ struct MainTabView: View {
                     }
                     .tag(AppTab.home)
                 
-                CalendarView(letters: homeViewModel.letters, pairID: pairID, currentUserID: viewModel.userID, partnerName: viewModel.partnerNickname ?? viewModel.partnerDisplayName, homeViewModel: homeViewModel, onOpenLocationInMap: { coordinate in
-                    mapFocusCoordinate = coordinate
-                    selectedTab = .memories
+                CalendarView(
+                    letters: homeViewModel.letters,
+                    pairID: pairID,
+                    currentUserID: viewModel.userID,
+                    partnerName: viewModel.partnerNickname ?? viewModel.partnerDisplayName,
+                    homeViewModel: homeViewModel,
+                    locationService: locationService,
+                    onOpenLocationInMap: { coordinate in
+                        mapFocusCoordinate = coordinate
+                        selectedTab = .memories
                 })
                     .tabItem {
                         Label("Calendar", systemImage: "calendar")
@@ -41,7 +55,14 @@ struct MainTabView: View {
                     }
                     .tag(AppTab.calendar)
                 
-                MapView(focusCoordinate: $mapFocusCoordinate, letters: homeViewModel.letters, pairID: pairID, currentUserID: viewModel.userID, partnerName: viewModel.partnerNickname ?? viewModel.partnerDisplayName )
+                MapView(
+                    focusCoordinate: $mapFocusCoordinate,
+                    letters: homeViewModel.letters,
+                    pairID: pairID,
+                    currentUserID: viewModel.userID,
+                    partnerName: viewModel.partnerNickname ?? viewModel.partnerDisplayName,
+                    locationService: locationService
+                )
                     .tabItem {
                         Label("Memories", systemImage: "map")
                             .labelStyle(.iconOnly)

@@ -11,8 +11,6 @@ import FirebaseFirestore
 enum PairError: Error {
     case codeNotFound, selfSearch
 }
-
-
 class PairServices{
     let db = Firestore.firestore()
     let userServices = UserServices()

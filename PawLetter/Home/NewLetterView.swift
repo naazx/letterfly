@@ -13,7 +13,6 @@ struct NewLetterView: View {
     @Environment(\.dismiss) var dismiss
     @State private var viewModel = NewLetterViewModel()
     @State private var audioRecorder = AudioRecorderService()
-    @State private var locationService = LocationService()
     @State private var editedLocationName: String?
     @State private var isAddingLocation: Bool = false
     @State private var selectedLocation: Letter.LetterLocation?
@@ -40,6 +39,7 @@ struct NewLetterView: View {
     let existingLetter: Letter?
     var pairID: String
     var authorID: String
+    var locationService: LocationService
     
     enum Field {
         case subject
@@ -47,10 +47,11 @@ struct NewLetterView: View {
     }
     @FocusState private var focusedField: Field?
     
-    init(existingLetter: Letter?, pairID: String, authorID: String){
+    init(existingLetter: Letter?, pairID: String, authorID: String, locationService: LocationService) {
         self.existingLetter = existingLetter
         self.pairID = pairID
         self.authorID = authorID
+        self.locationService = locationService
         _viewModel = State(initialValue: NewLetterViewModel(existingLetter: existingLetter))
     }
     
@@ -562,5 +563,10 @@ struct NewLetterView: View {
     }
 }
 #Preview {
-    NewLetterView(existingLetter: nil, pairID: "qJ23Kdi6EMFLYmtnWgiD", authorID: "3z34vv")
+    NewLetterView(
+        existingLetter: nil,
+        pairID: "qJ23Kdi6EMFLYmtnWgiD",
+        authorID: "3z34vv",
+        locationService: LocationService()
+    )
 }

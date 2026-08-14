@@ -16,13 +16,18 @@ struct DayLettersView: View {
     var currentUserID: String?
     var homeViewModel: HomeViewModel
     var partnerName: String?
+    var locationService: LocationService
     var onOpenLocationInMap: (CLLocationCoordinate2D) -> Void
     
     var body: some View {
         NavigationStack{
             List(letters){ letter in
                 NavigationLink(value: letter){
-                    LetterRowView(letter: letter, currentUserID: currentUserID, loadedImage: homeViewModel.loadedImages[letter.id ?? ""])
+                    LetterRowView(
+                        letter: letter,
+                        currentUserID: currentUserID,
+                        loadedImage: homeViewModel.loadedImages[letter.id ?? ""]
+                    )
                 }
                 .onAppear {
                     Task {
@@ -31,7 +36,14 @@ struct DayLettersView: View {
                 }
             }
             .navigationDestination(for: Letter.self) { letter in
-                LetterDetailView(letter: letter, pairID: pairID, currentUserID: currentUserID, partnerName: partnerName, onOpenLocationInMap: onOpenLocationInMap)
+                LetterDetailView(
+                    letter: letter,
+                    pairID: pairID,
+                    currentUserID: currentUserID,
+                    partnerName: partnerName,
+                    locationService: locationService,
+                    onOpenLocationInMap: onOpenLocationInMap
+                )
             }
             .navigationTitle(date.formatted(.dateTime.day().month().year()))
         }
@@ -42,10 +54,19 @@ struct DayLettersView: View {
     let sampleLetters: [Letter] = [
         Letter(
             authorID: "previewUser1",
-            subject: "how are you?", text: "Привіт, любий! Як твій день?",
+            subject: "how are you?",
+            text: "Hi, dear! How are you?",
             createdAt: .now
         ),
     ]
     
-    DayLettersView(date: .now, letters: sampleLetters, pairID: "123456789", currentUserID: nil , homeViewModel: HomeViewModel(), partnerName: "Nastia", onOpenLocationInMap: { _ in })
+    DayLettersView(
+        date: .now,
+        letters: sampleLetters,
+        pairID: "123456789",
+        currentUserID: nil ,
+        homeViewModel: HomeViewModel(),
+        partnerName: "nastia",
+        locationService: LocationService(),
+        onOpenLocationInMap: { _ in })
 }
