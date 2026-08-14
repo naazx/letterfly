@@ -25,7 +25,6 @@ struct MapView: View {
     @State private var letterToOpen: Letter?
     
     var letters: [Letter]
-    var homeViewModel: HomeViewModel
     let pairID: String
     var currentUserID: String?
     var partnerName: String?
@@ -37,42 +36,15 @@ struct MapView: View {
     var body: some View {
         NavigationStack {
             ZStack(alignment: .bottomTrailing) {
-                Map(position: $position) {
-                    UserAnnotation()
-                    
-                    ForEach(lettersWithLocation) { letter in
-                        if let location = letter.location {
-                            let coordinate = CLLocationCoordinate2D(
-                                latitude: location.latitude,
-                                longitude: location.longitude
-                            )
-                            
-                            Annotation(letter.subject, coordinate: coordinate) {
-                                MemoryMapPin(
-                                    isSelected: selectedLetter?.id == letter.id
-                                )
-                                .onTapGesture {
-                                    if selectedLetter?.id == letter.id {
-                                        selectedLetter = nil
-                                    } else {
-                                        selectedLetter = letter
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    
-                }
-                .mapStyle(isSatelliteStyle ? .imagery(elevation: .realistic) : .standard(elevation: .realistic, pointsOfInterest: .excludingAll))
-                .mapControls {}
-                .ignoresSafeArea(edges: .all)
-                .safeAreaInset(edge: .top) {
+                mapContent
+                    .ignoresSafeArea(edges: .all)
+                    .safeAreaInset(edge: .top) {
                         Text("Memories Map")
                             .font(.largeTitle.bold())
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.horizontal, 15)
                             .padding(.top, 25)
-                }
+                    }
                 
                 if let selectedLetter {
                     MemoryPreviewCard(
@@ -84,6 +56,7 @@ struct MapView: View {
                         .frame(maxWidth: .infinity)
                         .padding(.horizontal)
                         .padding(.bottom)
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
                 
                 VStack(spacing: 12) {
@@ -116,7 +89,7 @@ struct MapView: View {
                     }
                 }
                 .padding(.trailing, 16)
-                .padding(.bottom, 140)
+                .padding(.bottom, selectedLetter != nil ? 140 : 50)
             }
             .onAppear {
                 if !hasSetInitialPosition && !lettersWithLocation.isEmpty {
@@ -143,12 +116,38 @@ struct MapView: View {
             .navigationBarHidden(true)
         }
     }
+    private var mapContent: some View {
+        Map(position: $position) {
+            UserAnnotation()
+            ForEach(lettersWithLocation) { letter in
+                if let location = letter.location {
+                    let coordinate = CLLocationCoordinate2D(
+                        latitude: location.latitude,
+                        longitude: location.longitude
+                    )
+                    Annotation(letter.subject, coordinate: coordinate) {
+                        MemoryMapPin(isSelected: selectedLetter?.id == letter.id)
+                            .onTapGesture {
+                                withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                                    if selectedLetter?.id == letter.id {
+                                        selectedLetter = nil
+                                    } else {
+                                        selectedLetter = letter
+                                    }
+                                }
+                            }
+                    }
+                }
+            }
+        }
+        .mapStyle(isSatelliteStyle ? .imagery(elevation: .realistic) : .standard(elevation: .realistic, pointsOfInterest: .excludingAll))
+        .mapControls {}
+    }
 }
 
 #Preview {
     MapView( focusCoordinate: .constant(nil),
              letters: [],
-             homeViewModel: HomeViewModel(),
              pairID: "1234567890",
              currentUserID: "nazarLOX",
              partnerName: "nastia")

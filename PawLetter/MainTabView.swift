@@ -41,7 +41,7 @@ struct MainTabView: View {
                     }
                     .tag(AppTab.calendar)
                 
-                MapView(focusCoordinate: $mapFocusCoordinate, letters: homeViewModel.letters, homeViewModel: homeViewModel, pairID: pairID, currentUserID: viewModel.userID, partnerName: viewModel.partnerNickname ?? viewModel.partnerDisplayName )
+                MapView(focusCoordinate: $mapFocusCoordinate, letters: homeViewModel.letters, pairID: pairID, currentUserID: viewModel.userID, partnerName: viewModel.partnerNickname ?? viewModel.partnerDisplayName )
                     .tabItem {
                         Label("Memories", systemImage: "map")
                             .labelStyle(.iconOnly)
