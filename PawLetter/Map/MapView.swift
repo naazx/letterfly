@@ -119,23 +119,28 @@ struct MapView: View {
     private var mapContent: some View {
         Map(position: $position) {
             UserAnnotation()
-            ForEach(lettersWithLocation) { letter in
+            ForEach(Array(lettersWithLocation.enumerated()), id: \.element.id) { index, letter in
                 if let location = letter.location {
                     let coordinate = CLLocationCoordinate2D(
                         latitude: location.latitude,
                         longitude: location.longitude
                     )
                     Annotation(letter.subject, coordinate: coordinate) {
-                        MemoryMapPin(isSelected: selectedLetter?.id == letter.id, mood: letter.mood, surprise: letter.surprise)
-                            .onTapGesture {
-                                withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
-                                    if selectedLetter?.id == letter.id {
-                                        selectedLetter = nil
-                                    } else {
-                                        selectedLetter = letter
-                                    }
+                        MemoryMapPin(
+                            isSelected: selectedLetter?.id == letter.id,
+                            mood: letter.mood,
+                            surprise: letter.surprise,
+                            appearDelay: Double(index) * 0.1
+                        )
+                        .onTapGesture {
+                            withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                                if selectedLetter?.id == letter.id {
+                                    selectedLetter = nil
+                                } else {
+                                    selectedLetter = letter
                                 }
                             }
+                        }
                     }
                 }
             }
@@ -146,9 +151,11 @@ struct MapView: View {
 }
 
 #Preview {
-    MapView( focusCoordinate: .constant(nil),
+    MapView(
+        focusCoordinate: .constant(nil),
              letters: [],
              pairID: "1234567890",
              currentUserID: "nazarLOX",
-             partnerName: "nastia")
+             partnerName: "nastia"
+    )
 }

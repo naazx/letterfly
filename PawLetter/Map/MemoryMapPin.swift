@@ -11,6 +11,9 @@ struct MemoryMapPin: View {
     let isSelected: Bool
     let mood: MoodType?
     let surprise: SurpriseType?
+    let appearDelay: Double
+    
+    @State private var hasAppeared = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -52,14 +55,22 @@ struct MemoryMapPin: View {
                 }
             }
         }
+        .scaleEffect(hasAppeared ? 1 : 0.3)
+                .opacity(hasAppeared ? 1 : 0)
+                .onAppear {
+                    guard !hasAppeared else { return }
+                    withAnimation(.spring(response: 0.6, dampingFraction: 0.65).delay(appearDelay)) {
+                        hasAppeared = true
+                    }
+                }
     }
 }
 
 #Preview {
     VStack(spacing: 20) {
-        MemoryMapPin(isSelected: false, mood: nil, surprise: nil)
-        MemoryMapPin(isSelected: false, mood: .love, surprise: nil)
-        MemoryMapPin(isSelected: false, mood: nil, surprise: .flower)
-        MemoryMapPin(isSelected: true, mood: .happy, surprise: .chocolate)
+        MemoryMapPin(isSelected: false, mood: nil, surprise: nil, appearDelay: 0)
+        MemoryMapPin(isSelected: false, mood: .love, surprise: nil, appearDelay: 0.1)
+        MemoryMapPin(isSelected: false, mood: nil, surprise: .flower, appearDelay: 0.2)
+        MemoryMapPin(isSelected: true, mood: .happy, surprise: .chocolate, appearDelay: 0.3)
     }
 }
