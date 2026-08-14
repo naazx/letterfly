@@ -22,6 +22,7 @@ struct MapView: View {
     @State private var isSatelliteStyle: Bool = false
     @State private var hasSetInitialPosition = false
     @State private var selectedLetter: Letter?
+    @State private var letterToOpen: Letter?
     
     var letters: [Letter]
     var homeViewModel: HomeViewModel
@@ -51,7 +52,11 @@ struct MapView: View {
                                     isSelected: selectedLetter?.id == letter.id
                                 )
                                 .onTapGesture {
-                                    selectedLetter = letter
+                                    if selectedLetter?.id == letter.id {
+                                        selectedLetter = nil
+                                    } else {
+                                        selectedLetter = letter
+                                    }
                                 }
                             }
                         }
@@ -67,6 +72,18 @@ struct MapView: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.horizontal, 15)
                             .padding(.top, 25)
+                }
+                
+                if let selectedLetter {
+                    MemoryPreviewCard(
+                        letter: selectedLetter,
+                        onOpen: {
+                            letterToOpen = selectedLetter
+                        }
+                    )
+                        .frame(maxWidth: .infinity)
+                        .padding(.horizontal)
+                        .padding(.bottom)
                 }
                 
                 VStack(spacing: 12) {
@@ -99,7 +116,7 @@ struct MapView: View {
                     }
                 }
                 .padding(.trailing, 16)
-                .padding(.bottom, 50)
+                .padding(.bottom, 140)
             }
             .onAppear {
                 if !hasSetInitialPosition && !lettersWithLocation.isEmpty {
@@ -111,6 +128,17 @@ struct MapView: View {
                 guard let newCoordinate else { return }
                 position = .region(MKCoordinateRegion(center: newCoordinate, latitudinalMeters: 1500, longitudinalMeters: 1500))
                 focusCoordinate = nil
+            }
+            .navigationDestination(item: $letterToOpen) { letter in
+                LetterDetailView(
+                    letter: letter,
+                    pairID: pairID,
+                    currentUserID: currentUserID,
+                    partnerName: partnerName,
+                    onOpenLocationInMap: { coordinate in
+                        focusCoordinate = coordinate
+                    }
+                )
             }
             .navigationBarHidden(true)
         }
