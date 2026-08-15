@@ -37,11 +37,25 @@ struct MapView: View {
                                     .foregroundStyle(.secondary)
                             }
                             
-                            HStack(spacing: 8) {
-                                nearbyMenu
-                                filterMenu
-                                Spacer()
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: 8) {
+                                    nearbyMenu
+                                    filterMenu
+                                    satelliteButton
+                                    recenterButton
+                                }
                             }
+                            .mask(
+                                LinearGradient(
+                                    stops: [
+                                        .init(color: .black, location: 0),
+                                        .init(color: .black, location: 0.9),
+                                        .init(color: .clear, location: 1)
+                                    ],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.horizontal, 15)
@@ -61,42 +75,6 @@ struct MapView: View {
                         .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
                 
-                VStack(spacing: 12) {
-                    Button {
-                        withAnimation(
-                            .spring(
-                                response: 0.35,
-                                dampingFraction: 0.7
-                            )
-                        ) {
-                            mapViewModel.isSatelliteStyle.toggle()
-                        }
-                    } label: {
-                        Image(systemName: mapViewModel.isSatelliteStyle ? "map.fill" : "globe.americas.fill")
-                            .font(.title3)
-                            .foregroundColor(.primary)
-                            .padding(12)
-                            .background(.ultraThinMaterial)
-                            .clipShape(Circle())
-                            .shadow(color: .black.opacity(0.15), radius: 6, x: 0, y: 3)
-                    }
-                    
-                    Button {
-                        withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
-                            mapViewModel.position = .userLocation(fallback: .automatic)
-                        }
-                    } label: {
-                        Image(systemName: "location.fill")
-                            .font(.title3)
-                            .foregroundColor(.accentColor)
-                            .padding(12)
-                            .background(.ultraThinMaterial)
-                            .clipShape(Circle())
-                            .shadow(color: .black.opacity(0.15), radius: 6, x: 0, y: 3)
-                    }
-                }
-                .padding(.trailing, 16)
-                .padding(.bottom, mapViewModel.selectedLetter != nil ? 140 : 50)
             }
             .onAppear {
                 if !mapViewModel.hasSetInitialPosition && !lettersWithLocation.isEmpty {
@@ -223,6 +201,44 @@ struct MapView: View {
                 Text("Filter")
             }
             .font(.subheadline.weight(.medium))
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(.ultraThinMaterial)
+            .clipShape(Capsule())
+            .shadow(color: .black.opacity(0.15), radius: 6, x: 0, y: 3)
+        }
+    }
+    private var satelliteButton: some View {
+        Button {
+            withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) {
+                mapViewModel.isSatelliteStyle.toggle()
+            }
+        } label: {
+            HStack(spacing: 6) {
+                Image(systemName: mapViewModel.isSatelliteStyle ? "map.fill" : "globe.americas.fill")
+                Text(mapViewModel.isSatelliteStyle ? "Standard" : "Satellite")
+            }
+            .font(.subheadline.weight(.medium))
+            .foregroundColor(.accentColor)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(.ultraThinMaterial)
+            .clipShape(Capsule())
+            .shadow(color: .black.opacity(0.15), radius: 6, x: 0, y: 3)
+        }
+    }
+    private var recenterButton: some View {
+        Button {
+            withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                mapViewModel.position = .userLocation(fallback: .automatic)
+            }
+        } label: {
+            HStack(spacing: 6) {
+                Image(systemName: "location.fill")
+                Text("Recenter")
+            }
+            .font(.subheadline.weight(.medium))
+            .foregroundColor(.accentColor)
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
             .background(.ultraThinMaterial)
