@@ -11,6 +11,7 @@ import MapKit
 struct MapView: View {
     @Binding var focusCoordinate: CLLocationCoordinate2D?
     @State private var mapViewModel = MapViewModel()
+    @State private var isShowingFilterSheet = false
     
     var letters: [Letter]
     let pairID: String
@@ -40,7 +41,7 @@ struct MapView: View {
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack(spacing: 8) {
                                     nearbyMenu
-                                    filterMenu
+                                    filterButton
                                     satelliteButton
                                     recenterButton
                                 }
@@ -93,6 +94,37 @@ struct MapView: View {
                     )
                 )
                 focusCoordinate = nil
+            }
+            .sheet(isPresented: $isShowingFilterSheet) {
+                NavigationStack {
+                    List {
+                        ForEach(MapFilterOption.allCases, id: \.self) { option in
+                            Button {
+                                mapViewModel.toggleFilter(option)
+                            } label: {
+                                HStack {
+                                    Text(option.title)
+                                    Spacer()
+                                    if mapViewModel.selectedFilters.contains(option) {
+                                        Image(systemName: "checkmark")
+                                            .foregroundStyle(Color.accentColor)
+                                    }
+                                }
+                            }
+                            .foregroundStyle(.primary)
+                        }
+                    }
+                    .navigationTitle("Filter memories")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .confirmationAction) {
+                            Button("Done") {
+                                isShowingFilterSheet = false
+                            }
+                        }
+                    }
+                }
+                .presentationDetents([.medium])
             }
             .navigationDestination(item: $mapViewModel.letterToOpen) { letter in
                 LetterDetailView(
@@ -182,19 +214,9 @@ struct MapView: View {
                 .shadow(color: .black.opacity(0.15), radius: 6, x: 0, y: 3)
         }
     }
-    private var filterMenu: some View {
-        Menu {
-            ForEach(MapFilterOption.allCases, id: \.self) { option in
-                Button {
-                    mapViewModel.toggleFilter(option)
-                } label: {
-                    if mapViewModel.selectedFilters.contains(option) {
-                        Label(option.title, systemImage: "checkmark")
-                    } else {
-                        Text(option.title)
-                    }
-                }
-            }
+    private var filterButton: some View {
+        Button {
+            isShowingFilterSheet = true
         } label: {
             HStack(spacing: 6) {
                 Image(systemName: "line.3.horizontal.decrease.circle")
