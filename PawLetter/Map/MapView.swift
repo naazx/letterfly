@@ -39,7 +39,7 @@ struct MapView: View {
                             
                             HStack(spacing: 8) {
                                 nearbyMenu
-                                // place for filters
+                                filterMenu
                                 Spacer()
                             }
                         }
@@ -134,7 +134,7 @@ struct MapView: View {
     private var mapContent: some View {
         Map(position: $mapViewModel.position) {
             UserAnnotation()
-            ForEach(Array(lettersWithLocation.enumerated()), id: \.element.id) { index, letter in
+            ForEach(Array(mapViewModel.filteredLetters(from: lettersWithLocation).enumerated()), id: \.element.id) { index, letter in
                 if let location = letter.location {
                     let coordinate = CLLocationCoordinate2D(
                         latitude: location.latitude,
@@ -202,6 +202,32 @@ struct MapView: View {
                 .background(.ultraThinMaterial)
                 .clipShape(Capsule())
                 .shadow(color: .black.opacity(0.15), radius: 6, x: 0, y: 3)
+        }
+    }
+    private var filterMenu: some View {
+        Menu {
+            ForEach(MapFilterOption.allCases, id: \.self) { option in
+                Button {
+                    mapViewModel.toggleFilter(option)
+                } label: {
+                    if mapViewModel.selectedFilters.contains(option) {
+                        Label(option.title, systemImage: "checkmark")
+                    } else {
+                        Text(option.title)
+                    }
+                }
+            }
+        } label: {
+            HStack(spacing: 6) {
+                Image(systemName: "line.3.horizontal.decrease.circle")
+                Text("Filter")
+            }
+            .font(.subheadline.weight(.medium))
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(.ultraThinMaterial)
+            .clipShape(Capsule())
+            .shadow(color: .black.opacity(0.15), radius: 6, x: 0, y: 3)
         }
     }
 }
