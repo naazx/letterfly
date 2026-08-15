@@ -14,8 +14,8 @@ struct MapView: View {
         fallback: .region(
             MKCoordinateRegion(
                 center: CLLocationCoordinate2D(latitude: 49.8397, longitude: 24.0297),
-                latitudinalMeters: 3000,
-                longitudinalMeters: 3000
+                latitudinalMeters: 5000 * 2,
+                longitudinalMeters: 5000 * 2
             )
         )
     )
@@ -23,6 +23,7 @@ struct MapView: View {
     @State private var hasSetInitialPosition = false
     @State private var selectedLetter: Letter?
     @State private var letterToOpen: Letter?
+    @State private var selectedRadius: NearbyRadius = .near
     
     var letters: [Letter]
     let pairID: String
@@ -33,6 +34,34 @@ struct MapView: View {
     var lettersWithLocation: [Letter] {
         letters.filter { $0.location != nil }
     }
+    
+    enum NearbyRadius: Double, CaseIterable {
+        case near = 5_000
+        case medium = 10_000
+        case far = 20_000
+        
+        var title: String {
+            switch self {
+            case .near:
+                return "5 km"
+            case .medium:
+                return "10 km"
+            case .far:
+                return "20 km"
+            }
+        }
+    }
+    
+    var nearbyCount: Int? {
+        guard let userCoordinate = locationService.userLocation else { return nil }
+        let userLocation = CLLocation(latitude: userCoordinate.latitude, longitude: userCoordinate.longitude)
+        
+        return lettersWithLocation.filter { letter in
+            guard let location = letter.location else { return false}
+            let letterLocation = CLLocation(latitude: location.latitude, longitude: location.longitude)
+            return userLocation.distance(from: letterLocation) <= selectedRadius.rawValue
+        }.count
+    }
 
     var body: some View {
         NavigationStack {
@@ -40,12 +69,20 @@ struct MapView: View {
                 mapContent
                     .ignoresSafeArea(edges: .all)
                     .safeAreaInset(edge: .top) {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Memories Map")
-                                .font(.largeTitle.bold())
-                            Text("\(lettersWithLocation.count) memories with \(partnerName ?? "your partner")")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
+                        VStack(alignment: .leading, spacing: 8) {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Memories Map")
+                                    .font(.largeTitle.bold())
+                                Text("\(lettersWithLocation.count) memories with \(partnerName ?? "your partner")")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                            }
+                            
+                            HStack(spacing: 8) {
+                                nearbyMenu
+                                // place for filters
+                                Spacer()
+                            }
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.horizontal, 15)
@@ -67,7 +104,12 @@ struct MapView: View {
                 
                 VStack(spacing: 12) {
                     Button {
-                        withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) {
+                        withAnimation(
+                            .spring(
+                                response: 0.35,
+                                dampingFraction: 0.7
+                            )
+                        ) {
                             isSatelliteStyle.toggle()
                         }
                     } label: {
@@ -102,10 +144,17 @@ struct MapView: View {
                     position = .automatic
                     hasSetInitialPosition = true
                 }
+                locationService.requestCurrentLocation()
             }
             .onChange(of: focusCoordinate) { oldValue, newCoordinate in
                 guard let newCoordinate else { return }
-                position = .region(MKCoordinateRegion(center: newCoordinate, latitudinalMeters: 1500, longitudinalMeters: 1500))
+                position = .region(
+                    MKCoordinateRegion(
+                        center: newCoordinate,
+                        latitudinalMeters: 1500,
+                        longitudinalMeters: 1500
+                    )
+                )
                 focusCoordinate = nil
             }
             .navigationDestination(item: $letterToOpen) { letter in
@@ -154,6 +203,49 @@ struct MapView: View {
         }
         .mapStyle(isSatelliteStyle ? .imagery(elevation: .realistic) : .standard(elevation: .realistic, pointsOfInterest: .excludingAll))
         .mapControls {}
+    }
+    private var nearbyMenu: some View {
+        Menu {
+            ForEach(NearbyRadius.allCases, id: \.self) { radius in
+                Button{
+                    selectedRadius = radius
+                    if let userCoordinate = locationService.userLocation {
+                        withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                            position = .region(
+                                MKCoordinateRegion(
+                                    center: userCoordinate,
+                                    latitudinalMeters: radius.rawValue * 2,
+                                    longitudinalMeters: radius.rawValue * 2
+                                )
+                            )
+                        }
+                    }
+                    
+                } label: {
+                    if radius == selectedRadius{
+                        Label(radius.title, systemImage: "checkmark")
+                    } else {
+                        Text(radius.title)
+                    }
+                }
+            }
+        } label: {
+            HStack(spacing: 6) {
+                Image(systemName: "mappin.and.ellipse")
+                if let nearbyCount{
+                    Text("\(nearbyCount) nearby")
+                } else {
+                    Text("Nearby")
+                }
+            }
+                .font(.subheadline.weight(.medium))
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(.ultraThinMaterial)
+                .clipShape(Capsule())
+                .shadow(color: .black.opacity(0.15), radius: 6, x: 0, y: 3)
+        }
+        
     }
 }
 
