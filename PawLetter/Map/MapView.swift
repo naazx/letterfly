@@ -10,20 +10,7 @@ import MapKit
 
 struct MapView: View {
     @Binding var focusCoordinate: CLLocationCoordinate2D?
-    @State private var position: MapCameraPosition = .userLocation(
-        fallback: .region(
-            MKCoordinateRegion(
-                center: CLLocationCoordinate2D(latitude: 49.8397, longitude: 24.0297),
-                latitudinalMeters: 5000 * 2,
-                longitudinalMeters: 5000 * 2
-            )
-        )
-    )
-    @State private var isSatelliteStyle: Bool = false
-    @State private var hasSetInitialPosition = false
-    @State private var selectedLetter: Letter?
-    @State private var letterToOpen: Letter?
-    @State private var selectedRadius: NearbyRadius = .near
+    @State private var mapViewModel = MapViewModel()
     
     var letters: [Letter]
     let pairID: String
@@ -33,34 +20,6 @@ struct MapView: View {
     
     var lettersWithLocation: [Letter] {
         letters.filter { $0.location != nil }
-    }
-    
-    enum NearbyRadius: Double, CaseIterable {
-        case near = 5_000
-        case medium = 10_000
-        case far = 20_000
-        
-        var title: String {
-            switch self {
-            case .near:
-                return "5 km"
-            case .medium:
-                return "10 km"
-            case .far:
-                return "20 km"
-            }
-        }
-    }
-    
-    var nearbyCount: Int? {
-        guard let userCoordinate = locationService.userLocation else { return nil }
-        let userLocation = CLLocation(latitude: userCoordinate.latitude, longitude: userCoordinate.longitude)
-        
-        return lettersWithLocation.filter { letter in
-            guard let location = letter.location else { return false}
-            let letterLocation = CLLocation(latitude: location.latitude, longitude: location.longitude)
-            return userLocation.distance(from: letterLocation) <= selectedRadius.rawValue
-        }.count
     }
 
     var body: some View {
@@ -89,11 +48,11 @@ struct MapView: View {
                         .padding(.top, 25)
                     }
                 
-                if let selectedLetter {
+                if let selectedLetter = mapViewModel.selectedLetter {
                     MemoryPreviewCard(
                         letter: selectedLetter,
                         onOpen: {
-                            letterToOpen = selectedLetter
+                            mapViewModel.letterToOpen = mapViewModel.selectedLetter
                         }
                     )
                         .frame(maxWidth: .infinity)
@@ -110,10 +69,10 @@ struct MapView: View {
                                 dampingFraction: 0.7
                             )
                         ) {
-                            isSatelliteStyle.toggle()
+                            mapViewModel.isSatelliteStyle.toggle()
                         }
                     } label: {
-                        Image(systemName: isSatelliteStyle ? "map.fill" : "globe.americas.fill")
+                        Image(systemName: mapViewModel.isSatelliteStyle ? "map.fill" : "globe.americas.fill")
                             .font(.title3)
                             .foregroundColor(.primary)
                             .padding(12)
@@ -124,7 +83,7 @@ struct MapView: View {
                     
                     Button {
                         withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
-                            position = .userLocation(fallback: .automatic)
+                            mapViewModel.position = .userLocation(fallback: .automatic)
                         }
                     } label: {
                         Image(systemName: "location.fill")
@@ -137,18 +96,18 @@ struct MapView: View {
                     }
                 }
                 .padding(.trailing, 16)
-                .padding(.bottom, selectedLetter != nil ? 140 : 50)
+                .padding(.bottom, mapViewModel.selectedLetter != nil ? 140 : 50)
             }
             .onAppear {
-                if !hasSetInitialPosition && !lettersWithLocation.isEmpty {
-                    position = .automatic
-                    hasSetInitialPosition = true
+                if !mapViewModel.hasSetInitialPosition && !lettersWithLocation.isEmpty {
+                    mapViewModel.position = .automatic
+                    mapViewModel.hasSetInitialPosition = true
                 }
                 locationService.requestCurrentLocation()
             }
             .onChange(of: focusCoordinate) { oldValue, newCoordinate in
                 guard let newCoordinate else { return }
-                position = .region(
+                mapViewModel.position = .region(
                     MKCoordinateRegion(
                         center: newCoordinate,
                         latitudinalMeters: 1500,
@@ -157,7 +116,7 @@ struct MapView: View {
                 )
                 focusCoordinate = nil
             }
-            .navigationDestination(item: $letterToOpen) { letter in
+            .navigationDestination(item: $mapViewModel.letterToOpen) { letter in
                 LetterDetailView(
                     letter: letter,
                     pairID: pairID,
@@ -173,7 +132,7 @@ struct MapView: View {
         }
     }
     private var mapContent: some View {
-        Map(position: $position) {
+        Map(position: $mapViewModel.position) {
             UserAnnotation()
             ForEach(Array(lettersWithLocation.enumerated()), id: \.element.id) { index, letter in
                 if let location = letter.location {
@@ -183,17 +142,17 @@ struct MapView: View {
                     )
                     Annotation(letter.subject, coordinate: coordinate) {
                         MemoryMapPin(
-                            isSelected: selectedLetter?.id == letter.id,
+                            isSelected: mapViewModel.selectedLetter?.id == letter.id,
                             mood: letter.mood,
                             surprise: letter.surprise,
                             appearDelay: Double(index) * 0.1
                         )
                         .onTapGesture {
                             withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
-                                if selectedLetter?.id == letter.id {
-                                    selectedLetter = nil
+                                if mapViewModel.selectedLetter?.id == letter.id {
+                                    mapViewModel.selectedLetter = nil
                                 } else {
-                                    selectedLetter = letter
+                                    mapViewModel.selectedLetter = letter
                                 }
                             }
                         }
@@ -201,17 +160,17 @@ struct MapView: View {
                 }
             }
         }
-        .mapStyle(isSatelliteStyle ? .imagery(elevation: .realistic) : .standard(elevation: .realistic, pointsOfInterest: .excludingAll))
+        .mapStyle(mapViewModel.isSatelliteStyle ? .imagery(elevation: .realistic) : .standard(elevation: .realistic, pointsOfInterest: .excludingAll))
         .mapControls {}
     }
     private var nearbyMenu: some View {
         Menu {
-            ForEach(NearbyRadius.allCases, id: \.self) { radius in
+            ForEach(MapViewModel.NearbyRadius.allCases, id: \.self) { radius in
                 Button{
-                    selectedRadius = radius
+                    mapViewModel.selectedRadius = radius
                     if let userCoordinate = locationService.userLocation {
                         withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
-                            position = .region(
+                            mapViewModel.position = .region(
                                 MKCoordinateRegion(
                                     center: userCoordinate,
                                     latitudinalMeters: radius.rawValue * 2,
@@ -220,9 +179,8 @@ struct MapView: View {
                             )
                         }
                     }
-                    
                 } label: {
-                    if radius == selectedRadius{
+                    if radius == mapViewModel.selectedRadius{
                         Label(radius.title, systemImage: "checkmark")
                     } else {
                         Text(radius.title)
@@ -232,7 +190,7 @@ struct MapView: View {
         } label: {
             HStack(spacing: 6) {
                 Image(systemName: "mappin.and.ellipse")
-                if let nearbyCount{
+                if let nearbyCount = mapViewModel.nearbyCount(from: lettersWithLocation, locationService) {
                     Text("\(nearbyCount) nearby")
                 } else {
                     Text("Nearby")
@@ -245,10 +203,8 @@ struct MapView: View {
                 .clipShape(Capsule())
                 .shadow(color: .black.opacity(0.15), radius: 6, x: 0, y: 3)
         }
-        
     }
 }
-
 #Preview {
     MapView(
         focusCoordinate: .constant(nil),
