@@ -65,7 +65,7 @@ struct LetterDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .task {
             guard let id = letter.id else { return }
-            if !letter.isRead {
+            if !letter.isRead &&  letter.authorID != currentUserID{
                 try? await letterServices.markAsRead(pairID: pairID, letterID: id)
             }
             selectedReaction = letter.reaction

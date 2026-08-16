@@ -28,7 +28,8 @@ struct LetterRowView: View {
 
                 VStack(alignment: .leading) {
                     Text(letter.subject)
-                        .fontWeight(letter.isRead ? .regular : .bold)
+                        .fontWeight((!letter.isRead && letter.authorID != currentUserID) ? .bold : .regular)
+
                     Text(letter.text ?? "🎤 Voice Message")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
