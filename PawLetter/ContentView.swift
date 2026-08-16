@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @AppStorage("appTheme") private var appTheme: Int = 0
+    @AppStorage("appTheme") private var appTheme: Int = 1
     @State private var authViewModel = AuthViewModel()
     
     var body: some View {
@@ -36,10 +36,8 @@ struct ContentView: View {
         switch appTheme{
         case 1:
             return .light
-        case 2:
-            return .dark
         default:
-            return nil // system
+            return .dark
         }
     }
 }

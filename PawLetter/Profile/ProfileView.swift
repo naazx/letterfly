@@ -11,7 +11,7 @@ import SwiftUI
 import UIKit
 
 struct ProfileView: View {
-    @AppStorage("appTheme") private var appTheme: Int = 0
+    @AppStorage("appTheme") private var appTheme: Int = 1
     @AppStorage("useHandwritingFont") var useHandwritingFont: Bool = true
     @State private var profileViewModel = ProfileViewModel()
     @State private var selectedItem: PhotosPickerItem?
@@ -271,8 +271,6 @@ struct ProfileView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             Picker("", selection: $appTheme) {
-                Image(systemName: "desktopcomputer")
-                    .tag(0)
 
                 Image(systemName: "sun.max")
                     .tag(1)
