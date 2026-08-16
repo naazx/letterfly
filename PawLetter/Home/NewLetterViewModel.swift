@@ -18,6 +18,7 @@ class NewLetterViewModel {
     var text: String? 
     var letterServices = LetterServices()
     var previewImage: UIImage?
+    var selectedImageData: Data?
     
     var showError: Bool = false
     var errorMessage: String = ""
@@ -48,28 +49,31 @@ class NewLetterViewModel {
         }
     }
     
-    func uploadPhoto(item: PhotosPickerItem, pairID: String, letterID: String) async throws -> String? {
+    func uploadPhoto(data: Data, pairID: String, letterID: String) async throws -> String? {
         isLoading = true
         defer {isLoading = false}
-        
-            let data = try await item.loadTransferable(type: Data.self)
             
-            guard let data else{
-                throw UploadError.dataConvertation
-            }
-            guard let image = UIImage(data: data) else{
-                throw UploadError.imageConvertation
-            }
-            previewImage = image
-            
-            guard let compression = image.jpegData(compressionQuality: 0.7)  else {
-                throw UploadError.imageCompression
-            }
-            let uploadedURL = try await storageService.uploadFile(data: compression, path:                                     "letterPhotos/\(pairID)/\(letterID).jpg")
+        let uploadedURL = try await storageService.uploadFile(data: data, path:                                     "letterPhotos/\(pairID)/\(letterID).jpg")
         
-            return uploadedURL.absoluteString
+        return uploadedURL.absoluteString
     }
-    func send(pairID: String, authorID: String, selectedItem: PhotosPickerItem?, recordingURL: URL?, location: Letter.LetterLocation?) async {
+    func loadPreview(item: PhotosPickerItem) async throws {
+        let data = try await item.loadTransferable(type: Data.self)
+        
+        guard let data else{
+            throw UploadError.dataConvertation
+        }
+        guard let image = UIImage(data: data) else{
+            throw UploadError.imageConvertation
+        }
+        previewImage = image
+        
+        guard let compression = image.jpegData(compressionQuality: 0.7)  else {
+            throw UploadError.imageCompression
+        }
+        selectedImageData = compression
+    }
+    func send(pairID: String, authorID: String, recordingURL: URL?, location: Letter.LetterLocation?) async {
         isLoading = true
         defer{ isLoading = false }
         
@@ -83,8 +87,8 @@ class NewLetterViewModel {
                     try await storageService.deleteFile(path: "letterPhotos/\(pairID)/\(letterID).jpg")
                     photoURL = nil
                     
-                } else if let selectedItem{
-                    photoURL = try await uploadPhoto(item: selectedItem, pairID: pairID, letterID: letterID)
+                } else if let selectedImageData{
+                    photoURL = try await uploadPhoto(data: selectedImageData, pairID: pairID, letterID: letterID)
                 }
                 
                 if inputMode == .text && existingLetter.audioURL != nil {
@@ -115,8 +119,8 @@ class NewLetterViewModel {
                 var photoURL: String? = nil
                 var audioURL: String? = nil
 
-                if let selectedItem {
-                    photoURL = try await uploadPhoto(item: selectedItem, pairID: pairID, letterID: reference.documentID)
+                if let selectedImageData {
+                    photoURL = try await uploadPhoto(data: selectedImageData, pairID: pairID, letterID: reference.documentID)
                 }
                 if inputMode == .voice, let recordingURL {
                     audioURL = try await uploadAudio(url: recordingURL, pairID: pairID, letterID: reference.documentID)

@@ -140,6 +140,13 @@ struct NewLetterView: View {
                 .sheet(isPresented: $isChoosingOnMap) {
                     chooseOnMapLocation
                 }
+                .onChange(of: selectedItem){  _ , newValue in
+                    if let newValue {
+                        Task{
+                            try? await viewModel.loadPreview(item: newValue)
+                        }
+                    } else {}
+                }
                 .scrollDismissesKeyboard(.interactively)
                 .navigationTitle(existingLetter == nil ? "New letter" : "Edit letter")
                 .navigationBarTitleDisplayMode(.inline)
@@ -489,7 +496,6 @@ struct NewLetterView: View {
                 await viewModel.send(
                     pairID: pairID,
                     authorID: authorID,
-                    selectedItem: selectedItem,
                     recordingURL: audioRecorder.recordingURL,
                     location: finalLocation
                 )
