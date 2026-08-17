@@ -296,7 +296,7 @@ struct ProfileView: View {
                 Text("Handwriting Font")
                     .font(.body)
 
-                Text("Applies to letter subject and text")
+                Text("Applies to letter card")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }

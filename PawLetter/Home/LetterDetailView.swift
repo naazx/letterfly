@@ -16,7 +16,8 @@ struct LetterDetailView: View {
     @State private var isShowingEdit: Bool = false
     @State private var selectedReaction: ReactionType?
     @State private var audioRecorder = AudioRecorderService()
-    @State private var hasInitializedReaction = false
+    @State private var hasInitializedReaction: Bool = false
+    @State private var isShowingCard: Bool = false
     
     let letter: Letter
     let pairID: String
@@ -35,7 +36,7 @@ struct LetterDetailView: View {
                 }
                 
                 Text(letter.subject)
-                    .font(.handwriting(size: 28, enabled: useHandwritingFont))
+                    .font(.title2.bold())
                 
                 moodSurpriseBadges
                 
@@ -47,7 +48,6 @@ struct LetterDetailView: View {
                 
                 if let text = letter.text {
                     Text(text)
-                        .font(.handwriting(size: 18, enabled: useHandwritingFont))
                         .lineSpacing(6)
                         .textSelection(.enabled)
                 } else if letter.audioURL != nil {
@@ -78,6 +78,9 @@ struct LetterDetailView: View {
         .toolbar{
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
+                    Button("Show Card", systemImage: "pencil.and.scribble") {
+                        isShowingCard = true
+                    }
                     Button("Edit", systemImage: "pencil") {
                         isShowingEdit = true
                     }
@@ -114,6 +117,11 @@ struct LetterDetailView: View {
                 pairID: pairID, authorID:
                     letter.authorID,
                 locationService: locationService
+            )
+        }
+        .sheet(isPresented: $isShowingCard) {
+            LetterCardView(
+                letter: letter
             )
         }
         .onChange(of: selectedReaction) { oldValue, newValue in
