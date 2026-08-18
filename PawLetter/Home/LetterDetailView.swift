@@ -121,7 +121,9 @@ struct LetterDetailView: View {
         }
         .sheet(isPresented: $isShowingCard) {
             LetterCardView(
-                letter: letter
+                letter: letter,
+                currentUserID: currentUserID,
+                partnerName: partnerName
             )
         }
         .onChange(of: selectedReaction) { oldValue, newValue in

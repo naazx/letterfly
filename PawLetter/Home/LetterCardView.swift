@@ -12,6 +12,7 @@ struct LetterCardView: View {
     @Environment(\.dismiss) var dismiss
     @State private var currentUserName: String?
     @State private var userServices = UserServices()
+    @State private var isAppeared = false
     
     var letter: Letter
     var currentUserID: String?
@@ -19,12 +20,16 @@ struct LetterCardView: View {
     
     var body: some View {
         ZStack {
-            Rectangle()
-                .fill(Color(.systemBackground))
+            Image("letterCardBackground")
+                .resizable()
+                .scaledToFill()
                 .ignoresSafeArea()
             
             VStack(spacing: 32) {
-                VStack(alignment: .leading, spacing: 16) {
+                VStack(alignment: .leading, spacing: 5) {
+                    Text("Dear, \(partnerName ?? "partner")")
+                        .font(.handwriting(size: 20, enabled: useHandwritingFont))
+                    
                     Text(letter.subject)
                         .font(.handwriting(size: 28, enabled: useHandwritingFont))
                     
@@ -32,11 +37,20 @@ struct LetterCardView: View {
                         Text(text)
                             .font(.handwriting(size: 18, enabled: useHandwritingFont))
                     }
+                   
+                    Spacer()
+                    
+                    Text("With love,")
+                        .font(.handwriting(size: 20, enabled: useHandwritingFont))
+                    
+                    Text(currentUserName ?? "your love")
+                        .font(.handwriting(size: 20, enabled: useHandwritingFont))
                 }
-                .frame(maxWidth: 250, minHeight: 250, alignment: .topLeading)
+                .frame(maxWidth: 250, maxHeight: 400, alignment: .topLeading)
                 .padding(24)
                 .background(Color.accentColor.opacity(0.70))
                 .clipShape(RoundedRectangle(cornerRadius: 24))
+                .foregroundStyle(.black)
                 
                 Button {
                     dismiss()
@@ -52,9 +66,22 @@ struct LetterCardView: View {
                         .padding(.top, 50)
                 }
             }
+            .rotation3DEffect(
+                .degrees(isAppeared ? 0 : 70),
+                axis: (x: 1, y: 0, z: 0),
+                anchor: .top,
+                perspective: 0.5
+            )
+            .opacity(isAppeared ? 1 : 0)
+            .onAppear {
+                withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
+                    isAppeared = true
+                }
+            }
         }
         .task {
-            if let result = try? await userServices.fetchUserProfile(uid: currentUserID!) {
+            guard let currentUserID else { return }
+            if let result = try? await userServices.fetchUserProfile(uid: currentUserID) {
                 currentUserName = result.displayName
             }
         }
