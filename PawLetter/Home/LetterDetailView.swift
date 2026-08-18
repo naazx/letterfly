@@ -225,7 +225,7 @@ struct LetterDetailView: View {
                             .font(.caption2.weight(.semibold))
                             .foregroundStyle(.secondary)
                         
-                        ChipPicker<ReactionType>(selection: $selectedReaction)
+                        ChipPicker<ReactionType>(selection: $selectedReaction, options: ReactionType.allCases)
                     }
                 }
             }
