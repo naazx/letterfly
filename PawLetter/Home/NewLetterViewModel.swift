@@ -29,6 +29,7 @@ class NewLetterViewModel {
     
     var mood: MoodType?
     var surprise: SurpriseType?
+    var surpriseOptions: [SurpriseType] = []
     
     enum InputMode: CaseIterable{
         case text
@@ -42,6 +43,7 @@ class NewLetterViewModel {
         self.text = existingLetter?.text ?? ""
         self.mood = existingLetter?.mood
         self.surprise = existingLetter?.surprise
+        self.surpriseOptions = generateSurpriseOptions(existing: existingLetter?.surprise)
         if existingLetter?.audioURL != nil {
             inputMode = .voice
         } else {
@@ -171,6 +173,21 @@ class NewLetterViewModel {
         let uploadedURL = try await storageService.uploadFile(data: data, path: "letterAudio/\(pairID)/\(letterID).m4a")
         
         return uploadedURL.absoluteString
+    }
+    private func generateSurpriseOptions(existing: SurpriseType?) -> [SurpriseType] {
+        var surprises = Array(SurpriseType.allCases.shuffled().prefix(4))
+        
+        if let surprise = existing {
+            if surprises.contains(surprise) {
+                if let targetIndex = surprises.firstIndex(of: surprise) {
+                    surprises.swapAt(targetIndex, 0)
+                }
+            } else {
+                surprises.remove(at: 3)
+                surprises.insert(surprise, at: 0)
+            }
+        }
+        return surprises
     }
 }
 enum UploadError : Error {

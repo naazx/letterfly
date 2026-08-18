@@ -454,7 +454,7 @@ struct NewLetterView: View {
                 .font(.caption2.weight(.semibold))
                 .foregroundStyle(.secondary)
             
-            ChipPicker<MoodType>(selection: $viewModel.mood)
+            ChipPicker<MoodType>(selection: $viewModel.mood, options: MoodType.allCases)
         }
     }
     private var giftSection: some View {
@@ -463,7 +463,7 @@ struct NewLetterView: View {
                 .font(.caption2.weight(.semibold))
                 .foregroundStyle(.secondary)
             
-            ChipPicker<SurpriseType>(selection: $viewModel.surprise)
+            ChipPicker<SurpriseType>(selection: $viewModel.surprise, options: viewModel.surpriseOptions)
         }
     }
     private var isSendDisabled: Bool {

@@ -9,11 +9,12 @@ import SwiftUI
 
 struct ChipPicker<T: CaseIterable & Hashable & ChipDisplayable>: View {
     @Binding var selection: T?
+    var options: [T]
     
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack{
-                ForEach(Array(T.allCases), id: \.self) { option in
+                ForEach(options, id: \.self) { option in
                     HStack(spacing: 4){
                         Text(option.emoji)
                         Text(option.title)
@@ -37,5 +38,8 @@ struct ChipPicker<T: CaseIterable & Hashable & ChipDisplayable>: View {
 }
 
 #Preview {
-    ChipPicker<MoodType>(selection: .constant(.happy))
+    ChipPicker<MoodType>(
+        selection: .constant(.happy),
+        options: MoodType.allCases
+    )
 }
