@@ -21,36 +21,46 @@ struct PairEventsView: View {
     }
     
     var body: some View {
-        List {
-            ForEach(sortedEvents) { event in
-                HStack(spacing: 12) {
-                    Image(systemName: event.isRecurring ? "repeat" : "calendar")
-                        .foregroundStyle(Color.accentColor)
-                        .frame(width: 32, height: 32)
-                        .background(Color.accentColor.opacity(0.15))
-                        .clipShape(Circle())
-                    
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(event.title)
-                            .font(.body.weight(.medium))
-                        Text(event.nextOccurrence.formatted(date: .abbreviated, time: .omitted))
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+        Group {
+            if sortedEvents.isEmpty {
+                ContentUnavailableView(
+                    "No Events Yet",
+                    systemImage: "calendar.badge.plus",
+                    description: Text("Add your first event to remember it together")
+                )
+            } else {
+                List {
+                    ForEach(sortedEvents) { event in
+                        HStack(spacing: 12) {
+                            Image(systemName: event.isRecurring ? "repeat" : "calendar")
+                                .foregroundStyle(Color.accentColor)
+                                .frame(width: 32, height: 32)
+                                .background(Color.accentColor.opacity(0.15))
+                                .clipShape(Circle())
+                            
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(event.title)
+                                    .font(.body.weight(.medium))
+                                Text(event.nextOccurrence.formatted(date: .abbreviated, time: .omitted))
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                            
+                            Spacer()
+                        }
+                        .padding(.vertical, 4)
+                        .onTapGesture {
+                            eventToEdit = event
+                        }
                     }
-                    
-                    Spacer()
-                }
-                .padding(.vertical, 4)
-                .onTapGesture {
-                    eventToEdit = event
-                }
-            }
-            .onDelete{ indexSet in
-                for index in indexSet {
-                    let event = sortedEvents[index]
-                    guard let id = event.id else { continue }
-                    Task {
-                        try? await pairEventServices.deleteEvent(pairID: pairID, eventID: id)
+                    .onDelete{ indexSet in
+                        for index in indexSet {
+                            let event = sortedEvents[index]
+                            guard let id = event.id else { continue }
+                            Task {
+                                try? await pairEventServices.deleteEvent(pairID: pairID, eventID: id)
+                            }
+                        }
                     }
                 }
             }
@@ -60,6 +70,20 @@ struct PairEventsView: View {
             Button("Add Event", systemImage: "plus") {
                 isShowingNewEvent = true
             }
+        }
+        .sheet(isPresented: $isShowingNewEvent) {
+            NewPairEventView(
+                pairID: pairID,
+                currentUserID: currentUserID ?? "",
+                existingEvent: nil)
+            
+        }
+        .sheet(item: $eventToEdit) { event in
+            NewPairEventView(
+                pairID: pairID,
+                currentUserID: currentUserID ?? "",
+                existingEvent: event
+            )
         }
     }
 }
