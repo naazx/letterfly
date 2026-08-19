@@ -11,7 +11,9 @@ import SwiftUI
 
 struct CalendarView: View {
     @State private var viewModel = CalendarViewModel()
+    @State private var eventsViewModel = PairEventsViewModel()
     @State private var isShowingDayDetail: Bool = false
+    
     
     var letters: [Letter]
     var pairID: String
@@ -43,6 +45,15 @@ struct CalendarView: View {
             cursor = next
         }
         return result
+    }
+    
+    private var nearestEvent: PairEvent? {
+        eventsViewModel.events.min(by: { $0.nextOccurrence < $1.nextOccurrence })
+    }
+    
+    private var daysUntil: Int? {
+        guard let nearestEvent else { return nil }
+        return Calendar.current.dateComponents([.day], from: Date(), to: nearestEvent.nextOccurrence).day
     }
     
     var body: some View {
@@ -137,6 +148,11 @@ struct CalendarView: View {
                             proxy.scrollTo(currentMonth, anchor: .center)
                         }
                     }
+                    
+                    eventsViewModel.startListening(pairID: pairID)
+                }
+                .onDisappear{
+                    eventsViewModel.stopListening()
                 }
             }
         }
@@ -180,7 +196,7 @@ struct CalendarView: View {
         letters: sampleLetters,
         pairID: "123456789",
         currentUserID: nil,
-        partnerName: "Nastia",
+        partnerName: "nastia",
         homeViewModel: HomeViewModel(),
         locationService: LocationService(),
         onOpenLocationInMap: { _ in })
