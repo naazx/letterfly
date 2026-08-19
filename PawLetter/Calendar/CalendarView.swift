@@ -60,54 +60,56 @@ struct CalendarView: View {
         let grouped = viewModel.groupedLetters(letters)
         
         NavigationStack {
+            VStack(spacing: 0) {
+                
+                NavigationLink {
+                    PairEventsView(
+                        eventsViewModel: eventsViewModel,
+                        pairID: pairID,
+                        currentUserID: currentUserID
+                    )
+                } label: {
+                    if let nearestEvent, let daysUntil {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(nearestEvent.title)
+                                    .font(.subheadline.weight(.semibold))
+                                Text(daysUntil == 0 ? "Today" : "In \(daysUntil) day\(daysUntil == 1 ? "" : "s")")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .foregroundStyle(.secondary)
+                        }
+                        .padding()
+                        .background(Color(.secondarySystemBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                        .padding(.horizontal)
+                        .padding(.bottom, 12)
+                    } else {
+                        HStack {
+                            Image(systemName: "calendar.badge.plus")
+                            Text("Add your first event")
+                            Spacer()
+                        }
+                        .padding()
+                        .background(Color(.secondarySystemBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                        .padding(.horizontal)
+                        .padding(.bottom, 12)
+                    }
+                }
+            
             ScrollViewReader{ proxy in
                 ScrollView {
                     LazyVStack(alignment: .leading, spacing: 0) {
-                            NavigationLink {
-                                PairEventsView(
-                                    eventsViewModel: eventsViewModel,
-                                    pairID: pairID,
-                                    currentUserID: currentUserID
-                                )
-                            } label: {
-                            if let nearestEvent, let daysUntil {
-                                HStack {
-                                    VStack(alignment: .leading, spacing: 2) {
-                                        Text(nearestEvent.title)
-                                            .font(.subheadline.weight(.semibold))
-                                        Text(daysUntil == 0 ? "Today" : "In \(daysUntil) day\(daysUntil == 1 ? "" : "s")")
-                                            .font(.caption)
-                                            .foregroundStyle(.secondary)
-                                    }
-                                    Spacer()
-                                    Image(systemName: "chevron.right")
-                                        .foregroundStyle(.secondary)
-                                }
-                                .padding()
-                                .background(Color(.secondarySystemBackground))
-                                .clipShape(RoundedRectangle(cornerRadius: 16))
-                                .padding(.horizontal)
-                                .padding(.bottom, 12)
-                            } else {
-                                HStack {
-                                    Image(systemName: "calendar.badge.plus")
-                                    Text("Add your first event")
-                                    Spacer()
-                                }
-                                .padding()
-                                .background(Color(.secondarySystemBackground))
-                                .clipShape(RoundedRectangle(cornerRadius: 16))
-                                .padding(.horizontal)
-                                .padding(.bottom, 12)
-                            }
-                        }
-                        
                         ForEach(months, id: \.self) { month in
                             VStack(alignment: .leading, spacing: 8) {
                                 VStack(alignment: .leading, spacing: 2) {
                                     Text(month.formatted(.dateTime.month(.wide)))
                                         .font(.title2.bold())
-
+                                    
                                     Text(month.formatted(.dateTime.year()))
                                         .font(.subheadline)
                                         .foregroundStyle(.secondary)
@@ -168,8 +170,8 @@ struct CalendarView: View {
                                                 guard hasContent else { return }
                                                 
                                                 withAnimation(.snappy) {
-                                                        viewModel.selectedDate = dayKey
-                                                    }
+                                                    viewModel.selectedDate = dayKey
+                                                }
                                                 isShowingDayDetail = true
                                             }
                                         }
@@ -180,7 +182,6 @@ struct CalendarView: View {
                         }
                     }
                 }
-                .navigationTitle("Calendar")
                 .onAppear {
                     DispatchQueue.main.async {
                         withAnimation(.snappy(duration: 0.5)){
@@ -195,6 +196,9 @@ struct CalendarView: View {
                 }
             }
         }
+            .navigationTitle("Calendar")
+            .navigationBarTitleDisplayMode(.inline)
+    }
         .sheet(isPresented: $isShowingDayDetail) {
             DayLettersView(
                 date: viewModel.selectedDate!,
