@@ -63,6 +63,27 @@ struct CalendarView: View {
             ScrollViewReader{ proxy in
                 ScrollView {
                     LazyVStack(alignment: .leading, spacing: 0) {
+                        
+                        if let nearestEvent, let daysUntil {
+                            HStack {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(nearestEvent.title)
+                                        .font(.subheadline.weight(.semibold))
+                                    Text(daysUntil == 0 ? "Today" : "In \(daysUntil) day\(daysUntil == 1 ? "" : "s")")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .foregroundStyle(.secondary)
+                            }
+                            .padding()
+                            .background(Color(.secondarySystemBackground))
+                            .clipShape(RoundedRectangle(cornerRadius: 16))
+                            .padding(.horizontal)
+                            .padding(.bottom, 12)
+                        }
+                        
                         ForEach(months, id: \.self) { month in
                             VStack(alignment: .leading, spacing: 8) {
                                 VStack(alignment: .leading, spacing: 2) {
