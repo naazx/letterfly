@@ -11,9 +11,7 @@ import SwiftUI
 
 struct CalendarView: View {
     @State private var viewModel = CalendarViewModel()
-    @State private var eventsViewModel = PairEventsViewModel()
     @State private var isShowingDayDetail: Bool = false
-    
     
     var letters: [Letter]
     var pairID: String
@@ -21,6 +19,7 @@ struct CalendarView: View {
     var partnerName: String?
     var homeViewModel: HomeViewModel
     var locationService: LocationService
+    var eventsViewModel: PairEventsViewModel
     var onOpenLocationInMap: (CLLocationCoordinate2D) -> Void
     
     private var currentMonth: Date {
@@ -188,11 +187,6 @@ struct CalendarView: View {
                             proxy.scrollTo(currentMonth, anchor: .center)
                         }
                     }
-                    
-                    eventsViewModel.startListening(pairID: pairID)
-                }
-                .onDisappear{
-                    eventsViewModel.stopListening()
                 }
             }
         }
@@ -208,6 +202,7 @@ struct CalendarView: View {
                 homeViewModel: homeViewModel,
                 partnerName: partnerName,
                 locationService: locationService,
+                eventsViewModel: eventsViewModel,
                 onOpenLocationInMap: onOpenLocationInMap
             )
                 .presentationDetents([.medium, .large])
@@ -242,5 +237,6 @@ struct CalendarView: View {
         partnerName: "nastia",
         homeViewModel: HomeViewModel(),
         locationService: LocationService(),
+        eventsViewModel: PairEventsViewModel(),
         onOpenLocationInMap: { _ in })
 }

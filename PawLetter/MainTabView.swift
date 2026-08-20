@@ -13,6 +13,7 @@ struct MainTabView: View {
     @State private var selectedTab: AppTab = .home
     @State private var mapFocusCoordinate: CLLocationCoordinate2D?
     @State private var locationService = LocationService()
+    @State private var eventsViewModel = PairEventsViewModel()
     var viewModel: AuthViewModel
     
     enum AppTab: Hashable {
@@ -28,6 +29,7 @@ struct MainTabView: View {
                         currentUserID: viewModel.userID,
                         partnerName: viewModel.partnerNickname ?? viewModel.partnerDisplayName,
                         locationService: locationService,
+                        eventsViewModel: eventsViewModel,
                         onOpenLocationInMap: { coordinate in
                             mapFocusCoordinate = coordinate
                             selectedTab = .memories
@@ -45,6 +47,7 @@ struct MainTabView: View {
                     partnerName: viewModel.partnerNickname ?? viewModel.partnerDisplayName,
                     homeViewModel: homeViewModel,
                     locationService: locationService,
+                    eventsViewModel: eventsViewModel,
                     onOpenLocationInMap: { coordinate in
                         mapFocusCoordinate = coordinate
                         selectedTab = .memories
@@ -61,7 +64,8 @@ struct MainTabView: View {
                     pairID: pairID,
                     currentUserID: viewModel.userID,
                     partnerName: viewModel.partnerNickname ?? viewModel.partnerDisplayName,
-                    locationService: locationService
+                    locationService: locationService,
+                    eventsViewModel: eventsViewModel
                 )
                     .tabItem {
                         Label("Memories", systemImage: "map")
@@ -69,7 +73,10 @@ struct MainTabView: View {
                     }
                     .tag(AppTab.memories)
                 
-                ProfileView(authViewModel: viewModel, homeViewModel: homeViewModel)
+                ProfileView(
+                    authViewModel: viewModel,
+                    homeViewModel: homeViewModel
+                )
                     .tabItem {
                         Label("Profile", systemImage: "person")
                             .labelStyle(.iconOnly)
@@ -78,9 +85,11 @@ struct MainTabView: View {
             }
             .onAppear {
                 homeViewModel.startListening(pairID: pairID)
+                eventsViewModel.startListening(pairID: pairID)
             }
             .onDisappear {
                 homeViewModel.stopListening()
+                eventsViewModel.stopListening()
             }
         } else {
             PawLoadingView()

@@ -25,6 +25,7 @@ struct LetterDetailView: View {
     var currentUserID: String?
     var partnerName: String?
     var locationService: LocationService
+    var eventsViewModel: PairEventsViewModel
     var onOpenLocationInMap: (CLLocationCoordinate2D) -> Void
     
     var body: some View {
@@ -116,7 +117,8 @@ struct LetterDetailView: View {
                 existingLetter: letter,
                 pairID: pairID, authorID:
                     letter.authorID,
-                locationService: locationService
+                locationService: locationService,
+                eventsViewModel: eventsViewModel
             )
         }
         .sheet(isPresented: $isShowingCard) {
@@ -315,6 +317,7 @@ struct LetterDetailView: View {
             ),
             pairID: "qJ23Kdi6EMFLYmtnWgiD",
             locationService: LocationService(),
+            eventsViewModel: PairEventsViewModel(),
             onOpenLocationInMap: { _ in }
         )
     }

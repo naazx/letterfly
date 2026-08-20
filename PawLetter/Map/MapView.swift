@@ -18,6 +18,7 @@ struct MapView: View {
     var currentUserID: String?
     var partnerName: String?
     var locationService: LocationService
+    var eventsViewModel: PairEventsViewModel
     
     var lettersWithLocation: [Letter] {
         letters.filter { $0.location != nil }
@@ -133,6 +134,7 @@ struct MapView: View {
                     currentUserID: currentUserID,
                     partnerName: partnerName,
                     locationService: locationService,
+                    eventsViewModel: eventsViewModel,
                     onOpenLocationInMap: { coordinate in
                         focusCoordinate = coordinate
                     }
@@ -276,6 +278,7 @@ struct MapView: View {
              pairID: "1234567890",
              currentUserID: "nazarLOX",
              partnerName: "nastia",
-             locationService: LocationService()
+             locationService: LocationService(),
+             eventsViewModel: PairEventsViewModel()
     )
 }

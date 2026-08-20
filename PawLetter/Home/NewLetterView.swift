@@ -40,6 +40,7 @@ struct NewLetterView: View {
     var pairID: String
     var authorID: String
     var locationService: LocationService
+    var eventsViewModel: PairEventsViewModel
     
     enum Field {
         case subject
@@ -47,11 +48,12 @@ struct NewLetterView: View {
     }
     @FocusState private var focusedField: Field?
     
-    init(existingLetter: Letter?, pairID: String, authorID: String, locationService: LocationService) {
+    init(existingLetter: Letter?, pairID: String, authorID: String, locationService: LocationService,  eventsViewModel: PairEventsViewModel) {
         self.existingLetter = existingLetter
         self.pairID = pairID
         self.authorID = authorID
         self.locationService = locationService
+        self.eventsViewModel = eventsViewModel
         _viewModel = State(initialValue: NewLetterViewModel(existingLetter: existingLetter))
     }
     
@@ -573,6 +575,7 @@ struct NewLetterView: View {
         existingLetter: nil,
         pairID: "qJ23Kdi6EMFLYmtnWgiD",
         authorID: "3z34vv",
-        locationService: LocationService()
+        locationService: LocationService(),
+        eventsViewModel: PairEventsViewModel()
     )
 }

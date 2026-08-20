@@ -17,6 +17,7 @@ struct DayLettersView: View {
     var homeViewModel: HomeViewModel
     var partnerName: String?
     var locationService: LocationService
+    var eventsViewModel: PairEventsViewModel
     var onOpenLocationInMap: (CLLocationCoordinate2D) -> Void
     
     var body: some View {
@@ -42,6 +43,7 @@ struct DayLettersView: View {
                     currentUserID: currentUserID,
                     partnerName: partnerName,
                     locationService: locationService,
+                    eventsViewModel: eventsViewModel,
                     onOpenLocationInMap: onOpenLocationInMap
                 )
             }
@@ -68,5 +70,6 @@ struct DayLettersView: View {
         homeViewModel: HomeViewModel(),
         partnerName: "nastia",
         locationService: LocationService(),
+        eventsViewModel: PairEventsViewModel(),
         onOpenLocationInMap: { _ in })
 }

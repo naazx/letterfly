@@ -18,6 +18,7 @@ struct HomeView: View {
     var currentUserID: String?
     var partnerName: String?
     var locationService: LocationService
+    var eventsViewModel: PairEventsViewModel
     
     var onOpenLocationInMap: (CLLocationCoordinate2D) -> Void
     
@@ -116,7 +117,8 @@ struct HomeView: View {
                         existingLetter: nil,
                         pairID: pairID,
                         authorID: currentUserID,
-                        locationService: locationService
+                        locationService: locationService,
+                        eventsViewModel: eventsViewModel
                     )
                 }
             }
@@ -127,6 +129,7 @@ struct HomeView: View {
                     currentUserID: currentUserID,
                     partnerName: partnerName,
                     locationService: locationService,
+                    eventsViewModel: eventsViewModel,
                     onOpenLocationInMap: onOpenLocationInMap
                 )
             }
@@ -150,5 +153,6 @@ struct HomeView: View {
              pairID: "qJ23Kdi6EMFLYmtnWgiD",
              currentUserID: nil,
              locationService: LocationService(),
+             eventsViewModel: PairEventsViewModel(),
              onOpenLocationInMap: { _ in })
 }
