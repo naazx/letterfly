@@ -17,6 +17,8 @@ struct ScheduledLettersView: View {
     var eventsViewModel: PairEventsViewModel
     var onOpenLocationInMap: (CLLocationCoordinate2D) -> Void
 
+    @State private var selectedLetter: Letter?
+
     private var sortedLetters: [Letter] {
         letters.sorted {
             ($0.unlockDate ?? .distantFuture) < ($1.unlockDate ?? .distantFuture)
@@ -34,25 +36,30 @@ struct ScheduledLettersView: View {
             } else {
                 List {
                     ForEach(sortedLetters) { letter in
-                        NavigationLink(value: letter) {
+                        Button {
+                            selectedLetter = letter
+                        } label: {
                             row(for: letter)
                         }
+                        .buttonStyle(.plain)
                     }
                 }
             }
         }
         .navigationTitle("Scheduled")
         .navigationBarTitleDisplayMode(.inline)
-        .navigationDestination(for: Letter.self) { letter in
-            LetterDetailView(
-                letter: letter,
-                pairID: pairID,
-                currentUserID: currentUserID,
-                partnerName: partnerName,
-                locationService: locationService,
-                eventsViewModel: eventsViewModel,
-                onOpenLocationInMap: onOpenLocationInMap
-            )
+        .sheet(item: $selectedLetter) { letter in
+            NavigationStack {
+                LetterDetailView(
+                    letter: letter,
+                    pairID: pairID,
+                    currentUserID: currentUserID,
+                    partnerName: partnerName,
+                    locationService: locationService,
+                    eventsViewModel: eventsViewModel,
+                    onOpenLocationInMap: onOpenLocationInMap
+                )
+            }
         }
     }
 
