@@ -15,7 +15,14 @@ struct LetterRowView: View {
     var body: some View {
             HStack {
                 Group {
-                    if let image = loadedImage {
+                    if isLocked {
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(Color.accentColor.opacity(0.15))
+                            .overlay {
+                                Image(systemName: "lock.fill")
+                                    .foregroundStyle(Color.accentColor)
+                            }
+                    } else if let image = loadedImage {
                         Image(uiImage: image)
                             .resizable()
                             .scaledToFill()
@@ -27,13 +34,15 @@ struct LetterRowView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 16))
 
                 VStack(alignment: .leading) {
-                    Text(letter.subject)
+                    Text(isLocked ? "Locked Letter" : letter.subject)
                         .fontWeight((!letter.isRead && letter.authorID != currentUserID) ? .bold : .regular)
 
-                    Text(letter.text ?? "🎤 Voice Message")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
+                    if !isLocked {
+                        Text(letter.text ?? "🎤 Voice Message")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                    }
                 }
 
                 Spacer()
@@ -56,6 +65,9 @@ struct LetterRowView: View {
                 }
             }
             .padding(.vertical, 6)
+    }
+    private var isLocked: Bool {
+        letter.isLocked(for: currentUserID)
     }
     private var placeholderView: some View {
         RoundedRectangle(cornerRadius: 16)

@@ -13,6 +13,6 @@ class CalendarViewModel {
     
     func groupedLetters(_ letters: [Letter]) -> [Date: [Letter]]{
         Dictionary(grouping: letters) { (letter) -> Date in
-            return Calendar.current.startOfDay(for: letter.createdAt) }
+            return Calendar.current.startOfDay(for: letter.unlockDate ?? letter.createdAt) }
     }
 }
