@@ -49,7 +49,7 @@ struct LetterRowView: View {
                             Image(systemName: "pencil")
                                 .font(.caption2)
                         }
-                        Text(letter.formattedDate)
+                        Text(displayDate)
                             .font(.caption)
                     }
                     .foregroundStyle(.secondary)
@@ -74,6 +74,13 @@ struct LetterRowView: View {
         return trimmed.first.map {
             String($0).uppercased()
         } ?? "✉️"
+    }
+
+    private var displayDate: String {
+        if let unlockDate = letter.unlockDate, unlockDate > .now {
+            return "Unlocks \(unlockDate.formatted(date: .abbreviated, time: .omitted))"
+        }
+        return letter.formattedDate
     }
 }
 
