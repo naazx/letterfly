@@ -12,8 +12,8 @@ class LetterServices{
     let db = Firestore.firestore()
     let storageService = StorageService()
     
-    func sendLetter(authorID: String, subject: String, text: String?, photoURL: String?, audioURL: String?, reference: DocumentReference, mood: MoodType?, surprise: SurpriseType?, location: Letter.LetterLocation?) async throws {
-        let letter = Letter(authorID: authorID, subject: subject, text: text, createdAt: .now, photoURL: photoURL, mood: mood, surprise: surprise, audioURL: audioURL, location: location)
+    func sendLetter(authorID: String, subject: String, text: String?, photoURL: String?, audioURL: String?, reference: DocumentReference, mood: MoodType?, surprise: SurpriseType?,location: Letter.LetterLocation?, unlockDate: Date?, linkedEventID: String?) async throws {
+        let letter = Letter(authorID: authorID, subject: subject, text: text, createdAt: .now, photoURL: photoURL, mood: mood, surprise: surprise, audioURL: audioURL, location: location, unlockDate: unlockDate, linkedEventID: linkedEventID)
         let encodedLetter = try Firestore.Encoder().encode(letter)
 
         try await reference.setData(encodedLetter)
@@ -50,7 +50,7 @@ class LetterServices{
         }
         try await db.collection("pairs").document(pairID).collection("letters").document(letterID).delete()
     }
-    func updateLetter(pairID: String, letterID: String, subject: String, text: String?, photoURL: String?, audioURL: String?, mood: MoodType?, surprise: SurpriseType?, location: Letter.LetterLocation?) async throws {
+    func updateLetter(pairID: String, letterID: String, subject: String, text: String?, photoURL: String?, audioURL: String?, mood: MoodType?, surprise: SurpriseType?, location: Letter.LetterLocation?, unlockDate: Date?, linkedEventID: String?) async throws {
         try await db.collection("pairs").document(pairID).collection("letters")
             .document(letterID)
             .updateData([
@@ -61,7 +61,9 @@ class LetterServices{
                 "editedAt": Date(),
                 "mood": mood?.rawValue as Any,
                 "surprise": surprise?.rawValue as Any,
-                "location": location != nil ? try Firestore.Encoder().encode(location) : NSNull()
+                "location": location != nil ? try Firestore.Encoder().encode(location) : NSNull(),
+                "unlockDate": unlockDate as Any,
+                "linkedEventID": linkedEventID as Any
             ])
     }
 }

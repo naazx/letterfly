@@ -31,6 +31,9 @@ class NewLetterViewModel {
     var surprise: SurpriseType?
     var surpriseOptions: [SurpriseType] = []
     
+    var unlockDate: Date?
+    var linkedEventID: String?
+    
     enum InputMode: CaseIterable{
         case text
         case voice
@@ -44,6 +47,8 @@ class NewLetterViewModel {
         self.mood = existingLetter?.mood
         self.surprise = existingLetter?.surprise
         self.surpriseOptions = generateSurpriseOptions(existing: existingLetter?.surprise)
+        self.unlockDate = existingLetter?.unlockDate
+        self.linkedEventID = existingLetter?.linkedEventID
         if existingLetter?.audioURL != nil {
             inputMode = .voice
         } else {
@@ -111,9 +116,11 @@ class NewLetterViewModel {
                         || mood != existingLetter.mood
                         || surprise != existingLetter.surprise
                         || location != existingLetter.location
+                        || unlockDate != existingLetter.unlockDate
+                        || linkedEventID != existingLetter.linkedEventID
 
                     if hasChanges {
-                        try await letterServices.updateLetter(pairID: pairID, letterID: letterID, subject: subject, text: text, photoURL: photoURL, audioURL: audioURL, mood: mood, surprise: surprise, location: location)
+                        try await letterServices.updateLetter(pairID: pairID, letterID: letterID, subject: subject, text: text, photoURL: photoURL, audioURL: audioURL, mood: mood, surprise: surprise, location: location, unlockDate: unlockDate, linkedEventID: linkedEventID)
                     }
                 
             } else {
@@ -127,7 +134,7 @@ class NewLetterViewModel {
                 if inputMode == .voice, let recordingURL {
                     audioURL = try await uploadAudio(url: recordingURL, pairID: pairID, letterID: reference.documentID)
                 }
-                try await letterServices.sendLetter(authorID: authorID, subject: subject, text: inputMode == .text ? text : nil, photoURL: photoURL, audioURL: audioURL, reference: reference, mood: mood, surprise: surprise, location: location)
+                try await letterServices.sendLetter(authorID: authorID, subject: subject, text: inputMode == .text ? text : nil, photoURL: photoURL, audioURL: audioURL, reference: reference, mood: mood, surprise: surprise, location: location, unlockDate: unlockDate, linkedEventID: linkedEventID)
             }
             isSuccess = true
             

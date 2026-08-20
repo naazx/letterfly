@@ -27,6 +27,9 @@ struct Letter : Codable, Identifiable, Equatable, Hashable{
     var audioURL: String?
     var location: LetterLocation?
     
+    var unlockDate: Date?
+    var linkedEventID: String?
+    
     struct LetterLocation : Hashable, Codable{
         var placeName: String?
         var latitude: Double
@@ -63,5 +66,10 @@ extension Letter {
     var formattedReactionEditedAt: String? {
         guard let reactionEditedAt else { return nil }
         return formatted(reactionEditedAt)
+    }
+    
+    func isLocked(for currentUserID: String?) -> Bool {
+        guard let unlockDate else { return false }
+        return !(authorID == currentUserID) && unlockDate > .now
     }
 }
