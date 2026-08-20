@@ -29,44 +29,65 @@ struct LetterDetailView: View {
     var onOpenLocationInMap: (CLLocationCoordinate2D) -> Void
     
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
-                
-                if letter.photoURL != nil {
-                    photoView
+        Group {
+            if letter.isLocked(for: currentUserID) {
+                VStack(spacing: 16) {
+                    Image(systemName: "lock.fill")
+                        .font(.system(size: 50))
+                        .foregroundStyle(Color.accentColor)
+                    
+                    Text("Locked Letter")
+                        .font(.title2.bold())
+                    
+                    if let unlockDate = letter.unlockDate {
+                        Text("Unlocks \(unlockDate.formatted(date: .abbreviated, time: .omitted))")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
                 }
-                
-                Text(letter.subject)
-                    .font(.title2.bold())
-                
-                moodSurpriseBadges
-                
-                Divider()
-                
-                metaInfoSection
-                
-                Divider()
-                
-                if let text = letter.text {
-                    Text(text)
-                        .lineSpacing(6)
-                        .textSelection(.enabled)
-                } else if letter.audioURL != nil {
-                    voicePlayerSection
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .padding(40)
+            } else {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 24) {
+                        
+                        if letter.photoURL != nil {
+                            photoView
+                        }
+                        
+                        Text(letter.subject)
+                            .font(.title2.bold())
+                        
+                        moodSurpriseBadges
+                        
+                        Divider()
+                        
+                        metaInfoSection
+                        
+                        Divider()
+                        
+                        if let text = letter.text {
+                            Text(text)
+                                .lineSpacing(6)
+                                .textSelection(.enabled)
+                        } else if letter.audioURL != nil {
+                            voicePlayerSection
+                        }
+                        
+                        locationDisplaySection
+                        
+                        reactionSection
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(20)
                 }
-                
-                locationDisplaySection
-                
-                reactionSection
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(20)
         }
         .navigationTitle("Letter")
         .navigationBarTitleDisplayMode(.inline)
         .task {
             guard let id = letter.id else { return }
-            if !letter.isRead &&  letter.authorID != currentUserID{
+            if !letter.isRead && letter.authorID != currentUserID && !letter.isLocked(for: currentUserID) {
                 try? await letterServices.markAsRead(pairID: pairID, letterID: id)
             }
             selectedReaction = letter.reaction
