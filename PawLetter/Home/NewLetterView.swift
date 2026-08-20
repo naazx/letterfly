@@ -36,6 +36,10 @@ struct NewLetterView: View {
     @State private var cameraPosition: MapCameraPosition = .automatic
     @State private var isLoadingLocation: Bool = false
     
+    @State private var scheduleOption: ScheduleOption = .sendNow
+    @State private var customUnlockDate: Date = .now
+    @State private var selectedLinkedEventID: String?
+    
     let existingLetter: Letter?
     var pairID: String
     var authorID: String
@@ -48,6 +52,10 @@ struct NewLetterView: View {
     }
     @FocusState private var focusedField: Field?
     
+    enum ScheduleOption: CaseIterable {
+        case sendNow, customDate, linkToEvent
+    }
+    
     init(existingLetter: Letter?, pairID: String, authorID: String, locationService: LocationService,  eventsViewModel: PairEventsViewModel) {
         self.existingLetter = existingLetter
         self.pairID = pairID
@@ -55,6 +63,16 @@ struct NewLetterView: View {
         self.locationService = locationService
         self.eventsViewModel = eventsViewModel
         _viewModel = State(initialValue: NewLetterViewModel(existingLetter: existingLetter))
+        
+        if let linkedEventID = existingLetter?.linkedEventID {
+            self._scheduleOption = State(initialValue: .linkToEvent)
+            self._selectedLinkedEventID = State(initialValue: linkedEventID)
+        } else if let unlockDate = existingLetter?.unlockDate {
+            self._scheduleOption = State(initialValue: .customDate)
+            self._customUnlockDate = State(initialValue: unlockDate)
+        } else {
+            self._scheduleOption = State(initialValue: .sendNow)
+        }
     }
     
     var body: some View {
@@ -79,6 +97,8 @@ struct NewLetterView: View {
                         moodSection
                         
                         giftSection
+                        
+                        scheduleSection
                 }
                     .padding(20)
             }
@@ -495,6 +515,23 @@ struct NewLetterView: View {
                 Letter.LetterLocation(placeName: editedLocationName, latitude: $0.latitude, longitude: $0.longitude)
                 }
             Task {
+                let finalUnlockDate: Date?
+                let finalLinkedEventID: String?
+
+                switch scheduleOption {
+                case .sendNow:
+                    finalUnlockDate = nil
+                    finalLinkedEventID = nil
+                case .customDate:
+                    finalUnlockDate = customUnlockDate
+                    finalLinkedEventID = nil
+                case .linkToEvent:
+                    finalLinkedEventID = selectedLinkedEventID
+                    finalUnlockDate = eventsViewModel.events.first(where: { $0.id == selectedLinkedEventID })?.nextOccurrence
+                }
+                viewModel.unlockDate = finalUnlockDate
+                viewModel.linkedEventID = finalLinkedEventID
+                
                 await viewModel.send(
                     pairID: pairID,
                     authorID: authorID,
@@ -564,6 +601,31 @@ struct NewLetterView: View {
                     Button("Cancel") {
                         tappedCoordinate = nil
                         isChoosingOnMap = false
+                    }
+                }
+            }
+        }
+    }
+    
+    private var scheduleSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Picker("Schedule", selection: $scheduleOption) {
+                Text("Send now").tag(ScheduleOption.sendNow)
+                Text("Custom date").tag(ScheduleOption.customDate)
+                Text("Link to event").tag(ScheduleOption.linkToEvent)
+            }
+            .pickerStyle(.segmented)
+            
+            switch scheduleOption {
+            case .sendNow:
+                EmptyView()
+            case .customDate:
+                DatePicker("Unlock date", selection: $customUnlockDate, displayedComponents: .date)
+            case .linkToEvent:
+                Picker("Event", selection: $selectedLinkedEventID) {
+                    Text("None").tag(String?.none)
+                    ForEach(eventsViewModel.events) { event in
+                        Text(event.title).tag(event.id)
                     }
                 }
             }
