@@ -609,6 +609,10 @@ struct NewLetterView: View {
     
     private var scheduleSection: some View {
         VStack(alignment: .leading, spacing: 10) {
+            Text("SENDING")
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(.secondary)
+            
             Picker("Schedule", selection: $scheduleOption) {
                 Text("Send now").tag(ScheduleOption.sendNow)
                 Text("Custom date").tag(ScheduleOption.customDate)

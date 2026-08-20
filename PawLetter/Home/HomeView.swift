@@ -25,11 +25,11 @@ struct HomeView: View {
     private var sortedLetters: [Letter] {
         switch sortOption {
         case .dateSent:
-            return  homeViewModel.letters.sorted { letter1, letter2 in
+            return  unlockedLetters.sorted { letter1, letter2 in
                 return letter1.createdAt > letter2.createdAt
             }
         case .name:
-            return homeViewModel.letters.sorted { letter1, letter2 in
+            return unlockedLetters.sorted { letter1, letter2 in
                 return letter1.subject.lowercased() < letter2.subject.lowercased()
             }
         }
@@ -41,6 +41,13 @@ struct HomeView: View {
         } else {
             sortedLetters.filter { $0.subject.localizedCaseInsensitiveContains(searchText) }
         }
+    }
+
+    private var unlockedLetters: [Letter] {
+        homeViewModel.letters.filter { !$0.isLocked(for: currentUserID) }
+    }
+    private var lockedLetters: [Letter] {
+        homeViewModel.letters.filter { $0.isLocked(for: currentUserID) }
     }
     
     var body: some View {
@@ -84,6 +91,20 @@ struct HomeView: View {
                     .scrollContentBackground(.hidden)
                     .background(Color(.systemGroupedBackground))
                     .toolbar{
+                        NavigationLink {
+                            ScheduledLettersView(
+                                letters: lockedLetters,
+                                pairID: pairID,
+                                currentUserID: currentUserID,
+                                partnerName: partnerName,
+                                locationService: locationService,
+                                eventsViewModel: eventsViewModel,
+                                onOpenLocationInMap: onOpenLocationInMap
+                            )
+                        } label: {
+                            Image(systemName: "lock")
+                        }
+                        
                         Menu {
                             Section("Sort By") {
                                 ForEach(SortOption.allCases, id: \.self) { option in
