@@ -5,6 +5,7 @@
 //  Created by Nazar Dydyn on 16.07.2026.
 //
 
+import Kingfisher
 import MapKit
 import SwiftUI
 
@@ -259,13 +260,12 @@ struct LetterDetailView: View {
             if let photoURL = letter.photoURL,
                let url = URL(string: photoURL) {
 
-                AsyncImage(url: url) { image in
-                    image
-                        .resizable()
-                        .scaledToFill()
-                } placeholder: {
-                    PawLoadingView()
-                }
+                KFImage(url)
+                    .placeholder {
+                        PawLoadingView()
+                    }
+                    .resizable()
+                    .scaledToFill()
 
             } else {
                 EmptyView()

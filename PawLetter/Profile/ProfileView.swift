@@ -7,6 +7,7 @@
 
 import PhotosUI
 import FirebaseAuth
+import Kingfisher
 import SwiftUI
 import UIKit
 
@@ -60,7 +61,6 @@ struct ProfileView: View {
                 }
                 .task {
                     await profileViewModel.loadProfile()
-                    await profileViewModel.loadFullImage()
                     await profileViewModel.loadPair(pairID: authViewModel.pairID)
                 }
         }
@@ -527,13 +527,12 @@ private var pairInfoSection: some View {
                     }
 
             } else if let imageURL = profileViewModel.avatarURL {
-                AsyncImage(url: imageURL) { image in
-                    image
-                        .resizable()
-                        .scaledToFill()
-                } placeholder: {
+                KFImage(imageURL)
+                .placeholder {
                     PawLoadingView()
                 }
+                .resizable()
+                .scaledToFill()
                 .frame(width: 150, height: 150)
                 .clipShape(Circle())
                 .overlay {
@@ -599,13 +598,12 @@ private var pairInfoSection: some View {
                     .scaledToFit()
 
             } else {
-                AsyncImage(url: profileViewModel.avatarURL) { image in
-                    image
-                        .resizable()
-                        .scaledToFit()
-                } placeholder: {
-                    PawLoadingView()
-                }
+                KFImage(profileViewModel.avatarURL)
+                    .placeholder {
+                        PawLoadingView()
+                    }
+                    .resizable()
+                    .scaledToFit()
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
