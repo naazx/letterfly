@@ -5,6 +5,7 @@
 //  Created by Nazar Dydyn on 14.08.2026.
 //
 
+import Kingfisher
 import SwiftUI
 
 struct MemoryPreviewCard: View {
@@ -23,15 +24,14 @@ struct MemoryPreviewCard: View {
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
             if let photoURL = letter.photoURL, let url = URL(string: photoURL) {
-                AsyncImage(url: url) { image in
-                    image
-                        .resizable()
-                        .scaledToFill()
-                } placeholder: {
-                    Color.gray.opacity(0.2)
-                }
-                .frame(width: 44, height: 44)
-                .clipShape(RoundedRectangle(cornerRadius: 10))
+                KFImage(url)
+                    .placeholder {
+                        Color.gray.opacity(0.2)
+                    }
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 44, height: 44)
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
             } else {
                 ZStack {
                     Circle()
