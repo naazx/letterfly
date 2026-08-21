@@ -4,13 +4,13 @@
 //
 //  Created by Nazar Dydyn on 19.07.2026.
 //
-
+import Kingfisher
 import SwiftUI
 
 struct LetterRowView: View {
-    let letter: Letter
+    var letter: Letter
     let currentUserID: String?
-    let loadedImage: UIImage?
+    let photoURL: String?
     
     var body: some View {
             HStack {
@@ -22,8 +22,11 @@ struct LetterRowView: View {
                                 Image(systemName: "lock.fill")
                                     .foregroundStyle(Color.accentColor)
                             }
-                    } else if let image = loadedImage {
-                        Image(uiImage: image)
+                    } else if let photoURL, let url = URL(string: photoURL){
+                        KFImage(url)
+                            .placeholder {
+                                placeholderView
+                            }
                             .resizable()
                             .scaledToFill()
                     } else {
@@ -97,14 +100,16 @@ struct LetterRowView: View {
 }
 
 #Preview {
-    LetterRowView( letter: Letter(
-        authorID: "3z34vv",
-        subject: "Test subject",
-        text: "This is a test letter to preview how the detail view looks.",
-        createdAt: .now,
-        photoURL: nil,
-        isRead: false
-    ),
-                   currentUserID: nil,
-                   loadedImage: nil)
+    LetterRowView(
+        letter: Letter(
+            authorID: "3z34vv",
+            subject: "Test subject",
+            text: "This is a test letter to preview how the detail view looks.",
+            createdAt: .now,
+            photoURL: nil,
+            isRead: false
+        ),
+            currentUserID: nil,
+            photoURL: nil
+    )
 }

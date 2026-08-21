@@ -61,12 +61,11 @@ struct HomeView: View {
                     List {
                         ForEach(displayedLetters) { letter in
                             NavigationLink(value: letter) {
-                                LetterRowView(letter: letter, currentUserID: currentUserID, loadedImage: homeViewModel.loadedImages[letter.id ?? ""])
-                            }
-                            .onAppear {
-                                Task {
-                                    await homeViewModel.loadImageIfNeeded(for: letter)
-                                }
+                                LetterRowView(
+                                    letter: letter,
+                                    currentUserID: currentUserID,
+                                    photoURL: letter.photoURL
+                                )
                             }
                             .listRowSeparator(.hidden)
                             .listRowInsets(

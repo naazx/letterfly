@@ -27,13 +27,8 @@ struct DayLettersView: View {
                     LetterRowView(
                         letter: letter,
                         currentUserID: currentUserID,
-                        loadedImage: homeViewModel.loadedImages[letter.id ?? ""]
+                        photoURL: letter.photoURL
                     )
-                }
-                .onAppear {
-                    Task {
-                        await homeViewModel.loadImageIfNeeded(for: letter)
-                    }
                 }
             }
             .navigationDestination(for: Letter.self) { letter in
