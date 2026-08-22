@@ -13,6 +13,8 @@ struct HomeView: View {
     @State private var letterServices = LetterServices()
     @State private var sortOption: SortOption = .dateSent
     @State private var searchText: String = ""
+    @State private var newLetterTapped = false
+    @State private var letterDeleted = false
     var homeViewModel: HomeViewModel
     var pairID: String
     var currentUserID: String?
@@ -78,6 +80,7 @@ struct HomeView: View {
                             )
                         }
                         .onDelete{ indexSet in
+                            letterDeleted.toggle()
                             for index in indexSet {
                                 let letter = displayedLetters[index]
                                 guard let id = letter.id else { continue }
@@ -124,6 +127,7 @@ struct HomeView: View {
                         
                         Button("New Letter", systemImage: "square.and.pencil"){
                             isShowingNewLetter = true
+                            newLetterTapped.toggle()
                         }
                     }
                     .navigationTitle("Letters")
@@ -154,6 +158,8 @@ struct HomeView: View {
                 )
             }
         }
+        .sensoryFeedback(.impact(weight: .medium), trigger: newLetterTapped)
+        .sensoryFeedback(.impact(weight: .medium), trigger: letterDeleted)
     }
    private var emptyState: some View {
         ContentUnavailableView {
@@ -163,6 +169,7 @@ struct HomeView: View {
         } actions: {
             Button("Write First Letter") {
                 isShowingNewLetter = true
+                newLetterTapped.toggle()
             }
             .buttonStyle(.borderedProminent)
         }

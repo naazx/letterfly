@@ -18,6 +18,7 @@ struct ScheduledLettersView: View {
     var onOpenLocationInMap: (CLLocationCoordinate2D) -> Void
 
     @State private var selectedLetter: Letter?
+    @State private var scheduledLetterTapped = false
 
     private var sortedLetters: [Letter] {
         letters.sorted {
@@ -37,6 +38,7 @@ struct ScheduledLettersView: View {
                 List {
                     ForEach(sortedLetters) { letter in
                         Button {
+                            scheduledLetterTapped.toggle()
                             selectedLetter = letter
                         } label: {
                             row(for: letter)
@@ -48,6 +50,7 @@ struct ScheduledLettersView: View {
         }
         .navigationTitle("Scheduled")
         .navigationBarTitleDisplayMode(.inline)
+        .sensoryFeedback(.impact(weight: .light), trigger: scheduledLetterTapped)
         .sheet(item: $selectedLetter) { letter in
             NavigationStack {
                 LetterDetailView(

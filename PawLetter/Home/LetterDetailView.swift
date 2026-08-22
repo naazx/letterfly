@@ -19,6 +19,10 @@ struct LetterDetailView: View {
     @State private var audioRecorder = AudioRecorderService()
     @State private var hasInitializedReaction: Bool = false
     @State private var isShowingCard: Bool = false
+    @State private var reactionChanged = false
+    @State private var menuActionTapped = false
+    @State private var playbackToggled = false
+    @State private var letterDeleted = false
     
     let letter: Letter
     let pairID: String
@@ -86,6 +90,10 @@ struct LetterDetailView: View {
         }
         .navigationTitle("Letter")
         .navigationBarTitleDisplayMode(.inline)
+        .sensoryFeedback(.selection, trigger: reactionChanged)
+        .sensoryFeedback(.impact(weight: .light), trigger: menuActionTapped)
+        .sensoryFeedback(.impact(weight: .light), trigger: playbackToggled)
+        .sensoryFeedback(.impact(weight: .heavy), trigger: letterDeleted)
         .task {
             guard let id = letter.id else { return }
             if !letter.isRead && letter.authorID != currentUserID && !letter.isLocked(for: currentUserID) {
@@ -103,12 +111,15 @@ struct LetterDetailView: View {
                 Menu {
                     Button("Show Card", systemImage: "pencil.and.scribble") {
                         isShowingCard = true
+                        menuActionTapped.toggle()
                     }
                     Button("Edit", systemImage: "pencil") {
                         isShowingEdit = true
+                        menuActionTapped.toggle()
                     }
                     Button("Delete", systemImage: "trash", role: .destructive) {
                         showDeleteConfirmation = true
+                        menuActionTapped.toggle()
                     }
                 } label: {
                     Image(systemName: "ellipsis.circle")
@@ -117,7 +128,10 @@ struct LetterDetailView: View {
         }
         .confirmationDialog("Options", isPresented: $showDeleteConfirmation) {
             Button("Delete", role: .destructive) {
-                guard let id = letter.id else { return }
+                guard let id = letter.id else {
+                    return
+                }
+                letterDeleted.toggle()
                 Task {
                     do{
                         try await letterServices.deleteLetter(pairID: pairID, letterID: id, photoURL: letter.photoURL, audioURL: letter.audioURL)
@@ -151,8 +165,13 @@ struct LetterDetailView: View {
             )
         }
         .onChange(of: selectedReaction) { oldValue, newValue in
-            guard hasInitializedReaction else { return }
-            guard let id = letter.id else { return }
+            guard hasInitializedReaction else {
+                return
+            }
+            reactionChanged.toggle()
+            guard let id = letter.id else {
+                return
+            }
             Task {
                 try? await letterServices.setReaction(pairID: pairID, letterID: id, reaction: newValue, previousReaction: oldValue)
             }
@@ -279,6 +298,7 @@ struct LetterDetailView: View {
     private var voicePlayerSection: some View {
         HStack(spacing: 16) {
             Button {
+                playbackToggled.toggle()
                 audioRecorder.isPlaying ? audioRecorder.stopPlayback() : audioRecorder.startPlayback()
             } label: {
                 Image(systemName: audioRecorder.isPlaying ? "pause.fill" : "play.fill")

@@ -40,6 +40,16 @@ struct NewLetterView: View {
     @State private var customUnlockDate: Date = .now
     @State private var selectedLinkedEventID: String?
     
+    @State private var photoRemoved = false
+    @State private var recordingStarted = false
+    @State private var recordingStopped = false
+    @State private var voicePlaybackToggled = false
+    @State private var recordingDeleted = false
+    @State private var locationRemoved = false
+    @State private var locationOptionTapped = false
+    @State private var sendTapped = false
+    @State private var cancelTapped = false
+    
     let existingLetter: Letter?
     var pairID: String
     var authorID: String
@@ -131,10 +141,12 @@ struct NewLetterView: View {
                 }
                 .confirmationDialog("Location Options", isPresented: $isAddingLocation) {
                     Button("Use current", systemImage: "location.fill") {
+                            locationOptionTapped.toggle()
                             locationService.requestPermission()
                             locationService.requestCurrentLocation()
                     }
                     Button("Choose on map", systemImage: "map") {
+                        locationOptionTapped.toggle()
                         isLoadingLocation = true
                         isChoosingOnMap = true
                         locationService.requestPermission()
@@ -173,6 +185,15 @@ struct NewLetterView: View {
                 .navigationTitle(existingLetter == nil ? "New letter" : "Edit letter")
                 .navigationBarTitleDisplayMode(.inline)
         }
+        .sensoryFeedback(.impact(weight: .medium), trigger: photoRemoved)
+        .sensoryFeedback(.impact(weight: .medium), trigger: recordingStarted)
+        .sensoryFeedback(.impact(weight: .medium), trigger: recordingStopped)
+        .sensoryFeedback(.impact(weight: .light), trigger: voicePlaybackToggled)
+        .sensoryFeedback(.impact(weight: .medium), trigger: recordingDeleted)
+        .sensoryFeedback(.impact(weight: .light), trigger: locationRemoved)
+        .sensoryFeedback(.impact(weight: .light), trigger: locationOptionTapped)
+        .sensoryFeedback(.impact(weight: .medium), trigger: sendTapped)
+        .sensoryFeedback(.impact(weight: .light), trigger: cancelTapped)
         .overlay {
             if isShowingSendAnimation {
                 Color(.systemBackground)
@@ -251,6 +272,7 @@ struct NewLetterView: View {
                         if viewModel.previewImage != nil || existingLetter?.photoURL != nil {
 
                             Button {
+                                photoRemoved.toggle()
                                 viewModel.didRemovePhoto = true
                                 selectedItem = nil
                                 viewModel.previewImage = nil
@@ -359,6 +381,7 @@ struct NewLetterView: View {
 
     private var startState: some View {
         Button {
+            recordingStarted.toggle()
             audioRecorder.startRecording()
         } label: {
             HStack {
@@ -389,6 +412,7 @@ struct NewLetterView: View {
             }
             
             Button {
+                recordingStopped.toggle()
                 audioRecorder.stopRecording()
             } label: {
                 Image(systemName: "stop.fill")
@@ -405,6 +429,7 @@ struct NewLetterView: View {
         VStack(spacing: 14) {
             HStack(spacing: 16) {
                 Button {
+                    voicePlaybackToggled.toggle()
                     audioRecorder.isPlaying ? audioRecorder.stopPlayback() : audioRecorder.startPlayback()
                 } label: {
                     Image(systemName: audioRecorder.isPlaying ? "pause.fill" : "play.fill")
@@ -422,6 +447,7 @@ struct NewLetterView: View {
             
             HStack(spacing: 20) {
                 Button {
+                    recordingDeleted.toggle()
                     audioRecorder.deleteRecording()
                     audioRecorder.startRecording()
                 } label: {
@@ -430,6 +456,7 @@ struct NewLetterView: View {
                 }
                 
                 Button(role: .destructive) {
+                    recordingDeleted.toggle()
                     audioRecorder.deleteRecording()
                 } label: {
                     Label("Delete", systemImage: "trash")
@@ -457,6 +484,7 @@ struct NewLetterView: View {
                     Spacer()
                     
                     Button {
+                        locationRemoved.toggle()
                         selectedLocation = nil
                         editedLocationName = nil
                     } label: {
@@ -511,6 +539,7 @@ struct NewLetterView: View {
 
     private var sendButton: some View {
         Button(existingLetter == nil ? "Send" : "Save") {
+            sendTapped.toggle()
             let finalLocation: Letter.LetterLocation? = selectedLocation.map {
                 Letter.LetterLocation(placeName: editedLocationName, latitude: $0.latitude, longitude: $0.longitude)
                 }
@@ -554,6 +583,7 @@ struct NewLetterView: View {
     private var cancellationToolbarItem: some ToolbarContent {
         ToolbarItem(placement: .cancellationAction) {
             Button("Cancel") {
+                cancelTapped.toggle()
                 dismiss()
             }
         }

@@ -13,6 +13,7 @@ struct LetterCardView: View {
     @State private var currentUserName: String?
     @State private var userServices = UserServices()
     @State private var isAppeared = false
+    @State private var cardDismissed = false
     
     var letter: Letter
     var currentUserID: String?
@@ -53,6 +54,7 @@ struct LetterCardView: View {
                 .foregroundStyle(.black)
                 
                 Button {
+                    cardDismissed.toggle()
                     dismiss()
                 } label: {
                     Image(systemName: "xmark")
@@ -79,6 +81,7 @@ struct LetterCardView: View {
                 }
             }
         }
+        .sensoryFeedback(.impact(weight: .light), trigger: cardDismissed)
         .task {
             guard let currentUserID else { return }
             if let result = try? await userServices.fetchUserProfile(uid: currentUserID) {
