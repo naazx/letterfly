@@ -9,6 +9,7 @@ import Kingfisher
 import SwiftUI
 
 struct MemoryPreviewCard: View {
+    @State private var openTapped = false
     let letter: Letter
     let onOpen: () -> Void
 
@@ -68,10 +69,12 @@ struct MemoryPreviewCard: View {
 
             Button {
                 onOpen()
+                openTapped.toggle()
             } label: {
                 Image(systemName: "chevron.right")
             }
         }
+        .sensoryFeedback(.impact(weight: .light), trigger: openTapped)
         .padding()
         .background(.ultraThinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 20))

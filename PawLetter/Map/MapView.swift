@@ -13,6 +13,13 @@ struct MapView: View {
     @State private var mapViewModel = MapViewModel()
     @State private var isShowingFilterSheet = false
     
+    @State private var pinTapped = false
+    @State private var radiusSelected = false
+    @State private var filterTapped = false
+    @State private var satelliteToggled = false
+    @State private var recenterTapped = false
+    @State private var filterOptionToggled = false
+    
     var letters: [Letter]
     let pairID: String
     var currentUserID: String?
@@ -101,6 +108,7 @@ struct MapView: View {
                     List {
                         ForEach(MapFilterOption.allCases, id: \.self) { option in
                             Button {
+                                filterOptionToggled.toggle()
                                 mapViewModel.toggleFilter(option)
                             } label: {
                                 HStack {
@@ -125,6 +133,7 @@ struct MapView: View {
                         }
                     }
                 }
+                .sensoryFeedback(.selection, trigger: filterOptionToggled)
                 .presentationDetents([.medium])
             }
             .navigationDestination(item: $mapViewModel.letterToOpen) { letter in
@@ -142,6 +151,11 @@ struct MapView: View {
             }
             .navigationBarHidden(true)
         }
+        .sensoryFeedback(.impact(weight: .light), trigger: pinTapped)
+        .sensoryFeedback(.selection, trigger: radiusSelected)
+        .sensoryFeedback(.impact(weight: .light), trigger: filterTapped)
+        .sensoryFeedback(.impact(weight: .light), trigger: satelliteToggled)
+        .sensoryFeedback(.impact(weight: .light), trigger: recenterTapped)
     }
     private var mapContent: some View {
         Map(position: $mapViewModel.position) {
@@ -160,6 +174,7 @@ struct MapView: View {
                             appearDelay: Double(index) * 0.1
                         )
                         .onTapGesture {
+                            pinTapped.toggle()
                             withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
                                 if mapViewModel.selectedLetter?.id == letter.id {
                                     mapViewModel.selectedLetter = nil
@@ -179,6 +194,7 @@ struct MapView: View {
         Menu {
             ForEach(MapViewModel.NearbyRadius.allCases, id: \.self) { radius in
                 Button{
+                    radiusSelected.toggle()
                     mapViewModel.selectedRadius = radius
                     if let userCoordinate = locationService.userLocation {
                         withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
@@ -218,6 +234,7 @@ struct MapView: View {
     }
     private var filterButton: some View {
         Button {
+            filterTapped.toggle()
             isShowingFilterSheet = true
         } label: {
             HStack(spacing: 6) {
@@ -234,6 +251,7 @@ struct MapView: View {
     }
     private var satelliteButton: some View {
         Button {
+            satelliteToggled.toggle()
             withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) {
                 mapViewModel.isSatelliteStyle.toggle()
             }
@@ -253,6 +271,7 @@ struct MapView: View {
     }
     private var recenterButton: some View {
         Button {
+            recenterTapped.toggle()
             withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
                 mapViewModel.position = .userLocation(fallback: .automatic)
             }
