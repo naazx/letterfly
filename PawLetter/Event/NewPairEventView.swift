@@ -16,6 +16,8 @@ struct NewPairEventView: View {
     @State private var title: String = ""
     @State private var date: Date = .now
     @State private var isRecurring: Bool = false
+    @State private var eventSaved = false
+    @State private var eventCancelled = false
     var pairEventServices = PairEventServices()
     
     init(pairID: String, currentUserID: String, existingEvent: PairEvent?) {
@@ -38,12 +40,14 @@ struct NewPairEventView: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {
+                        eventCancelled.toggle()
                         dismiss()
                     }
                 }
                 
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
+                        eventSaved.toggle()
                         Task {
                             if let existingEvent, let id = existingEvent.id {
                                 try? await pairEventServices.updateEvent(pairID: pairID, eventID: id, title: title, date: date, isRecurring: isRecurring)
@@ -58,6 +62,8 @@ struct NewPairEventView: View {
                 }
             }
         }
+        .sensoryFeedback(.impact(weight: .medium), trigger: eventSaved)
+        .sensoryFeedback(.impact(weight: .light), trigger: eventCancelled)
     }
 }
 

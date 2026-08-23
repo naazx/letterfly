@@ -12,6 +12,7 @@ import SwiftUI
 struct CalendarView: View {
     @State private var viewModel = CalendarViewModel()
     @State private var isShowingDayDetail: Bool = false
+    @State private var dayTapped = false
     
     var letters: [Letter]
     var pairID: String
@@ -167,7 +168,7 @@ struct CalendarView: View {
                                             .frame(height: 40)
                                             .onTapGesture {
                                                 guard hasContent else { return }
-                                                
+                                                dayTapped.toggle()
                                                 withAnimation(.snappy) {
                                                     viewModel.selectedDate = dayKey
                                                 }
@@ -193,6 +194,7 @@ struct CalendarView: View {
             .navigationTitle("Calendar")
             .navigationBarTitleDisplayMode(.inline)
     }
+        .sensoryFeedback(.impact(weight: .light), trigger: dayTapped)
         .sheet(isPresented: $isShowingDayDetail) {
             DayLettersView(
                 date: viewModel.selectedDate!,

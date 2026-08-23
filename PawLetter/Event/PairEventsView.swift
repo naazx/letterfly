@@ -14,6 +14,9 @@ struct PairEventsView: View {
     
     @State private var isShowingNewEvent = false
     @State private var eventToEdit: PairEvent?
+    @State private var addEventTapped = false
+    @State private var eventTapped = false
+    @State private var eventDeleted = false
     var pairEventServices = PairEventServices()
     
     var sortedEvents: [PairEvent] {
@@ -50,10 +53,12 @@ struct PairEventsView: View {
                         }
                         .padding(.vertical, 4)
                         .onTapGesture {
+                            eventTapped.toggle()
                             eventToEdit = event
                         }
                     }
                     .onDelete{ indexSet in
+                        eventDeleted.toggle()
                         for index in indexSet {
                             let event = sortedEvents[index]
                             guard let id = event.id else { continue }
@@ -65,9 +70,13 @@ struct PairEventsView: View {
                 }
             }
         }
+        .sensoryFeedback(.impact(weight: .light), trigger: addEventTapped)
+        .sensoryFeedback(.impact(weight: .light), trigger: eventTapped)
+        .sensoryFeedback(.impact(weight: .medium), trigger: eventDeleted)
         .navigationTitle("Events")
         .toolbar {
             Button("Add Event", systemImage: "plus") {
+                addEventTapped.toggle()
                 isShowingNewEvent = true
             }
         }
