@@ -49,6 +49,8 @@ struct NewLetterView: View {
     @State private var locationOptionTapped = false
     @State private var sendTapped = false
     @State private var cancelTapped = false
+    @State private var moodChanged = false
+    @State private var surpriseChanged = false
     
     let existingLetter: Letter?
     var pairID: String
@@ -122,6 +124,12 @@ struct NewLetterView: View {
                 } message: {
                     Text(viewModel.errorMessage)
                 }
+                .onChange(of: viewModel.mood) { _, _ in
+                    moodChanged.toggle()
+                }
+                .onChange(of: viewModel.surprise) { _, _ in
+                    surpriseChanged.toggle()
+                }
                 .onChange(of: viewModel.isSuccess){ _, _ in
                     if existingLetter == nil {
                         isShowingSendAnimation = true
@@ -194,6 +202,8 @@ struct NewLetterView: View {
         .sensoryFeedback(.impact(weight: .light), trigger: locationOptionTapped)
         .sensoryFeedback(.impact(weight: .medium), trigger: sendTapped)
         .sensoryFeedback(.impact(weight: .light), trigger: cancelTapped)
+        .sensoryFeedback(.selection, trigger: moodChanged)
+        .sensoryFeedback(.selection, trigger: surpriseChanged)
         .overlay {
             if isShowingSendAnimation {
                 Color(.systemBackground)
