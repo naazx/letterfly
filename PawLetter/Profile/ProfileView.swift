@@ -24,8 +24,15 @@ struct ProfileView: View {
     
     @State private var isEditingPartnerNickname: Bool = false
     @State private var editedPartnerNickname: String = ""
-    
     @State private var codeCopied: Bool = false
+    
+    @State private var nameEditToggled = false
+    @State private var codeCopyTapped = false
+    @State private var partnerNicknameEditToggled = false
+    @State private var avatarTapped = false
+    @State private var fullScreenDismissed = false
+    @State private var logoutTapped = false
+    @State private var logoutConfirmed = false
     
 
     var authViewModel: AuthViewModel
@@ -40,6 +47,7 @@ struct ProfileView: View {
                     isPresented: $showLogoutDialog
                 ) {
                     Button("Log Out", role: .destructive) {
+                        logoutConfirmed.toggle()
                         authViewModel.signOut()
                     }
 
@@ -64,6 +72,13 @@ struct ProfileView: View {
                     await profileViewModel.loadPair(pairID: authViewModel.pairID)
                 }
         }
+        .sensoryFeedback(.impact(weight: .light), trigger: nameEditToggled)
+        .sensoryFeedback(.success, trigger: codeCopyTapped)
+        .sensoryFeedback(.impact(weight: .light), trigger: partnerNicknameEditToggled)
+        .sensoryFeedback(.impact(weight: .light), trigger: avatarTapped)
+        .sensoryFeedback(.impact(weight: .light), trigger: fullScreenDismissed)
+        .sensoryFeedback(.impact(weight: .light), trigger: logoutTapped)
+        .sensoryFeedback(.impact(weight: .heavy), trigger: logoutConfirmed)
     }
     private var profileForm: some View {
         ScrollView(showsIndicators: false) {
@@ -176,11 +191,13 @@ struct ProfileView: View {
                 HStack {
 
                     Button("Cancel") {
+                        nameEditToggled.toggle()
                         isEditingName = false
                         editedName = authViewModel.displayName ?? ""
                     }
 
                     Button("Save") {
+                        nameEditToggled.toggle()
                         Task{
                             await authViewModel.saveDisplayName(editedName);
                             isEditingName = false
@@ -192,6 +209,7 @@ struct ProfileView: View {
             } else {
 
                 Button {
+                    nameEditToggled.toggle()
                     editedName = authViewModel.displayName ?? ""
                     isEditingName = true
 
@@ -226,7 +244,7 @@ struct ProfileView: View {
             Spacer()
 
             Button {
-
+                codeCopyTapped.toggle()
                 UIPasteboard.general.string = profileViewModel.inviteCode
 
                 withAnimation(.spring()) {
@@ -374,10 +392,12 @@ private var pairInfoSection: some View {
                 HStack {
 
                     Button("Cancel") {
+                        partnerNicknameEditToggled.toggle()
                         isEditingPartnerNickname = false
                     }
 
                     Button("Save") {
+                        partnerNicknameEditToggled.toggle()
                         Task{
                             await authViewModel.savePartnerNickname(editedPartnerNickname)
                             isEditingPartnerNickname = false
@@ -387,8 +407,8 @@ private var pairInfoSection: some View {
                 }
                 
             } else {
-
                 Button {
+                    partnerNicknameEditToggled.toggle()
                     editedPartnerNickname =
                         authViewModel.partnerNickname ??
                         authViewModel.partnerDisplayName ?? ""
@@ -477,6 +497,7 @@ private var pairInfoSection: some View {
     }
     private var logoutSection: some View {
         Button("Logout", role: .destructive) {
+            logoutTapped.toggle()
             showLogoutDialog = true
         }
         .frame(maxWidth: .infinity)
@@ -523,6 +544,7 @@ private var pairInfoSection: some View {
                         radius: 15
                     )
                     .onTapGesture {
+                        avatarTapped.toggle()
                         showFullScreenAvatar = true
                     }
 
@@ -544,6 +566,7 @@ private var pairInfoSection: some View {
                     radius: 15
                 )
                 .onTapGesture {
+                    avatarTapped.toggle()
                     showFullScreenAvatar = true
                 }
                 
@@ -564,6 +587,7 @@ private var pairInfoSection: some View {
                         radius: 15
                     )
                     .onTapGesture {
+                        avatarTapped.toggle()
                         showFullScreenAvatar = true
                     }
             }
@@ -610,6 +634,7 @@ private var pairInfoSection: some View {
         .background(.black)
         .ignoresSafeArea()
         .onTapGesture {
+            fullScreenDismissed.toggle()
             showFullScreenAvatar = false
         }
     }

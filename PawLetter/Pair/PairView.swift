@@ -15,6 +15,8 @@ struct PairView: View {
     @State private var errorMessage: String = ""
     @State private var showError: Bool = false
     @State private var isJoining: Bool = false
+    @State private var joinTapped = false
+    @State private var logoutTapped = false
     
     var userServices = UserServices()
     var viewModel: AuthViewModel
@@ -30,6 +32,7 @@ struct PairView: View {
                     TextField("Enter your partner code", text: $partnerCodeInput)
                     
                     Button("Join") {
+                        joinTapped.toggle()
                         Task {
                             isJoining = true
                             guard let user = Auth.auth().currentUser else {
@@ -60,6 +63,7 @@ struct PairView: View {
             }
             .toolbar{
                 Button("Logout", systemImage: "person.crop.circle.fill.badge.xmark") {
+                    logoutTapped.toggle()
                     viewModel.signOut()
                 }
             }
@@ -81,6 +85,8 @@ struct PairView: View {
                 Text(errorMessage)
             }
         }
+        .sensoryFeedback(.impact(weight: .medium), trigger: joinTapped)
+        .sensoryFeedback(.impact(weight: .light), trigger: logoutTapped)
     }
 }
 
