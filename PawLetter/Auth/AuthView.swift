@@ -11,16 +11,16 @@ struct AuthView: View {
             VStack {
                 Spacer()
 
-                // SignInWithAppleButton(.signIn) { request in
-                //     viewModel.prepareAppleRequest(request)
-                // } onCompletion: { result in
-                //     Task {
-                //         await viewModel.signInWithApple(result: result)
-                //     }
-                // }
-                // .signInWithAppleButtonStyle(.black)
-                // .frame(height: 50)
-                // .padding(.horizontal)
+                 SignInWithAppleButton(.signIn) { request in
+                     viewModel.prepareAppleRequest(request)
+                 } onCompletion: { result in
+                     Task {
+                         await viewModel.signInWithApple(result: result)
+                     }
+                 }
+                 .signInWithAppleButtonStyle(.black)
+                 .frame(height: 50)
+                 .padding(.horizontal)
 
                 GoogleSignInButton {
                     Task {

@@ -9,33 +9,50 @@ import FirebaseFirestore
 import FirebaseAuth
 
 class UserServices {
-
     let db = Firestore.firestore()
     
     func createUserDocument(uid: String, inviteCode: String) async throws {
-        try await db.collection("users").document(uid).setData([
-            "inviteCode": inviteCode,
-            "pairID": NSNull()
-        ])
-    }
-    func isCodeTaken(_ code: String) async throws -> Bool {
-        let snapshot = try await db.collection("users")
-            .whereField("inviteCode", isEqualTo: code)
-            .getDocuments()
+        do {
+            try await db.collection("users").document(uid).setData([
+                "inviteCode": inviteCode,
+                "pairID": NSNull()
+            ])
+        } catch {
+            throw NSError(domain: "PawLetter", code: -1, userInfo: [
+                NSLocalizedDescriptionKey: "FAILED at users.setData: \(error.localizedDescription)"
+            ])
+        }
         
-        return !snapshot.documents.isEmpty
+        do {
+            try await reserveInviteCode(inviteCode, uid: uid)
+        } catch {
+            throw NSError(domain: "PawLetter", code: -2, userInfo: [
+                NSLocalizedDescriptionKey: "FAILED at reserveInviteCode (inviteCodes): \(error.localizedDescription)"
+            ])
+        }
     }
-    func generateRandomCode() -> String{
+    
+    func isCodeTaken(_ code: String) async throws -> Bool {
+        let doc = try await db.collection("inviteCodes").document(code).getDocument()
+        return doc.exists
+    }
+    
+    func reserveInviteCode(_ code: String, uid: String) async throws {
+        try await db.collection("inviteCodes").document(code).setData(["uid": uid])
+    }
+    
+    func generateRandomCode() -> String {
         let codeCharacters = "abcdefghijklmnopqrstuvwxyz0123456789"
         var code = ""
         
-        for _ in 1...6{
-            if let character = codeCharacters.randomElement(){
+        for _ in 1...6 {
+            if let character = codeCharacters.randomElement() {
                 code.append(character)
             }
         }
         return code
     }
+    
     func generateUniqueInviteCode() async throws -> String {
         while true {
             let code = generateRandomCode()
@@ -46,11 +63,13 @@ class UserServices {
             }
         }
     }
+    
     func updateAvatarURL(uid: String, url: String) async throws {
         try await db.collection("users").document(uid).updateData(
             ["avatarURL": url]
         )
     }
+    
     func fetchUserProfile(uid: String) async throws -> (inviteCode: String?, avatarURL: String?, displayName: String?, pairID: String?, partnerNickname: String?) {
         let data = try await db.collection("users").document(uid).getDocument().data()
         let inviteCode = data?["inviteCode"] as? String
@@ -60,11 +79,13 @@ class UserServices {
         let partnerNickname = data?["partnerNickname"] as? String
         return (inviteCode, avatarURL, displayName, pairID, partnerNickname)
     }
+    
     func updateDisplayName(uid: String, name: String) async throws {
         try await db.collection("users").document(uid).updateData(
             ["displayName": name]
         )
     }
+    
     func updatePartnerNickname(uid: String, nickname: String) async throws {
         try await db.collection("users").document(uid).updateData(
             ["partnerNickname": nickname]

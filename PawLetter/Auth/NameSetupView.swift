@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import FirebaseAuth
 
 struct NameSetupView: View {
     @State private var name = ""
@@ -16,12 +17,28 @@ struct NameSetupView: View {
         NavigationStack {
             Form {
                 Section {
+                    Text("DEBUG UID: \(Auth.auth().currentUser?.uid ?? "nil")")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    
+                    Button("DEBUG Sign Out") {
+                        authViewModel.signOut()
+                    }
+                }
+                Section {
                     TextField("Your name", text: $name)
                 } footer: {
                     Text("Your name will be displayed on the letters you send.")
                 }
             }
             .navigationTitle("What's your name?")
+            .alert("Error", isPresented: .constant(authViewModel.authError != nil)) {
+                Button("OK") {
+                    authViewModel.authError = nil
+                }
+            } message: {
+                Text(authViewModel.authError?.errorDescription ?? "")
+            }
             .safeAreaInset(edge: .bottom) {
                 Button("Continue") {
                     Task {
