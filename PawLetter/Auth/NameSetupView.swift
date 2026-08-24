@@ -17,15 +17,6 @@ struct NameSetupView: View {
         NavigationStack {
             Form {
                 Section {
-                    Text("DEBUG UID: \(Auth.auth().currentUser?.uid ?? "nil")")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                    
-                    Button("DEBUG Sign Out") {
-                        authViewModel.signOut()
-                    }
-                }
-                Section {
                     TextField("Your name", text: $name)
                 } footer: {
                     Text("Your name will be displayed on the letters you send.")
