@@ -30,6 +30,13 @@ struct AuthView: View {
                 .frame(height: 50)
                 .padding(.horizontal)
 
+                Text("By continuing, you agree to our [Privacy Policy](https://naazx.github.io/pawletter-legal/)")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal)
+                    .padding(.top, 12)
+
                 Spacer()
             }
             .onChange(of: viewModel.authError){
