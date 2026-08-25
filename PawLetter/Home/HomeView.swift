@@ -9,6 +9,7 @@ import MapKit
 import SwiftUI
 
 struct HomeView: View {
+    @Environment(PushNotificationService.self) private var pushService
     @State private var isShowingNewLetter: Bool = false
     @State private var letterServices = LetterServices()
     @State private var sortOption: SortOption = .dateSent
@@ -132,6 +133,19 @@ struct HomeView: View {
                     }
                     .navigationTitle("Letters")
                     .navigationBarTitleDisplayMode(.large)
+                }
+            }
+            .task {
+                let granted = await pushService.requestPermission()
+                if granted, pushService.fcmToken != nil, let currentUserID {
+                    await pushService.saveFCMToken(uid: currentUserID)
+                }
+            }
+            .onChange(of: pushService.fcmToken) { _, newToken in
+                if newToken != nil, let currentUserID {
+                    Task {
+                        await pushService.saveFCMToken(uid: currentUserID)
+                    }
                 }
             }
             .searchable(text: $searchText, prompt: "Search...")
