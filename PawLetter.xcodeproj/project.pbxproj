@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D9318E20303D8DBD003F8F2E /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = D9318E1F303D8DBD003F8F2E /* FirebaseMessaging */; };
 		D9CD431D3038CB1F00F553D2 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = D9CD431C3038CB1F00F553D2 /* Kingfisher */; };
 		D9E00EEB2FEFE7100074F0E3 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = D9E00EEA2FEFE7100074F0E3 /* FirebaseAuth */; };
 		D9E00EED2FEFE7100074F0E3 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = D9E00EEC2FEFE7100074F0E3 /* FirebaseFirestore */; };
 		D9ECDA9F3005326D005244BE /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = D9ECDA9E3005326D005244BE /* FirebaseStorage */; };
 		D9F230813017F020000D7DA2 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = D9F230803017F020000D7DA2 /* GoogleSignIn */; };
 		D9F230833017F020000D7DA2 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = D9F230823017F020000D7DA2 /* GoogleSignInSwift */; };
-		D9F230873017F094000D7DA2 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D9F230863017F094000D7DA2 /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -37,7 +37,6 @@
 		D9E00EBF2FEFE5C20074F0E3 /* PawLetter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PawLetter.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D9E00ECC2FEFE5C30074F0E3 /* PawLetterTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PawLetterTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D9E00ED62FEFE5C30074F0E3 /* PawLetterUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PawLetterUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		D9F230863017F094000D7DA2 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -78,6 +77,7 @@
 			files = (
 				D9CD431D3038CB1F00F553D2 /* Kingfisher in Frameworks */,
 				D9F230833017F020000D7DA2 /* GoogleSignInSwift in Frameworks */,
+				D9318E20303D8DBD003F8F2E /* FirebaseMessaging in Frameworks */,
 				D9E00EEB2FEFE7100074F0E3 /* FirebaseAuth in Frameworks */,
 				D9F230813017F020000D7DA2 /* GoogleSignIn in Frameworks */,
 				D9E00EED2FEFE7100074F0E3 /* FirebaseFirestore in Frameworks */,
@@ -109,7 +109,6 @@
 				D9E00ECF2FEFE5C30074F0E3 /* PawLetterTests */,
 				D9E00ED92FEFE5C30074F0E3 /* PawLetterUITests */,
 				D9E00EC02FEFE5C20074F0E3 /* Products */,
-				D9F230863017F094000D7DA2 /* GoogleService-Info.plist */,
 				D9ECDA9D3005326D005244BE /* Frameworks */,
 			);
 			sourceTree = "<group>";
@@ -157,6 +156,7 @@
 				D9F230803017F020000D7DA2 /* GoogleSignIn */,
 				D9F230823017F020000D7DA2 /* GoogleSignInSwift */,
 				D9CD431C3038CB1F00F553D2 /* Kingfisher */,
+				D9318E1F303D8DBD003F8F2E /* FirebaseMessaging */,
 			);
 			productName = PawLetter;
 			productReference = D9E00EBF2FEFE5C20074F0E3 /* PawLetter.app */;
@@ -262,7 +262,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D9F230873017F094000D7DA2 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -668,6 +667,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		D9318E1F303D8DBD003F8F2E /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D9E00EE92FEFE7100074F0E3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
+		};
 		D9CD431C3038CB1F00F553D2 /* Kingfisher */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = D9CD431B3038CB1F00F553D2 /* XCRemoteSwiftPackageReference "Kingfisher" */;

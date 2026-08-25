@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>119801655722-8eiu5i4ma80v12ep9l8narrt97jlnvti.apps.googleusercontent.com</string>
+	<string>119801655722-q38idgsdjn224s2tm2m4esnlet6c2oeg.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.119801655722-8eiu5i4ma80v12ep9l8narrt97jlnvti</string>
+	<string>com.googleusercontent.apps.119801655722-q38idgsdjn224s2tm2m4esnlet6c2oeg</string>
 	<key>API_KEY</key>
 	<string>AIzaSyDkMhLgQvZg6Owh9ePunQ0ZWeGxNLiFRNI</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,7 +13,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.nazardydyn.PawLetter</string>
+	<string>com.nazardydyn.Letterfly</string>
 	<key>PROJECT_ID</key>
 	<string>pawletter-28dcc</string>
 	<key>STORAGE_BUCKET</key>
@@ -29,6 +29,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:119801655722:ios:1cc31f55cef395df7a7bd3</string>
+	<string>1:119801655722:ios:7ba110d759e49c0d7a7bd3</string>
 </dict>
 </plist>

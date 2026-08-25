@@ -11,7 +11,7 @@
 			<string>GoogleSignIn</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.119801655722-8eiu5i4ma80v12ep9l8narrt97jlnvti</string>
+				<string>com.googleusercontent.apps.119801655722-q38idgsdjn224s2tm2m4esnlet6c2oeg</string>
 			</array>
 		</dict>
 	</array>
@@ -19,6 +19,10 @@
 	<array>
 		<string>Caveat-Bold.ttf</string>
 		<string>Caveat-Regular.ttf</string>
+	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
 	</array>
 </dict>
 </plist>
