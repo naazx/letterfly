@@ -16,8 +16,11 @@ struct PawLetterApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+             ContentView()
                 .environment(pushService)
+                .onOpenURL { url in
+                    GIDSignIn.sharedInstance.handle(url)
+                }
                 .onAppear {
                     appDelegate.pushService = pushService
                 }
