@@ -11,16 +11,15 @@ import FirebaseCore
 
 @main
 struct PawLetterApp: App {
-    
-    init() {
-        FirebaseApp.configure()
-    }
-    
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    @State private var pushService = PushNotificationService()
+
     var body: some Scene {
         WindowGroup {
-             ContentView()
-                .onOpenURL { url in
-                    GIDSignIn.sharedInstance.handle(url)
+            ContentView()
+                .environment(pushService)
+                .onAppear {
+                    appDelegate.pushService = pushService
                 }
         }
     }
