@@ -16,22 +16,24 @@ class PairServices{
     let userServices = UserServices()
     
     func joinPair(myUID: String, partnerCode: String) async throws {
-      guard let partnerID = try await findUser(partnerCode) else {
+        guard let partnerID = try await findUser(partnerCode) else {
             throw PairError.codeNotFound
         }
-         if partnerID == myUID{
+        if partnerID == myUID {
             throw PairError.selfSearch
         }
-        
-        let pairID = try await createPairDocument(myUID: myUID, partnerID: partnerID)
-        
-        try await db.collection("users").document(myUID).updateData([
-            "pairID": pairID
-        ])
-        
-        try await db.collection("users").document(partnerID).updateData([
-            "pairID": pairID
-        ])
+
+        let newPairRef = db.collection("pairs").document()
+
+        let batch = db.batch()
+        batch.setData([
+            "members": [myUID, partnerID],
+            "startDate": Timestamp(date: Date()),
+        ], forDocument: newPairRef)
+        batch.updateData(["pairID": newPairRef.documentID], forDocument: db.collection("users").document(myUID))
+        batch.updateData(["pairID": newPairRef.documentID], forDocument: db.collection("users").document(partnerID))
+
+        try await batch.commit()
     }
     func findUser(_ invitationCode: String) async throws -> String?{
         let snapshot = try await db.collection("users")
@@ -39,15 +41,6 @@ class PairServices{
             .getDocuments()
         
         return snapshot.documents.first?.documentID
-    }
-    func createPairDocument(myUID: String, partnerID: String) async throws -> String{
-        let newPairRef = db.collection("pairs").document()
-        
-        try await newPairRef.setData([
-            "members" : [myUID, partnerID],
-            "startDate" : Timestamp(date: Date())
-        ])
-        return  newPairRef.documentID
     }
     func fetchPartnerID(pairID: String, myUID: String) async throws -> String? {
         let snapshot = try await db.collection("pairs").document(pairID).getDocument()
