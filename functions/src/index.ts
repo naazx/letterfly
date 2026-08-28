@@ -170,3 +170,61 @@ export const pairEventReminders = onSchedule(
     }
   }
 );
+
+/**
+ * Checks whether any letter was created today for a given pair.
+ * @param {string} pairID - The pair document ID.
+ * @return {Promise<boolean>} True if at least one letter exists today.
+ */
+async function hasLetterToday(pairID: string): Promise<boolean> {
+  const startOfDay = new Date();
+  startOfDay.setHours(0, 0, 0, 0);
+
+  const endOfDay = new Date();
+  endOfDay.setHours(23, 59, 59, 999);
+
+  const snapshot = await admin.firestore()
+    .collection("pairs").doc(pairID).collection("letters")
+    .where("createdAt", ">=", startOfDay)
+    .where("createdAt", "<=", endOfDay)
+    .limit(1)
+    .get();
+
+  return !snapshot.empty;
+}
+
+export const dailyWriteReminder = onSchedule(
+  {
+    schedule: "every day 21:00",
+    timeZone: "Europe/Kyiv",
+  },
+  async () => {
+    const pairsSnapshot = await admin.firestore()
+      .collection("pairs").get();
+
+    for (const pairDoc of pairsSnapshot.docs) {
+      const pairID = pairDoc.id;
+      const wroteToday = await hasLetterToday(pairID);
+
+      if (wroteToday) continue;
+
+      const members: string[] = pairDoc.data().members ?? [];
+
+      for (const memberID of members) {
+        const memberDoc = await admin.firestore()
+          .collection("users").doc(memberID).get();
+        const fcmToken = memberDoc.data()?.fcmToken;
+
+        if (!fcmToken) continue;
+
+        await admin.messaging().send({
+          token: fcmToken,
+          notification: {
+            title: "Don't forget to write!",
+            body: "You haven't sent a letter today.",
+          },
+        });
+      }
+    }
+  }
+);
