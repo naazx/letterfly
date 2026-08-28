@@ -27,11 +27,16 @@ export const onNewLetter = onDocumentCreated(
 
     if (!fcmToken) return;
 
+    const rawText: string = letter.text ?? "You've received a new letter";
+    const body = rawText.length > 100 ?
+      rawText.slice(0, 100) + "..." :
+      rawText;
+
     await admin.messaging().send({
       token: fcmToken,
       notification: {
-        title: "New letter!",
-        body: letter.subject ?? "You've received a new letter",
+        title: letter.subject ?? "New letter!",
+        body: body,
       },
     });
   }

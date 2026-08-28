@@ -90,7 +90,11 @@ struct MapView: View {
                     mapViewModel.position = .automatic
                     mapViewModel.hasSetInitialPosition = true
                 }
-                locationService.requestCurrentLocation()
+                if locationService.authorizationStatus == .notDetermined {
+                    locationService.requestPermission()
+                } else {
+                    locationService.requestCurrentLocation()
+                }
             }
             .onChange(of: focusCoordinate) { oldValue, newCoordinate in
                 guard let newCoordinate else { return }
