@@ -197,15 +197,23 @@ class AuthViewModel {
         }
     }
 
-    func signOut(){
+    func signOut() {
+        if let uid = Auth.auth().currentUser?.uid {
+            Task {
+                try? await Firestore.firestore()
+                    .collection("users").document(uid)
+                    .updateData(["fcmToken": FieldValue.delete()])
+            }
+        }
+        
         do {
-            try  Auth.auth().signOut()
+            try Auth.auth().signOut()
             isLogged = false
             pairID = nil
             displayName = nil
             partnerNickname = nil
             partnerDisplayName = nil
-        }catch{
+        } catch {
             print("error: \(error.localizedDescription)")
         }
     }
