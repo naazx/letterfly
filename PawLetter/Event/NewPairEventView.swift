@@ -49,11 +49,12 @@ struct NewPairEventView: View {
                     Button("Save") {
                         eventSaved.toggle()
                         Task {
+                            let normalizedDate = Calendar.current.startOfDay(for: date)
                             if let existingEvent, let id = existingEvent.id {
-                                try? await pairEventServices.updateEvent(pairID: pairID, eventID: id, title: title, date: date, isRecurring: isRecurring)
+                                try? await pairEventServices.updateEvent(pairID: pairID, eventID: id, title: title, date: normalizedDate, isRecurring: isRecurring)
                             } else {
                                 let reference = pairEventServices.newEventReference(pairID: pairID)
-                                try? await pairEventServices.createEvent(reference: reference, title: title, date: date, isRecurring: isRecurring, createdBy: currentUserID)
+                                try? await pairEventServices.createEvent(reference: reference, title: title, date: normalizedDate, isRecurring: isRecurring, createdBy: currentUserID)
                             }
                             dismiss()
                         }

@@ -562,11 +562,12 @@ struct NewLetterView: View {
                     finalUnlockDate = nil
                     finalLinkedEventID = nil
                 case .customDate:
-                    finalUnlockDate = customUnlockDate
+                    finalUnlockDate = Calendar.current.startOfDay(for: customUnlockDate)
                     finalLinkedEventID = nil
                 case .linkToEvent:
                     finalLinkedEventID = selectedLinkedEventID
-                    finalUnlockDate = eventsViewModel.events.first(where: { $0.id == selectedLinkedEventID })?.nextOccurrence
+                    let eventDate = eventsViewModel.events.first(where: { $0.id == selectedLinkedEventID })?.nextOccurrence
+                    finalUnlockDate = eventDate.map { Calendar.current.startOfDay(for: $0) }
                 }
                 viewModel.unlockDate = finalUnlockDate
                 viewModel.linkedEventID = finalLinkedEventID
