@@ -45,7 +45,10 @@ struct AuthView: View {
                         HStack(spacing: 8) {
                             Image("google_logo")
                                 .resizable()
+                                .frame(width: 26, height: 26)
+                                .scaleEffect(1.3)
                                 .frame(width: 20, height: 20)
+                                .clipped()
                             Text("Sign in with Google")
                                 .font(.system(size: 19, weight: .medium))
                                 .foregroundStyle(.black)
