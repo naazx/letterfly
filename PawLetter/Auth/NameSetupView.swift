@@ -17,12 +17,31 @@ struct NameSetupView: View {
         NavigationStack {
             Form {
                 Section {
+                    VStack(spacing: 12) {
+                        Image(systemName: "person.text.rectangle.fill")
+                            .font(.system(size: 36))
+                            .foregroundStyle(.pink)
+
+                        Text("What's your name?")
+                            .font(.title2.bold())
+
+                        Text("This is what your partner will see on the letters you send.")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .listRowBackground(Color.clear)
+                    .listRowInsets(EdgeInsets())
+                }
+
+                Section {
                     TextField("Your name", text: $name)
-                } footer: {
-                    Text("Your name will be displayed on the letters you send.")
                 }
             }
-            .navigationTitle("What's your name?")
+            .navigationTitle("")
+            .navigationBarTitleDisplayMode(.inline)
             .alert("Error", isPresented: .constant(authViewModel.authError != nil)) {
                 Button("OK") {
                     authViewModel.authError = nil
@@ -37,6 +56,7 @@ struct NameSetupView: View {
                     }
                 }
                 .buttonStyle(.borderedProminent)
+                .tint(.pink)
                 .controlSize(.large)
                 .frame(maxWidth: .infinity)
                 .padding()
