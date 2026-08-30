@@ -8,6 +8,27 @@
 import FirebaseAuth
 import SwiftUI
 
+private struct PressScaleEffect: ViewModifier {
+    @State private var isPressed = false
+
+    func body(content: Content) -> some View {
+        content
+            .scaleEffect(isPressed ? 0.96 : 1)
+            .animation(.easeOut(duration: 0.15), value: isPressed)
+            .simultaneousGesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { _ in isPressed = true }
+                    .onEnded { _ in isPressed = false }
+            )
+    }
+}
+
+private extension View {
+    func pressScaleEffect() -> some View {
+        modifier(PressScaleEffect())
+    }
+}
+
 struct PairView: View {
     @State private var inviteCode: String?
     @State private var partnerCodeInput: String = ""
@@ -17,6 +38,7 @@ struct PairView: View {
     @State private var joinTapped = false
     @State private var logoutTapped = false
     @State private var copiedTapped = false
+    @State private var showCopiedConfirmation = false
 
     var userServices = UserServices()
     var viewModel: AuthViewModel
@@ -39,45 +61,73 @@ struct PairView: View {
                             .foregroundStyle(.secondary)
                             .multilineTextAlignment(.center)
                     }
-                    .padding(.top, 20)
+                    .padding(.top, 24)
 
                     VStack(spacing: 12) {
                         if let inviteCode {
                             Text(inviteCode)
                                 .font(.system(.largeTitle, design: .monospaced, weight: .semibold))
                                 .kerning(4)
-                        } else {
-                            ProgressView()
-                                .frame(height: 44)
-                        }
 
-                        if let inviteCode {
                             HStack(spacing: 12) {
                                 Button {
                                     UIPasteboard.general.string = inviteCode
                                     copiedTapped.toggle()
+
+                                    withAnimation(.easeOut(duration: 0.2)) {
+                                        showCopiedConfirmation = true
+                                    }
+                                    Task {
+                                        try? await Task.sleep(for: .seconds(1.5))
+                                        withAnimation(.easeOut(duration: 0.2)) {
+                                            showCopiedConfirmation = false
+                                        }
+                                    }
                                 } label: {
-                                    Label("Copy", systemImage: "doc.on.doc")
+                                    Label(
+                                        showCopiedConfirmation ? "Copied" : "Copy",
+                                        systemImage: showCopiedConfirmation ? "checkmark" : "doc.on.doc"
+                                    )
+                                    .contentTransition(.symbolEffect(.replace))
+                                    .frame(maxWidth: .infinity)
                                 }
                                 .buttonStyle(.bordered)
+                                .pressScaleEffect()
+                                .tint(.pink)
 
                                 ShareLink(item: inviteCode) {
                                     Label("Share", systemImage: "square.and.arrow.up")
+                                        .frame(maxWidth: .infinity)
                                 }
                                 .buttonStyle(.bordered)
+                                .pressScaleEffect()
+                                .tint(.pink)
                             }
+                        } else {
+                            ProgressView()
+                                .frame(height: 44)
                         }
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 24)
+                    .padding(.horizontal, 16)
                     .background(Color(.secondarySystemGroupedBackground))
                     .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                     .padding(.horizontal)
 
                     VStack(spacing: 12) {
-                        TextField("Enter your partner's code", text: $partnerCodeInput)
-                            .textFieldStyle(.roundedBorder)
-                            .autocapitalization(.none)
+                        HStack(spacing: 8) {
+                            Image(systemName: "number")
+                                .foregroundStyle(.secondary)
+
+                            TextField("Enter your partner's code", text: $partnerCodeInput)
+                                .autocapitalization(.none)
+                                .autocorrectionDisabled()
+                        }
+                        .padding(.horizontal, 16)
+                        .frame(height: 48)
+                        .background(Color(.secondarySystemGroupedBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
 
                         Button {
                             joinTapped.toggle()
@@ -108,6 +158,7 @@ struct PairView: View {
                         } label: {
                             if isJoining {
                                 ProgressView()
+                                    .tint(.white)
                                     .frame(maxWidth: .infinity)
                             } else {
                                 Text("Join")
@@ -115,6 +166,7 @@ struct PairView: View {
                             }
                         }
                         .buttonStyle(.borderedProminent)
+                        .tint(.pink)
                         .controlSize(.large)
                         .disabled(isJoining || partnerCodeInput.trimmingCharacters(in: .whitespaces).isEmpty)
                     }

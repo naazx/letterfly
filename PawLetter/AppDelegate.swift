@@ -16,7 +16,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate {
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
-        print("✅ AppDelegate launched")
+        print("AppDelegate launched")
         FirebaseApp.configure()
         Messaging.messaging().delegate = self
         return true
@@ -26,12 +26,12 @@ class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate {
         _ application: UIApplication,
         didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
     ) {
-        print("✅ APNs device token received")
+        print("APNs device token received")
         Messaging.messaging().apnsToken = deviceToken
     }
 
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
-        print("✅ FCM token received: \(fcmToken ?? "nil")")
+        print("FCM token received: \(fcmToken ?? "nil")")
         pushService?.fcmToken = fcmToken
     }
 }
