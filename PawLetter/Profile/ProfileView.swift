@@ -125,7 +125,7 @@ struct ProfileView: View {
         .frame(maxWidth: .infinity)
         .padding()
         .background(Color(.secondarySystemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 22))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
     }
     private var userInfoSection: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -155,7 +155,7 @@ struct ProfileView: View {
                 fontRow
             }
             .background(Color(.secondarySystemBackground))
-            .clipShape(RoundedRectangle(cornerRadius: 22))
+            .clipShape(RoundedRectangle(cornerRadius: 16))
         }
     }
     private var nameRow: some View {
@@ -247,12 +247,13 @@ struct ProfileView: View {
                 codeCopyTapped.toggle()
                 UIPasteboard.general.string = profileViewModel.inviteCode
 
-                withAnimation(.spring()) {
+                withAnimation(.easeOut(duration: 0.2)) {
                     codeCopied = true
                 }
 
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                    withAnimation(.spring()) {
+                Task {
+                    try? await Task.sleep(for: .seconds(1.5))
+                    withAnimation(.easeOut(duration: 0.2)) {
                         codeCopied = false
                     }
                 }
@@ -354,7 +355,7 @@ private var pairInfoSection: some View {
                 lettersRow
             }
             .background(Color(.secondarySystemBackground))
-            .clipShape(RoundedRectangle(cornerRadius: 22))
+            .clipShape(RoundedRectangle(cornerRadius: 16))
         }
     }
     private var partnerRow: some View {
@@ -503,7 +504,7 @@ private var pairInfoSection: some View {
         .frame(maxWidth: .infinity)
         .padding()
         .background(Color.red.opacity(0.15))
-        .clipShape(RoundedRectangle(cornerRadius: 22))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
     }
     private var avatarSection: some View {
         VStack(spacing: 18) {
