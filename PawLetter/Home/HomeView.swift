@@ -74,9 +74,9 @@ struct HomeView: View {
                             .listRowInsets(
                                 EdgeInsets(
                                     top: 8,
-                                    leading: 20,
+                                    leading: 16,
                                     bottom: 8,
-                                    trailing: 20
+                                    trailing: 16
                                 )
                             )
                         }
@@ -107,6 +107,7 @@ struct HomeView: View {
                         } label: {
                             Image(systemName: "lock")
                         }
+                        .tint(.pink)
                         
                         Menu {
                             Section("Sort By") {
@@ -125,11 +126,13 @@ struct HomeView: View {
                         } label: {
                             Image(systemName: "arrow.up.arrow.down")
                         }
+                        .tint(.pink)
                         
                         Button("New Letter", systemImage: "square.and.pencil"){
                             isShowingNewLetter = true
                             newLetterTapped.toggle()
                         }
+                        .tint(.pink)
                     }
                     .navigationTitle("Letters")
                     .navigationBarTitleDisplayMode(.large)
@@ -186,6 +189,7 @@ struct HomeView: View {
                 newLetterTapped.toggle()
             }
             .buttonStyle(.borderedProminent)
+            .tint(.pink)
         }
     }
 }
