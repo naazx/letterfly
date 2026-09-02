@@ -9,6 +9,27 @@ import PhotosUI
 import MapKit
 import SwiftUI
 
+private struct PressScaleEffect: ViewModifier {
+    @State private var isPressed = false
+
+    func body(content: Content) -> some View {
+        content
+            .scaleEffect(isPressed ? 0.96 : 1)
+            .animation(.easeOut(duration: 0.15), value: isPressed)
+            .simultaneousGesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { _ in isPressed = true }
+                    .onEnded { _ in isPressed = false }
+            )
+    }
+}
+
+private extension View {
+    func pressScaleEffect() -> some View {
+        modifier(PressScaleEffect())
+    }
+}
+
 struct NewLetterView: View {
     @Environment(\.dismiss) var dismiss
     @State private var viewModel = NewLetterViewModel()
@@ -112,8 +133,9 @@ struct NewLetterView: View {
                         
                         scheduleSection
                 }
-                    .padding(20)
+                    .padding(16)
             }
+                .background(Color(.systemGroupedBackground))
                 .toolbar {
                     keyboardToolbar
                     confirmationToolbarItem
@@ -275,8 +297,8 @@ struct NewLetterView: View {
                     .scaledToFill()
                     .frame(height: 240)
                     .frame(maxWidth: .infinity)
-                    .clipShape(RoundedRectangle(cornerRadius: 22))
-                    .contentShape(RoundedRectangle(cornerRadius: 22))
+                    .clipShape(RoundedRectangle(cornerRadius: 24))
+                    .contentShape(RoundedRectangle(cornerRadius: 24))
                     .shadow(color: .black.opacity(0.12), radius: 10, y: 5)
                     .overlay(alignment: .topTrailing) {
                         if viewModel.previewImage != nil || existingLetter?.photoURL != nil {
@@ -296,8 +318,8 @@ struct NewLetterView: View {
 
                     }
             } else {
-                RoundedRectangle(cornerRadius: 22)
-                    .fill(Color(.secondarySystemBackground))
+                RoundedRectangle(cornerRadius: 24)
+                    .fill(Color(.secondarySystemGroupedBackground))
                     .frame(height: 240)
                     .overlay {
 
@@ -323,7 +345,7 @@ struct NewLetterView: View {
                 .focused($focusedField, equals: .subject)
                 .font(.title3.weight(.semibold))
                 .padding()
-                .background(Color(.secondarySystemBackground))
+                .background(Color(.secondarySystemGroupedBackground))
                 .clipShape(RoundedRectangle(cornerRadius: 16))
                 .submitLabel(.next)
                 .onSubmit { focusedField = .letter }
@@ -360,7 +382,7 @@ struct NewLetterView: View {
                 .frame(minHeight: 260)
                 .padding(12)
                 .scrollContentBackground(.hidden)
-                .background(Color(.secondarySystemBackground))
+                .background(Color(.secondarySystemGroupedBackground))
                 .clipShape(RoundedRectangle(cornerRadius: 16))
                 .textInputAutocapitalization(.sentences)
                 .autocorrectionDisabled(false)
@@ -384,7 +406,7 @@ struct NewLetterView: View {
             }
             .frame(maxWidth: .infinity)
             .padding()
-            .background(Color(.secondarySystemBackground))
+            .background(Color(.secondarySystemGroupedBackground))
             .clipShape(RoundedRectangle(cornerRadius: 16))
         }
     }
@@ -449,6 +471,7 @@ struct NewLetterView: View {
                         .background(Color.accentColor)
                         .clipShape(Circle())
                 }
+                .pressScaleEffect()
                 
                 Text(audioRecorder.formattedDuration)
                     .font(.headline.monospacedDigit())
@@ -503,7 +526,7 @@ struct NewLetterView: View {
                     }
                 }
                 .padding()
-                .background(Color(.secondarySystemBackground))
+                .background(Color(.secondarySystemGroupedBackground))
                 .clipShape(RoundedRectangle(cornerRadius: 16))
             }
         }
