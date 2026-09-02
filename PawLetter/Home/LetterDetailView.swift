@@ -224,7 +224,7 @@ struct LetterDetailView: View {
                         .foregroundStyle(.secondary)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 6)
-                        .background(Color(.secondarySystemGroupedBackground))
+                        .background(Color(.secondarySystemBackground))
                         .clipShape(Capsule())
                     }
                 }
