@@ -67,8 +67,8 @@ struct MapView: View {
                             )
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal, 15)
-                        .padding(.top, 25)
+                        .padding(.horizontal, 16)
+                        .padding(.top, 24)
                     }
                 
                 if let selectedLetter = mapViewModel.selectedLetter {
@@ -229,6 +229,7 @@ struct MapView: View {
                 }
             }
                 .font(.subheadline.weight(.medium))
+                .foregroundColor(.accentColor)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
                 .background(.ultraThinMaterial)
@@ -246,6 +247,7 @@ struct MapView: View {
                 Text("Filter")
             }
             .font(.subheadline.weight(.medium))
+            .foregroundColor(.accentColor)
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
             .background(.ultraThinMaterial)
