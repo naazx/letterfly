@@ -9,6 +9,27 @@ import Kingfisher
 import MapKit
 import SwiftUI
 
+private struct PressScaleEffect: ViewModifier {
+    @State private var isPressed = false
+
+    func body(content: Content) -> some View {
+        content
+            .scaleEffect(isPressed ? 0.96 : 1)
+            .animation(.easeOut(duration: 0.15), value: isPressed)
+            .simultaneousGesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { _ in isPressed = true }
+                    .onEnded { _ in isPressed = false }
+            )
+    }
+}
+
+private extension View {
+    func pressScaleEffect() -> some View {
+        modifier(PressScaleEffect())
+    }
+}
+
 struct LetterDetailView: View {
     @AppStorage("useHandwritingFont") var useHandwritingFont: Bool = true
     @Environment(\.dismiss) var dismiss
@@ -84,7 +105,7 @@ struct LetterDetailView: View {
                         reactionSection
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(20)
+                    .padding(16)
                 }
             }
         }
@@ -203,7 +224,7 @@ struct LetterDetailView: View {
                         .foregroundStyle(.secondary)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 6)
-                        .background(Color(.secondarySystemBackground))
+                        .background(Color(.secondarySystemGroupedBackground))
                         .clipShape(Capsule())
                     }
                 }
@@ -308,6 +329,7 @@ struct LetterDetailView: View {
                     .background(Color.accentColor)
                     .clipShape(Circle())
             }
+            .pressScaleEffect()
             
             Text(audioRecorder.formattedDuration)
                 .font(.headline.monospacedDigit())
