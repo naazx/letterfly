@@ -70,7 +70,15 @@ struct CalendarView: View {
                     )
                 } label: {
                     if let nearestEvent, let daysUntil {
-                        HStack {
+                        HStack(spacing: 12) {
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(Color.accentColor.opacity(0.15))
+                                .frame(width: 36, height: 36)
+                                .overlay {
+                                    Image(systemName: "calendar")
+                                        .foregroundStyle(Color.accentColor)
+                                }
+
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(nearestEvent.title)
                                     .font(.subheadline.weight(.semibold))
@@ -88,10 +96,20 @@ struct CalendarView: View {
                         .padding(.horizontal)
                         .padding(.bottom, 12)
                     } else {
-                        HStack {
-                            Image(systemName: "calendar.badge.plus")
+                        HStack(spacing: 12) {
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(Color.accentColor.opacity(0.15))
+                                .frame(width: 36, height: 36)
+                                .overlay {
+                                    Image(systemName: "calendar.badge.plus")
+                                        .foregroundStyle(Color.accentColor)
+                                }
+
                             Text("Add your first event")
+                                .font(.subheadline.weight(.semibold))
                             Spacer()
+                            Image(systemName: "chevron.right")
+                                .foregroundStyle(.secondary)
                         }
                         .padding()
                         .background(Color(.secondarySystemBackground))
