@@ -31,6 +31,8 @@ struct DayLettersView: View {
                     )
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(Color(.systemGroupedBackground))
             .navigationDestination(for: Letter.self) { letter in
                 LetterDetailView(
                     letter: letter,
