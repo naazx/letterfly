@@ -32,7 +32,7 @@ struct MemoryPreviewCard: View {
                     .resizable()
                     .scaledToFill()
                     .frame(width: 44, height: 44)
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
             } else {
                 ZStack {
                     Circle()
@@ -55,7 +55,7 @@ struct MemoryPreviewCard: View {
                 HStack(spacing: 6) {
                     if let mood = letter.mood {
                         Text(mood.emoji)
-                            .font(.caption2)    
+                            .font(.caption2)
                     }
                     if letter.audioURL != nil {
                         Image(systemName: "waveform")
@@ -72,12 +72,13 @@ struct MemoryPreviewCard: View {
                 openTapped.toggle()
             } label: {
                 Image(systemName: "chevron.right")
+                    .foregroundStyle(.secondary)
             }
         }
         .sensoryFeedback(.impact(weight: .light), trigger: openTapped)
         .padding()
         .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 20))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
     }
 }
 #Preview {
