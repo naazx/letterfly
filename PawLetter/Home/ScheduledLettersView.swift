@@ -46,6 +46,8 @@ struct ScheduledLettersView: View {
                         .buttonStyle(.plain)
                     }
                 }
+                .scrollContentBackground(.hidden)
+                .background(Color(.systemGroupedBackground))
             }
         }
         .navigationTitle("Scheduled")
@@ -72,7 +74,7 @@ struct ScheduledLettersView: View {
                 .foregroundStyle(Color.accentColor)
                 .frame(width: 32, height: 32)
                 .background(Color.accentColor.opacity(0.15))
-                .clipShape(Circle())
+                .clipShape(RoundedRectangle(cornerRadius: 8))
 
             VStack(alignment: .leading, spacing: 2) {
                 Text("Locked Letter")
