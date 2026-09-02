@@ -36,7 +36,7 @@ struct LetterRowView: View {
                 .frame(width: 60, height: 60)
                 .clipShape(RoundedRectangle(cornerRadius: 16))
 
-                VStack(alignment: .leading) {
+                VStack(alignment: .leading, spacing: 4) {
                     Text(isLocked ? "Locked Letter" : letter.subject)
                         .fontWeight((!letter.isRead && letter.authorID != currentUserID) ? .bold : .regular)
 
@@ -50,7 +50,7 @@ struct LetterRowView: View {
 
                 Spacer()
 
-                VStack(alignment: .trailing) {
+                VStack(alignment: .trailing, spacing: 4) {
                     if letter.authorID == currentUserID {
                         Text("You")
                             .font(.caption2)
@@ -67,7 +67,7 @@ struct LetterRowView: View {
                     .foregroundStyle(.secondary)
                 }
             }
-            .padding(.vertical, 6)
+            .padding(.vertical, 8)
     }
     private var isLocked: Bool {
         letter.isLocked(for: currentUserID)
