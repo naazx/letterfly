@@ -7,6 +7,27 @@
 
 import SwiftUI
 
+private struct PressScaleEffect: ViewModifier {
+    @State private var isPressed = false
+
+    func body(content: Content) -> some View {
+        content
+            .scaleEffect(isPressed ? 0.96 : 1)
+            .animation(.easeOut(duration: 0.15), value: isPressed)
+            .simultaneousGesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { _ in isPressed = true }
+                    .onEnded { _ in isPressed = false }
+            )
+    }
+}
+
+private extension View {
+    func pressScaleEffect() -> some View {
+        modifier(PressScaleEffect())
+    }
+}
+
 struct LetterCardView: View {
     @AppStorage("useHandwritingFont") private var useHandwritingFont: Bool = true
     @Environment(\.dismiss) var dismiss
@@ -67,6 +88,7 @@ struct LetterCardView: View {
                         )
                         .padding(.top, 50)
                 }
+                .pressScaleEffect()
             }
             .rotation3DEffect(
                 .degrees(isAppeared ? 0 : 70),
