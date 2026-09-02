@@ -8,21 +8,29 @@
 import SwiftUI
 
 struct PawLoadingView: View {
-    @State private var isAnimating = false
+    @State private var isFloating = false
+    @State private var isRotating = false
 
     var body: some View {
-        Image(systemName: "pawprint.fill")
+        Image(systemName: "envelope.fill")
             .font(.system(size: 36))
             .foregroundStyle(.accent)
-            .scaleEffect(isAnimating ? 1.15 : 0.9)
-            .opacity(isAnimating ? 1 : 0.6)
+            .shadow(color: .accentColor.opacity(0.35), radius: isFloating ? 12 : 4, y: isFloating ? 8 : 2)
+            .offset(y: isFloating ? -8 : 8)
+            .rotationEffect(.degrees(isRotating ? 4 : -4))
             .animation(
-                .easeInOut(duration: 0.8)
+                .easeInOut(duration: 1.4)
                 .repeatForever(autoreverses: true),
-                value: isAnimating
+                value: isFloating
+            )
+            .animation(
+                .easeInOut(duration: 1.8)
+                .repeatForever(autoreverses: true),
+                value: isRotating
             )
             .onAppear {
-                isAnimating = true
+                isFloating = true
+                isRotating = true
             }
     }
 }
