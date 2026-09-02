@@ -34,27 +34,29 @@ struct PairEventsView: View {
             } else {
                 List {
                     ForEach(sortedEvents) { event in
-                        HStack(spacing: 12) {
-                            Image(systemName: event.isRecurring ? "repeat" : "calendar")
-                                .foregroundStyle(Color.accentColor)
-                                .frame(width: 32, height: 32)
-                                .background(Color.accentColor.opacity(0.15))
-                                .clipShape(Circle())
-                            
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(event.title)
-                                    .font(.body.weight(.medium))
-                                Text(event.nextOccurrence.formatted(date: .abbreviated, time: .omitted))
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
-                            
-                            Spacer()
-                        }
-                        .padding(.vertical, 4)
-                        .onTapGesture {
+                        Button {
                             eventTapped.toggle()
                             eventToEdit = event
+                        } label: {
+                            HStack(spacing: 12) {
+                                Image(systemName: event.isRecurring ? "repeat" : "calendar")
+                                    .foregroundStyle(Color.accentColor)
+                                    .frame(width: 32, height: 32)
+                                    .background(Color.accentColor.opacity(0.15))
+                                    .clipShape(RoundedRectangle(cornerRadius: 8))
+
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(event.title)
+                                        .font(.body.weight(.medium))
+                                        .foregroundStyle(.primary)
+                                    Text(event.nextOccurrence.formatted(date: .abbreviated, time: .omitted))
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+
+                                Spacer()
+                            }
+                            .padding(.vertical, 4)
                         }
                     }
                     .onDelete{ indexSet in
@@ -68,6 +70,8 @@ struct PairEventsView: View {
                         }
                     }
                 }
+                .scrollContentBackground(.hidden)
+                .background(Color(.systemGroupedBackground))
             }
         }
         .sensoryFeedback(.impact(weight: .light), trigger: addEventTapped)
@@ -79,6 +83,7 @@ struct PairEventsView: View {
                 addEventTapped.toggle()
                 isShowingNewEvent = true
             }
+            .tint(.pink)
         }
         .sheet(isPresented: $isShowingNewEvent) {
             NewPairEventView(
