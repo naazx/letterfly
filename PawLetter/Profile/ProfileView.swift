@@ -97,6 +97,7 @@ struct ProfileView: View {
             .padding(.top, 12)
             .padding(.bottom, 40)
         }
+        .background(Color(.systemGroupedBackground))
     }
     private var statsSection: some View {
 
@@ -124,7 +125,7 @@ struct ProfileView: View {
         }
         .frame(maxWidth: .infinity)
         .padding()
-        .background(Color(.secondarySystemBackground))
+        .background(Color(.secondarySystemGroupedBackground))
         .clipShape(RoundedRectangle(cornerRadius: 16))
     }
     private var userInfoSection: some View {
@@ -154,7 +155,7 @@ struct ProfileView: View {
                 
                 fontRow
             }
-            .background(Color(.secondarySystemBackground))
+            .background(Color(.secondarySystemGroupedBackground))
             .clipShape(RoundedRectangle(cornerRadius: 16))
         }
     }
@@ -354,7 +355,7 @@ private var pairInfoSection: some View {
 
                 lettersRow
             }
-            .background(Color(.secondarySystemBackground))
+            .background(Color(.secondarySystemGroupedBackground))
             .clipShape(RoundedRectangle(cornerRadius: 16))
         }
     }
