@@ -151,7 +151,7 @@ enum SurpriseType: String, CaseIterable, Codable, ChipDisplayable {
         case .tea:
             return "🍵"
         case .hotChocolate:
-            return "☕️"
+            return "🫖"
         case .bubbleTea:
             return "🧋"
         case .bracelet:
