@@ -308,6 +308,7 @@ struct NewLetterView: View {
                                 viewModel.didRemovePhoto = true
                                 selectedItem = nil
                                 viewModel.previewImage = nil
+                                viewModel.selectedImageData = nil
                             } label: {
                                 Image(systemName: "trash.circle.fill")
                                     .font(.title2)
