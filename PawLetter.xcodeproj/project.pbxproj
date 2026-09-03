@@ -43,7 +43,7 @@
 		D9F230893017F0FD000D7DA2 /* Exceptions for "PawLetter" folder in "PawLetter" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Info.plist,
+				Resources/Info.plist,
 			);
 			target = D9E00EBE2FEFE5C20074F0E3 /* PawLetter */;
 		};
