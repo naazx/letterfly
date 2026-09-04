@@ -520,7 +520,7 @@ private var pairInfoSection: some View {
                 Text(authViewModel.displayName ?? "User")
                     .font(.title2.bold())
                 
-                Text("PawLetter member")
+                Text("Letterfly member")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
