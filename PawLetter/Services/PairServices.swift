@@ -11,7 +11,15 @@ import FirebaseFirestore
 enum PairError: Error {
     case codeNotFound, selfSearch
 }
-class PairServices{
+
+protocol PairServiceProtocol {
+    func joinPair(myUID: String, partnerCode: String) async throws
+    func findUser(_ invitationCode: String) async throws -> String?
+    func fetchPartnerID(pairID: String, myUID: String) async throws -> String?
+    func fetchPair(pairID: String) async throws -> Pair?
+}
+
+class PairServices: PairServiceProtocol {
     let db = Firestore.firestore()
     let userServices = UserServices()
     

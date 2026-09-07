@@ -8,7 +8,18 @@ import Foundation
 import FirebaseFirestore
 import FirebaseAuth
 
-class UserServices {
+protocol UserServiceProtocol {
+    func createUserDocument(uid: String, inviteCode: String) async throws
+    func isCodeTaken(_ code: String) async throws -> Bool
+    func reserveInviteCode(_ code: String, uid: String) async throws
+    func generateUniqueInviteCode() async throws -> String
+    func updateAvatarURL(uid: String, url: String) async throws
+    func fetchUserProfile(uid: String) async throws -> (inviteCode: String?, avatarURL: String?, displayName: String?, pairID: String?, partnerNickname: String?)
+    func updateDisplayName(uid: String, name: String) async throws
+    func updatePartnerNickname(uid: String, nickname: String) async throws
+}
+
+class UserServices: UserServiceProtocol {
     let db = Firestore.firestore()
     
     func createUserDocument(uid: String, inviteCode: String) async throws {
