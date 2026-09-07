@@ -16,8 +16,8 @@ import FirebaseCore
 @Observable
 class AuthViewModel {
     var isLogged: Bool = false
-    let userServices = UserServices()
-    let pairServices = PairServices()
+    let userServices: UserServiceProtocol
+    let pairServices: PairServiceProtocol
     var pairID: String?
     var displayName: String?
     var isLoadingPairID: Bool = false
@@ -53,12 +53,16 @@ class AuthViewModel {
         }
     }
 
-    init(){
+    init(userServices: UserServiceProtocol = UserServices(), pairServices: PairServiceProtocol = PairServices()){
+        self.userServices = userServices
+        self.pairServices = pairServices
+        
         if let currentUser = Auth.auth().currentUser {
             isLogged = true
             let userIDlocal = currentUser.uid
             self.userID = userIDlocal
             isLoadingPairID = true
+            
             Task{
                 await loadUserData(uid: userIDlocal)
             }
