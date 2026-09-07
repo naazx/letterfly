@@ -12,49 +12,51 @@ import SwiftUI
 
 @Observable
 class NewLetterViewModel {
-    var storageService = StorageService()
-    var isLoading: Bool = false
-    var subject: String = ""
-    var text: String? 
-    var letterServices = LetterServices()
-    var previewImage: UIImage?
-    var selectedImageData: Data?
-    
-    var showError: Bool = false
-    var errorMessage: String = ""
-    var isSuccess: Bool = false
-    
-    var existingLetter: Letter?
-    var didRemovePhoto: Bool = false
-    
-    var mood: MoodType?
-    var surprise: SurpriseType?
-    var surpriseOptions: [SurpriseType] = []
-    
-    var unlockDate: Date?
-    var linkedEventID: String?
-    
-    enum InputMode: CaseIterable{
-        case text
-        case voice
-    }
-    var inputMode: InputMode = .text
-    
-    init(existingLetter: Letter? = nil) {
-        self.existingLetter = existingLetter
-        self.subject = existingLetter?.subject ?? ""
-        self.text = existingLetter?.text ?? ""
-        self.mood = existingLetter?.mood
-        self.surprise = existingLetter?.surprise
-        self.surpriseOptions = generateSurpriseOptions(existing: existingLetter?.surprise)
-        self.unlockDate = existingLetter?.unlockDate
-        self.linkedEventID = existingLetter?.linkedEventID
-        if existingLetter?.audioURL != nil {
-            inputMode = .voice
-        } else {
-            inputMode = .text
+    let storageService: StorageServiceProtocol
+        var isLoading: Bool = false
+        var subject: String = ""
+        var text: String?
+        let letterServices: LetterServiceProtocol
+        var previewImage: UIImage?
+        var selectedImageData: Data?
+        
+        var showError: Bool = false
+        var errorMessage: String = ""
+        var isSuccess: Bool = false
+        
+        var existingLetter: Letter?
+        var didRemovePhoto: Bool = false
+        
+        var mood: MoodType?
+        var surprise: SurpriseType?
+        var surpriseOptions: [SurpriseType] = []
+        
+        var unlockDate: Date?
+        var linkedEventID: String?
+        
+        enum InputMode: CaseIterable{
+            case text
+            case voice
         }
-    }
+        var inputMode: InputMode = .text
+    
+    init(existingLetter: Letter? = nil, storageService: StorageServiceProtocol = StorageService(), letterServices: LetterServiceProtocol = LetterServices()) {
+            self.storageService = storageService
+            self.letterServices = letterServices
+            self.existingLetter = existingLetter
+            self.subject = existingLetter?.subject ?? ""
+            self.text = existingLetter?.text ?? ""
+            self.mood = existingLetter?.mood
+            self.surprise = existingLetter?.surprise
+            self.surpriseOptions = generateSurpriseOptions(existing: existingLetter?.surprise)
+            self.unlockDate = existingLetter?.unlockDate
+            self.linkedEventID = existingLetter?.linkedEventID
+            if existingLetter?.audioURL != nil {
+                inputMode = .voice
+            } else {
+                inputMode = .text
+            }
+        }
     
     func uploadPhoto(data: Data, pairID: String, letterID: String) async throws -> String? {
         isLoading = true

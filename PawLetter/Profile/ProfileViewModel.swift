@@ -12,7 +12,7 @@ import SwiftUI
 
 @Observable
 class ProfileViewModel{
-    var storageService = StorageService()
+    let storageService: StorageServiceProtocol
     
     var avatarURL: URL?
     var previewImage: UIImage?
@@ -21,8 +21,14 @@ class ProfileViewModel{
     var errorMessage: String = ""
     
     var inviteCode: String?
-    var userServices = UserServices()
-    var pairServices = PairServices()
+    let userServices: UserServiceProtocol
+    let pairServices: PairServiceProtocol
+    
+    init(storageService: StorageServiceProtocol = StorageService(), userServices: UserServiceProtocol = UserServices(), pairServices: PairServiceProtocol = PairServices()){
+        self.storageService = storageService
+        self.userServices = userServices
+        self.pairServices = pairServices
+    }
     
     var pair: Pair?
     
