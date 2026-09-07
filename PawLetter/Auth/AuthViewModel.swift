@@ -67,7 +67,7 @@ class AuthViewModel {
     
     func signInWithGoogle() async {
         guard let clientID = FirebaseApp.app()?.options.clientID else {
-            print("error: відсутній clientID у Firebase-конфігурації")
+            print("error: no clientID у Firebase-configurarion")
             return
         }
 
@@ -75,7 +75,7 @@ class AuthViewModel {
         GIDSignIn.sharedInstance.configuration = config
 
         guard let rootViewController = Self.topViewController() else {
-            print("error: не вдалося знайти root view controller для презентації Google Sign-In")
+            print("error: can't find root view controller for presentation Google Sign-In")
             return
         }
 
@@ -83,7 +83,7 @@ class AuthViewModel {
             let googleResult = try await GIDSignIn.sharedInstance.signIn(withPresenting: rootViewController)
 
             guard let idToken = googleResult.user.idToken?.tokenString else {
-                print("error: Google не повернув idToken")
+                print("error: Google has not returned idToken")
                 return
             }
             let accessToken = googleResult.user.accessToken.tokenString
@@ -149,19 +149,19 @@ class AuthViewModel {
         switch result {
         case .success(let authorization):
             guard let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential else {
-                print("error: не вдалося отримати ASAuthorizationAppleIDCredential")
+                print("error: can't get ASAuthorizationAppleIDCredential")
                 return
             }
             guard let nonce = currentNonce else {
-                print("error: відсутній currentNonce — prepareAppleRequest не був викликаний")
+                print("error: no currentNonce — prepareAppleRequest was not called")
                 return
             }
             guard let appleIDToken = appleIDCredential.identityToken else {
-                print("error: Apple не повернув identityToken")
+                print("error: Apple has not returned identityToken")
                 return
             }
             guard let idTokenString = String(data: appleIDToken, encoding: .utf8) else {
-                print("error: не вдалося декодувати identityToken як UTF-8")
+                print("error: can't decode identityToken as UTF-8")
                 return
             }
 
