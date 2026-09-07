@@ -8,7 +8,14 @@
 import Foundation
 import FirebaseFirestore
 
-class PairEventServices {
+protocol PairEventServiceProtocol {
+    func newEventReference(pairID: String) -> DocumentReference
+    func createEvent(reference: DocumentReference, title: String, date: Date, isRecurring: Bool, createdBy: String) async throws
+    func updateEvent(pairID: String, eventID: String, title: String, date: Date, isRecurring: Bool) async throws
+    func deleteEvent(pairID: String, eventID: String) async throws
+}
+
+class PairEventServices: PairEventServiceProtocol {
     let db = Firestore.firestore()
     
     func newEventReference(pairID: String) -> DocumentReference {

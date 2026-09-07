@@ -8,7 +8,12 @@
 import Foundation
 import FirebaseStorage
 
-class StorageService {
+protocol StorageServiceProtocol {
+    func uploadFile(data: Data, path: String) async throws -> URL
+    func deleteFile(path: String) async throws
+}
+
+class StorageService: StorageServiceProtocol {
     func uploadFile(data: Data, path: String) async throws -> URL {
         if data.count > 5 * 1024 * 1024 {
             throw StorageError.fileTooLarge

@@ -8,9 +8,22 @@
 import Foundation
 import FirebaseFirestore
 
-class LetterServices{
+protocol LetterServiceProtocol {
+    func sendLetter(authorID: String, subject: String, text: String?, photoURL: String?, audioURL: String?, reference: DocumentReference, mood: MoodType?, surprise: SurpriseType?, location: Letter.LetterLocation?, unlockDate: Date?, linkedEventID: String?) async throws
+    func newLetterReference(pairID: String) -> DocumentReference
+    func markAsRead(pairID: String, letterID: String) async throws
+    func setReaction(pairID: String, letterID: String, reaction: ReactionType?, previousReaction: ReactionType?) async throws
+    func deleteLetter(pairID: String, letterID: String, photoURL: String?, audioURL: String?) async throws
+    func updateLetter(pairID: String, letterID: String, subject: String, text: String?, photoURL: String?, audioURL: String?, mood: MoodType?, surprise: SurpriseType?, location: Letter.LetterLocation?, unlockDate: Date?, linkedEventID: String?) async throws
+}
+
+class LetterServices: LetterServiceProtocol {
     let db = Firestore.firestore()
-    let storageService = StorageService()
+    let storageService: StorageServiceProtocol
+    
+    init(storageService: StorageServiceProtocol = StorageService()) {
+        self.storageService = storageService
+    }
     
     func sendLetter(authorID: String, subject: String, text: String?, photoURL: String?, audioURL: String?, reference: DocumentReference, mood: MoodType?, surprise: SurpriseType?,location: Letter.LetterLocation?, unlockDate: Date?, linkedEventID: String?) async throws {
         let letter = Letter(authorID: authorID, subject: subject, text: text, createdAt: .now, photoURL: photoURL, mood: mood, surprise: surprise, audioURL: audioURL, location: location, unlockDate: unlockDate, linkedEventID: linkedEventID)
