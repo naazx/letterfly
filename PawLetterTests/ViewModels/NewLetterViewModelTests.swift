@@ -52,4 +52,20 @@ struct NewLetterViewModelTests {
         
         #expect(viewModel.subject == mockLetterServices.updateLetterSubject)
     }
+    
+    @Test func send_editExistingLetter_uploadPhotoFails_setsErrorMessage() async {
+        let mockLetterServices = MockLetterServices()
+        let mockStorageService = MockStorageService()
+        mockStorageService.errorToThrow = StorageError.uploadFailed
+        
+        let existingLetter = Letter(id: "123456789", authorID: "user1", subject: "Hello", text: "", createdAt: .now)
+        let viewModel = NewLetterViewModel(existingLetter: existingLetter, storageService: mockStorageService, letterServices: mockLetterServices)
+        
+        viewModel.selectedImageData = Data()
+        
+        await viewModel.send(pairID: "pair123", authorID: "user1", recordingURL: nil, location: nil)
+        
+        #expect(viewModel.showError == true)
+        #expect(viewModel.errorMessage == "Could not upload photo")
+    }
 }

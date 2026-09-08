@@ -9,8 +9,14 @@ import Foundation
 @testable import PawLetter
 
 class MockStorageService: StorageServiceProtocol {
+    var errorToThrow: Error?
+    
     func uploadFile(data: Data, path: String) async throws -> URL {
-        URL(string: "https://fake.com/\(path)")!
+        if let error = errorToThrow {
+            throw error
+        } else {
+            URL(string: "https://fake.com/\(path)")!
+        }
     }
     func deleteFile(path: String) async throws {
         
