@@ -14,6 +14,7 @@ class MockLetterServices: LetterServiceProtocol {
     var updateLetterCalled = false
     var sendLetterSubject: String?
     var sendLetterText: String?
+    var updateLetterSubject: String?
     
     var errorToThrow: Error?
     
@@ -41,6 +42,7 @@ class MockLetterServices: LetterServiceProtocol {
     }
     func updateLetter(pairID: String, letterID: String, subject: String, text: String?, photoURL: String?, audioURL: String?, mood: MoodType?, surprise: SurpriseType?, location: Letter.LetterLocation?, unlockDate: Date?, linkedEventID: String?) async throws {
         updateLetterCalled = true
+        updateLetterSubject = subject
         
         if let errorToThrow {
             throw errorToThrow

@@ -38,4 +38,18 @@ struct NewLetterViewModelTests {
         
         #expect(mockLetterServices.updateLetterCalled == false)
     }
+    
+    @Test func send_editExistingLetter_withChanges_callslUpdateLetter() async {
+        let mockLetterServices = MockLetterServices()
+        let mockStorageService = MockStorageService()
+        
+        let existingLetter = Letter(id: "123456789", authorID: "user1", subject: "Hello", text: "", createdAt: .now)
+        let viewModel = NewLetterViewModel(existingLetter: existingLetter, storageService: mockStorageService, letterServices: mockLetterServices)
+        
+        viewModel.subject = "Some changes to come"
+        
+        await viewModel.send(pairID: "pair123", authorID: "user1", recordingURL: nil, location: nil)
+        
+        #expect(viewModel.subject == mockLetterServices.updateLetterSubject)
+    }
 }
