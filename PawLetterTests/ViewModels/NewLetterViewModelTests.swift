@@ -1,0 +1,29 @@
+//
+//  NewLetterViewModelTests.swift
+//  PawLetterTests
+//
+//  Created by Nazar Dydyn on 08.09.2026.
+//
+
+import Testing
+@testable import PawLetter
+
+@MainActor
+struct NewLetterViewModelTests {
+    @Test func send_newLetter_textOnly_callsSendLetterWithCorrectSubject() async {
+        let mockLetterServices = MockLetterServices()
+        let mockStorageService = MockStorageService()
+        let viewModel = NewLetterViewModel(storageService: mockStorageService, letterServices: mockLetterServices)
+        
+        viewModel.subject = "Hello"
+        viewModel.text = "Test message"
+        viewModel.inputMode = .text
+        
+        await viewModel.send(pairID: "pair123", authorID: "user1", recordingURL: nil, location: nil)
+        
+        #expect(mockLetterServices.sendLetterCalled == true)
+        #expect(mockLetterServices.sendLetterSubject == "Hello")
+        #expect(mockLetterServices.sendLetterText == "Test message")
+        #expect(viewModel.isSuccess == true)
+    }
+}

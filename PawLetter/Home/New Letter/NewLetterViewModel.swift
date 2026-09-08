@@ -88,7 +88,7 @@ class NewLetterViewModel {
         
         do{
             if let existingLetter {
-                guard let letterID = existingLetter.id else {return}
+                guard let letterID = existingLetter.id else { return }
                 var photoURL = existingLetter.photoURL
                 var audioURL = existingLetter.audioURL
                 
