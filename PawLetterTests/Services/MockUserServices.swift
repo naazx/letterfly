@@ -10,25 +10,28 @@ import Foundation
 
 
 class MockUserServices: UserServiceProtocol {
-    var profileToReturn: (inviteCode: String?, avatarURL: String?, displayName: String?, pairID: String?, partnerNickname: String?) = (nil, nil, nil, nil, nil)
+    var profilesByUID: [String: (inviteCode: String?, avatarURL: String?, displayName: String?, pairID: String?, partnerNickname: String?)] = [:]
+    var defaultProfile: (inviteCode: String?, avatarURL: String?, displayName: String?, pairID: String?, partnerNickname: String?) = (nil, nil, nil, nil, nil)
 
+    func fetchUserProfile(uid: String) async throws -> (inviteCode: String?, avatarURL: String?, displayName: String?, pairID: String?, partnerNickname: String?) {
+        profilesByUID[uid] ?? defaultProfile
+    }
+    
+    // решта методів без змін
     func createUserDocument(uid: String, inviteCode: String) async throws {
         
     }
     func isCodeTaken(_ code: String) async throws -> Bool {
-        return false
+        false
     }
     func reserveInviteCode(_ code: String, uid: String) async throws {
         
     }
     func generateUniqueInviteCode() async throws -> String {
-        return "i love nastia"
+        "i love nastia"
     }
     func updateAvatarURL(uid: String, url: String) async throws {
         
-    }
-    func fetchUserProfile(uid: String) async throws -> (inviteCode: String?, avatarURL: String?, displayName: String?, pairID: String?, partnerNickname: String?) {
-        return profileToReturn
     }
     func updateDisplayName(uid: String, name: String) async throws {
         
@@ -36,5 +39,4 @@ class MockUserServices: UserServiceProtocol {
     func updatePartnerNickname(uid: String, nickname: String) async throws {
         
     }
-
 }
