@@ -43,5 +43,23 @@ struct AuthViewModelTests {
         #expect(viewModel.displayName == "Nazar")
         #expect(viewModel.partnerDisplayName == "Nastia")
     }
+    
+    @Test func mapError_noInternetError_returnsNoInternet() async {
+        let viewModel = AuthViewModel()
+        let error = NSError(domain: NSURLErrorDomain,code: NSURLErrorNotConnectedToInternet)
+        
+        let result = viewModel.mapError(error)
+        
+        #expect(result == .noInternet)
+    }
+    
+    @Test func mapError_unknownError_returnsUnknownError() async {
+        let viewModel = AuthViewModel()
+        let error = NSError(domain: "custom",code: 123, userInfo: [NSLocalizedDescriptionKey: "nazar loves nastia"])
+        
+        let result = viewModel.mapError(error)
+        
+        #expect(result?.localizedDescription == "nazar loves nastia")
+    }
 
 }
