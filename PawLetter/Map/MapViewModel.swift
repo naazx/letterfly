@@ -80,15 +80,25 @@ class MapViewModel{
                 case .all:
                     continue
                 case .withPhotos:
-                    if letter.photoURL == nil { return false }
+                    if letter.photoURL == nil {
+                        return false
+                    }
                 case .withMood:
-                    if letter.mood == nil { return false }
+                    if letter.mood == nil {
+                        return false
+                    }
                 case .withSurprise:
-                    if letter.surprise == nil { return false }
+                    if letter.surprise == nil {
+                        return false
+                    }
                 case .thisYear:
-                    if !Calendar.current.isDate(letter.createdAt, equalTo: .now, toGranularity: .year) { return false }
+                    if !Calendar.current.isDate(letter.createdAt, equalTo: .now, toGranularity: .year) {
+                        return false
+                    }
                 case .thisMonth:
-                    if !Calendar.current.isDate(letter.createdAt, equalTo: .now, toGranularity: .month) { return false }
+                    if !Calendar.current.isDate(letter.createdAt, equalTo: .now, toGranularity: .month) {
+                        return false
+                    }
                 }
             }
             return true
