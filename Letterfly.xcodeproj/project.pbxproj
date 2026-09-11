@@ -231,7 +231,7 @@
 					};
 				};
 			};
-			buildConfigurationList = D9E00EBA2FEFE5C20074F0E3 /* Build configuration list for PBXProject "PawLetter" */;
+			buildConfigurationList = D9E00EBA2FEFE5C20074F0E3 /* Build configuration list for PBXProject "Letterfly" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -452,6 +452,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = PawLetter/Resources/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Letterfly;
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "PawLetter uses your location to tag where you wrote this letter";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Microphone is needed for recording voice letters";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -489,6 +490,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = PawLetter/Resources/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Letterfly;
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "PawLetter uses your location to tag where you wrote this letter";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Microphone is needed for recording voice letters";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -601,7 +603,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		D9E00EBA2FEFE5C20074F0E3 /* Build configuration list for PBXProject "PawLetter" */ = {
+		D9E00EBA2FEFE5C20074F0E3 /* Build configuration list for PBXProject "Letterfly" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D9E00EDE2FEFE5C30074F0E3 /* Debug */,
