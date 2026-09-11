@@ -1,13 +1,13 @@
 //
-//  PawLetterUITestsLaunchTests.swift
-//  PawLetterUITests
+//  LetterflyUITestsLaunchTests.swift
+//  LetterflyUITests
 //
 //  Created by Nazar Dydyn on 27.06.2026.
 //
 
 import XCTest
 
-final class PawLetterUITestsLaunchTests: XCTestCase {
+final class LetterflyUITestsLaunchTests: XCTestCase {
 
     override class var runsForEachTargetApplicationUIConfiguration: Bool {
         true

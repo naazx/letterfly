@@ -34,38 +34,38 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		D9E00EBF2FEFE5C20074F0E3 /* PawLetter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PawLetter.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		D9E00ECC2FEFE5C30074F0E3 /* PawLetterTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PawLetterTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		D9E00ED62FEFE5C30074F0E3 /* PawLetterUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PawLetterUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D9E00EBF2FEFE5C20074F0E3 /* Letterfly.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Letterfly.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D9E00ECC2FEFE5C30074F0E3 /* LetterflyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LetterflyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D9E00ED62FEFE5C30074F0E3 /* LetterflyUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LetterflyUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		D9F230893017F0FD000D7DA2 /* Exceptions for "PawLetter" folder in "PawLetter" target */ = {
+		D9F230893017F0FD000D7DA2 /* Exceptions for "Letterfly" folder in "Letterfly" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Resources/Info.plist,
 			);
-			target = D9E00EBE2FEFE5C20074F0E3 /* PawLetter */;
+			target = D9E00EBE2FEFE5C20074F0E3 /* Letterfly */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		D9E00EC12FEFE5C20074F0E3 /* PawLetter */ = {
+		D9E00EC12FEFE5C20074F0E3 /* Letterfly */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				D9F230893017F0FD000D7DA2 /* Exceptions for "PawLetter" folder in "PawLetter" target */,
+				D9F230893017F0FD000D7DA2 /* Exceptions for "Letterfly" folder in "Letterfly" target */,
 			);
-			path = PawLetter;
+			path = Letterfly;
 			sourceTree = "<group>";
 		};
-		D9E00ECF2FEFE5C30074F0E3 /* PawLetterTests */ = {
+		D9E00ECF2FEFE5C30074F0E3 /* LetterflyTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = PawLetterTests;
+			path = LetterflyTests;
 			sourceTree = "<group>";
 		};
-		D9E00ED92FEFE5C30074F0E3 /* PawLetterUITests */ = {
+		D9E00ED92FEFE5C30074F0E3 /* LetterflyUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = PawLetterUITests;
+			path = LetterflyUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -105,9 +105,9 @@
 		D9E00EB62FEFE5C20074F0E3 = {
 			isa = PBXGroup;
 			children = (
-				D9E00EC12FEFE5C20074F0E3 /* PawLetter */,
-				D9E00ECF2FEFE5C30074F0E3 /* PawLetterTests */,
-				D9E00ED92FEFE5C30074F0E3 /* PawLetterUITests */,
+				D9E00EC12FEFE5C20074F0E3 /* Letterfly */,
+				D9E00ECF2FEFE5C30074F0E3 /* LetterflyTests */,
+				D9E00ED92FEFE5C30074F0E3 /* LetterflyUITests */,
 				D9E00EC02FEFE5C20074F0E3 /* Products */,
 				D9ECDA9D3005326D005244BE /* Frameworks */,
 			);
@@ -116,9 +116,9 @@
 		D9E00EC02FEFE5C20074F0E3 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D9E00EBF2FEFE5C20074F0E3 /* PawLetter.app */,
-				D9E00ECC2FEFE5C30074F0E3 /* PawLetterTests.xctest */,
-				D9E00ED62FEFE5C30074F0E3 /* PawLetterUITests.xctest */,
+				D9E00EBF2FEFE5C20074F0E3 /* Letterfly.app */,
+				D9E00ECC2FEFE5C30074F0E3 /* LetterflyTests.xctest */,
+				D9E00ED62FEFE5C30074F0E3 /* LetterflyUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -133,9 +133,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		D9E00EBE2FEFE5C20074F0E3 /* PawLetter */ = {
+		D9E00EBE2FEFE5C20074F0E3 /* Letterfly */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D9E00EE02FEFE5C30074F0E3 /* Build configuration list for PBXNativeTarget "PawLetter" */;
+			buildConfigurationList = D9E00EE02FEFE5C30074F0E3 /* Build configuration list for PBXNativeTarget "Letterfly" */;
 			buildPhases = (
 				D9E00EBB2FEFE5C20074F0E3 /* Sources */,
 				D9E00EBC2FEFE5C20074F0E3 /* Frameworks */,
@@ -146,9 +146,9 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				D9E00EC12FEFE5C20074F0E3 /* PawLetter */,
+				D9E00EC12FEFE5C20074F0E3 /* Letterfly */,
 			);
-			name = PawLetter;
+			name = Letterfly;
 			packageProductDependencies = (
 				D9E00EEA2FEFE7100074F0E3 /* FirebaseAuth */,
 				D9E00EEC2FEFE7100074F0E3 /* FirebaseFirestore */,
@@ -159,12 +159,12 @@
 				D9318E1F303D8DBD003F8F2E /* FirebaseMessaging */,
 			);
 			productName = PawLetter;
-			productReference = D9E00EBF2FEFE5C20074F0E3 /* PawLetter.app */;
+			productReference = D9E00EBF2FEFE5C20074F0E3 /* Letterfly.app */;
 			productType = "com.apple.product-type.application";
 		};
-		D9E00ECB2FEFE5C30074F0E3 /* PawLetterTests */ = {
+		D9E00ECB2FEFE5C30074F0E3 /* LetterflyTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D9E00EE32FEFE5C30074F0E3 /* Build configuration list for PBXNativeTarget "PawLetterTests" */;
+			buildConfigurationList = D9E00EE32FEFE5C30074F0E3 /* Build configuration list for PBXNativeTarget "LetterflyTests" */;
 			buildPhases = (
 				D9E00EC82FEFE5C30074F0E3 /* Sources */,
 				D9E00EC92FEFE5C30074F0E3 /* Frameworks */,
@@ -176,18 +176,18 @@
 				D9E00ECE2FEFE5C30074F0E3 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				D9E00ECF2FEFE5C30074F0E3 /* PawLetterTests */,
+				D9E00ECF2FEFE5C30074F0E3 /* LetterflyTests */,
 			);
-			name = PawLetterTests;
+			name = LetterflyTests;
 			packageProductDependencies = (
 			);
 			productName = PawLetterTests;
-			productReference = D9E00ECC2FEFE5C30074F0E3 /* PawLetterTests.xctest */;
+			productReference = D9E00ECC2FEFE5C30074F0E3 /* LetterflyTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		D9E00ED52FEFE5C30074F0E3 /* PawLetterUITests */ = {
+		D9E00ED52FEFE5C30074F0E3 /* LetterflyUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D9E00EE62FEFE5C30074F0E3 /* Build configuration list for PBXNativeTarget "PawLetterUITests" */;
+			buildConfigurationList = D9E00EE62FEFE5C30074F0E3 /* Build configuration list for PBXNativeTarget "LetterflyUITests" */;
 			buildPhases = (
 				D9E00ED22FEFE5C30074F0E3 /* Sources */,
 				D9E00ED32FEFE5C30074F0E3 /* Frameworks */,
@@ -199,13 +199,13 @@
 				D9E00ED82FEFE5C30074F0E3 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				D9E00ED92FEFE5C30074F0E3 /* PawLetterUITests */,
+				D9E00ED92FEFE5C30074F0E3 /* LetterflyUITests */,
 			);
-			name = PawLetterUITests;
+			name = LetterflyUITests;
 			packageProductDependencies = (
 			);
 			productName = PawLetterUITests;
-			productReference = D9E00ED62FEFE5C30074F0E3 /* PawLetterUITests.xctest */;
+			productReference = D9E00ED62FEFE5C30074F0E3 /* LetterflyUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -250,9 +250,9 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				D9E00EBE2FEFE5C20074F0E3 /* PawLetter */,
-				D9E00ECB2FEFE5C30074F0E3 /* PawLetterTests */,
-				D9E00ED52FEFE5C30074F0E3 /* PawLetterUITests */,
+				D9E00EBE2FEFE5C20074F0E3 /* Letterfly */,
+				D9E00ECB2FEFE5C30074F0E3 /* LetterflyTests */,
+				D9E00ED52FEFE5C30074F0E3 /* LetterflyUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -308,12 +308,12 @@
 /* Begin PBXTargetDependency section */
 		D9E00ECE2FEFE5C30074F0E3 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = D9E00EBE2FEFE5C20074F0E3 /* PawLetter */;
+			target = D9E00EBE2FEFE5C20074F0E3 /* Letterfly */;
 			targetProxy = D9E00ECD2FEFE5C30074F0E3 /* PBXContainerItemProxy */;
 		};
 		D9E00ED82FEFE5C30074F0E3 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = D9E00EBE2FEFE5C20074F0E3 /* PawLetter */;
+			target = D9E00EBE2FEFE5C20074F0E3 /* Letterfly */;
 			targetProxy = D9E00ED72FEFE5C30074F0E3 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -445,13 +445,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = PawLetter/Resources/PawLetter.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Letterfly/Resources/Letterfly.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = XF9VRNPAKX;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = PawLetter/Resources/Info.plist;
+				INFOPLIST_FILE = Letterfly/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Letterfly;
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "PawLetter uses your location to tag where you wrote this letter";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Microphone is needed for recording voice letters";
@@ -483,13 +483,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = PawLetter/Resources/PawLetter.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Letterfly/Resources/Letterfly.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = XF9VRNPAKX;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = PawLetter/Resources/Info.plist;
+				INFOPLIST_FILE = Letterfly/Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Letterfly;
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "PawLetter uses your location to tag where you wrote this letter";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Microphone is needed for recording voice letters";
@@ -612,7 +612,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D9E00EE02FEFE5C30074F0E3 /* Build configuration list for PBXNativeTarget "PawLetter" */ = {
+		D9E00EE02FEFE5C30074F0E3 /* Build configuration list for PBXNativeTarget "Letterfly" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D9E00EE12FEFE5C30074F0E3 /* Debug */,
@@ -621,7 +621,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D9E00EE32FEFE5C30074F0E3 /* Build configuration list for PBXNativeTarget "PawLetterTests" */ = {
+		D9E00EE32FEFE5C30074F0E3 /* Build configuration list for PBXNativeTarget "LetterflyTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D9E00EE42FEFE5C30074F0E3 /* Debug */,
@@ -630,7 +630,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D9E00EE62FEFE5C30074F0E3 /* Build configuration list for PBXNativeTarget "PawLetterUITests" */ = {
+		D9E00EE62FEFE5C30074F0E3 /* Build configuration list for PBXNativeTarget "LetterflyUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D9E00EE72FEFE5C30074F0E3 /* Debug */,
