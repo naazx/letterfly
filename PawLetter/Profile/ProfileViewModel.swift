@@ -107,15 +107,4 @@ class ProfileViewModel{
             showError = true
         }
     }
-}class ListNode {
-         var val: Int
-         var next: ListNode?
-        init(_ val: Int) {
-             self.val = val
-             self.next = nil
-         }
-     }
-class Solution {
-    func mergeTwoLists(_ list1: ListNode?, _ list2: ListNode?) -> ListNode? {
-        var list = list1 + list2
-    }
+}
