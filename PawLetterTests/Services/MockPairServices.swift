@@ -13,6 +13,7 @@ class MockPairServices: PairServiceProtocol {
     var pair: Pair?
     var user: String?
     var joinPairCalled: Bool = false
+    var fetchPairCalled: Bool = false
     
     func joinPair(myUID: String, partnerCode: String) async throws {
         joinPairCalled = true
@@ -24,6 +25,7 @@ class MockPairServices: PairServiceProtocol {
         return partnerID
     }
     func fetchPair(pairID: String) async throws -> Pair? {
+        fetchPairCalled = true
         return pair
     }
 }
