@@ -138,6 +138,7 @@ struct HomeView: View {
                     .navigationBarTitleDisplayMode(.large)
                 }
             }
+            .onboardingOverlay(message: "You're all set. Start writing, and this is where your memories will live.", systemImage: "envelope.fill", isLastScreen: true)
             .task {
                 let granted = await pushService.requestPermission()
                 if granted, pushService.fcmToken != nil, let currentUserID {

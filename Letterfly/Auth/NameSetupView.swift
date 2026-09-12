@@ -42,6 +42,7 @@ struct NameSetupView: View {
             }
             .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
+            .onboardingOverlay(message: "Almost there — next you'll connect with your partner.", systemImage: "person.fill")
             .alert("Error", isPresented: .constant(authViewModel.authError != nil)) {
                 Button("OK") {
                     authViewModel.authError = nil

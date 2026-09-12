@@ -162,6 +162,7 @@ struct PairView: View {
                 .padding(.bottom, 32)
             }
             .background(Color(.systemGroupedBackground))
+            .onboardingOverlay(message: "Last step! Once you're paired, you're ready to send your first letter.", systemImage: "person.2.fill")
             .task {
                 guard let user = Auth.auth().currentUser else {
                     errorMessage = "You're not signed in."

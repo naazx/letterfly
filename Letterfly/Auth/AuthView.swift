@@ -89,6 +89,7 @@ struct AuthView: View {
             }
             .background(Color(.systemGroupedBackground))
             .ignoresSafeArea(.container, edges: .bottom)
+            .onboardingOverlay(message: "Your private space to write to each other, one letter at a time.", systemImage: "envelope.fill")
             .onChange(of: viewModel.authError) {
                 showError = true
             }
