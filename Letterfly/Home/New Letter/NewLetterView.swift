@@ -606,7 +606,7 @@ struct NewLetterView: View {
         NavigationStack{
             Group {
                 if isLoadingLocation {
-                    PawLoadingView()
+                    LetterLoadingView()
                 } else {
                     MapReader { proxy in
                         Map(position: $cameraPosition) {

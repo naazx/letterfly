@@ -15,7 +15,7 @@ struct ContentView: View {
         
         Group{
             if authViewModel.isLoadingPairID{
-                PawLoadingView()
+                LetterLoadingView()
             }
             else if authViewModel.isLogged == false{
                 AuthView(viewModel: authViewModel)

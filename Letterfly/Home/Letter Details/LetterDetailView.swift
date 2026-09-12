@@ -281,7 +281,7 @@ struct LetterDetailView: View {
 
                 KFImage(url)
                     .placeholder {
-                        PawLoadingView()
+                        LetterLoadingView()
                     }
                     .resizable()
                     .scaledToFill()

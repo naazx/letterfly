@@ -92,7 +92,7 @@ struct MainTabView: View {
                 eventsViewModel.stopListening()
             }
         } else {
-            PawLoadingView()
+            LetterLoadingView()
         }
     }
 }

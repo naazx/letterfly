@@ -553,7 +553,7 @@ private var pairInfoSection: some View {
             } else if let imageURL = profileViewModel.avatarURL {
                 KFImage(imageURL)
                 .placeholder {
-                    PawLoadingView()
+                    LetterLoadingView()
                 }
                 .resizable()
                 .scaledToFill()
@@ -599,7 +599,7 @@ private var pairInfoSection: some View {
                     .fill(.black.opacity(0.35))
                     .frame(width: 150, height: 150)
 
-                PawLoadingView()
+                LetterLoadingView()
             }
         }
     }
@@ -626,7 +626,7 @@ private var pairInfoSection: some View {
             } else {
                 KFImage(profileViewModel.avatarURL)
                     .placeholder {
-                        PawLoadingView()
+                        LetterLoadingView()
                     }
                     .resizable()
                     .scaledToFit()

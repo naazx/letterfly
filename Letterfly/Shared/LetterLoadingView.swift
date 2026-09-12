@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct PawLoadingView: View {
+struct LetterLoadingView: View {
     @State private var isFloating = false
     @State private var isRotating = false
 
@@ -36,5 +36,5 @@ struct PawLoadingView: View {
 }
 
 #Preview {
-    PawLoadingView()
+    LetterLoadingView()
 }
