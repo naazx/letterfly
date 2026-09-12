@@ -79,7 +79,7 @@ struct AuthView: View {
                 }
                 .padding(.horizontal, 24)
                 
-                Text("By continuing, you agree to our [Privacy Policy](https://naazx.github.io/pawletter-legal/)")
+                Text("By continuing, you agree to our [Privacy Policy](https://naazx.github.io/letterfly-legal/)")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)

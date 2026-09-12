@@ -33,14 +33,14 @@ class PairServices: PairServiceProtocol {
 
         let newPairRef = db.collection("pairs").document()
 
-        let batch = db.batch()
-        batch.setData([
+        try await newPairRef.setData([
             "members": [myUID, partnerID],
             "startDate": Timestamp(date: Date()),
-        ], forDocument: newPairRef)
+        ])
+
+        let batch = db.batch()
         batch.updateData(["pairID": newPairRef.documentID], forDocument: db.collection("users").document(myUID))
         batch.updateData(["pairID": newPairRef.documentID], forDocument: db.collection("users").document(partnerID))
-
         try await batch.commit()
     }
     func findUser(_ invitationCode: String) async throws -> String?{
