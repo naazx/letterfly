@@ -4,6 +4,7 @@ import GoogleSignInSwift
 
 struct AuthView: View {
     @State private var showError: Bool = false
+    @Environment(\.colorScheme) private var colorScheme
     
     var viewModel: AuthViewModel
     
@@ -39,7 +40,7 @@ struct AuthView: View {
                             await viewModel.signInWithApple(result: result)
                         }
                     }
-                    .signInWithAppleButtonStyle(.black)
+                    .signInWithAppleButtonStyle(colorScheme == .dark ? .white : .black)
                     .frame(height: 52)
                     .clipShape(RoundedRectangle(cornerRadius: 12))
                     
@@ -69,11 +70,12 @@ struct AuthView: View {
                         .overlay(
                             RoundedRectangle(cornerRadius: 12)
                                 .strokeBorder(
-                                    Color.primary.opacity(0.12),
+                                    Color.primary.opacity(colorScheme == .dark ? 0.25 : 0.12),
                                     lineWidth: 1
                                 )
                         )
                     }
+                    .buttonStyle(.plain)
                 }
                 .padding(.horizontal, 24)
                 
@@ -86,8 +88,6 @@ struct AuthView: View {
                     .padding(.bottom, 8)
             }
             .background(Color(.systemGroupedBackground))
-            // Фон тягнеться під home indicator, щоб groupedBackground не обривався
-            // видимою межею над безпечною зоною знизу.
             .ignoresSafeArea(.container, edges: .bottom)
             .onChange(of: viewModel.authError) {
                 showError = true
@@ -106,4 +106,3 @@ struct AuthView: View {
 #Preview {
     AuthView(viewModel: AuthViewModel())
 }
-
