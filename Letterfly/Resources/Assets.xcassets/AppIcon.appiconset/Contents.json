@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "pawLetterAPPicon.png",
+      "filename" : "letterflyAPPicon.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
@@ -13,7 +13,7 @@
           "value" : "dark"
         }
       ],
-      "filename" : "pawLetterDARKicon.png",
+      "filename" : "letterflyDARKicon.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
@@ -25,7 +25,7 @@
           "value" : "tinted"
         }
       ],
-      "filename" : "pawLetterICONtinted.png",
+      "filename" : "letterflyICONtinted.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
