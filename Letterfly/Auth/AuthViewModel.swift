@@ -29,7 +29,7 @@ class AuthViewModel {
     var authError: AuthError?
     
     enum AuthError: LocalizedError, Equatable{
-        case noInternet, unknown(String)
+        case noInternet, unknown(String), requiresRecentLogin
         
         var errorDescription: String? {
             switch self {
@@ -37,6 +37,8 @@ class AuthViewModel {
                 return "No Internet connection"
             case .unknown(let message):
                 return message
+            case .requiresRecentLogin:
+                return "For your security, please sign out and sign back in, then try deleting your account again."
             }
         }
     }
@@ -258,6 +260,28 @@ class AuthViewModel {
             partnerNickname = nickname
         } catch {
             print("error: \(error.localizedDescription)")
+        }
+    }
+    
+    func deleteAccount() async {
+        guard let user = Auth.auth().currentUser else { return }
+        let uid = user.uid
+        let currentPairID = pairID
+
+        do {
+            try await userServices.deleteUserDocument(uid: uid, pairID: currentPairID)
+            try await user.delete()
+
+            isLogged = false
+            pairID = nil
+            displayName = nil
+            partnerNickname = nil
+            partnerDisplayName = nil
+            userID = nil
+        } catch let error as NSError where error.code == AuthErrorCode.requiresRecentLogin.rawValue {
+            authError = .requiresRecentLogin
+        } catch {
+            authError = .unknown(error.localizedDescription)
         }
     }
 }
