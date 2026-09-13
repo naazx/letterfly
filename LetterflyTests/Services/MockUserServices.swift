@@ -17,7 +17,6 @@ class MockUserServices: UserServiceProtocol {
         profilesByUID[uid] ?? defaultProfile
     }
     
-    // решта методів без змін
     func createUserDocument(uid: String, inviteCode: String) async throws {
         
     }
@@ -37,6 +36,10 @@ class MockUserServices: UserServiceProtocol {
         
     }
     func updatePartnerNickname(uid: String, nickname: String) async throws {
+        
+    }
+    
+    func deleteUserDocument(uid: String, pairID: String?) async throws {
         
     }
 }

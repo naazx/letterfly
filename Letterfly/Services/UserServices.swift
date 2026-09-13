@@ -17,6 +17,7 @@ protocol UserServiceProtocol {
     func fetchUserProfile(uid: String) async throws -> (inviteCode: String?, avatarURL: String?, displayName: String?, pairID: String?, partnerNickname: String?)
     func updateDisplayName(uid: String, name: String) async throws
     func updatePartnerNickname(uid: String, nickname: String) async throws
+    func deleteUserDocument(uid: String, pairID: String?) async throws
 }
 
 class UserServices: UserServiceProtocol {
@@ -101,5 +102,14 @@ class UserServices: UserServiceProtocol {
         try await db.collection("users").document(uid).updateData(
             ["partnerNickname": nickname]
         )
+    }
+    
+    func deleteUserDocument(uid: String, pairID: String?) async throws {
+        if let pairID {
+            try await db.collection("pairs").document(pairID).updateData([
+                "members": FieldValue.arrayRemove([uid])
+            ])
+        }
+        try await db.collection("users").document(uid).delete()
     }
 }
