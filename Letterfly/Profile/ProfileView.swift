@@ -34,6 +34,11 @@ struct ProfileView: View {
     @State private var logoutTapped = false
     @State private var logoutConfirmed = false
     
+    @State private var showDeleteDialog = false
+    @State private var isDeletingAccount = false
+    @State private var deleteTapped = false
+    @State private var deleteConfirmed = false
+    
 
     var authViewModel: AuthViewModel
     var homeViewModel: HomeViewModel
@@ -71,6 +76,23 @@ struct ProfileView: View {
                     await profileViewModel.loadProfile()
                     await profileViewModel.loadPair(pairID: authViewModel.pairID)
                 }
+                .confirmationDialog(
+                    "Delete your account?",
+                    isPresented: $showDeleteDialog,
+                    titleVisibility: .visible
+                ) {
+                    Button("Delete Account", role: .destructive) {
+                        deleteConfirmed.toggle()
+                        Task {
+                            isDeletingAccount = true
+                            await authViewModel.deleteAccount()
+                            isDeletingAccount = false
+                        }
+                    }
+                    Button("Cancel", role: .cancel) { }
+                } message: {
+                    Text("This permanently deletes your account and profile. Your partner will keep any letters already exchanged, but you'll lose access to them. This can't be undone.")
+                }
         }
         .sensoryFeedback(.impact(weight: .light), trigger: nameEditToggled)
         .sensoryFeedback(.success, trigger: codeCopyTapped)
@@ -79,6 +101,8 @@ struct ProfileView: View {
         .sensoryFeedback(.impact(weight: .light), trigger: fullScreenDismissed)
         .sensoryFeedback(.impact(weight: .light), trigger: logoutTapped)
         .sensoryFeedback(.impact(weight: .heavy), trigger: logoutConfirmed)
+        .sensoryFeedback(.impact(weight: .light), trigger: deleteTapped)
+        .sensoryFeedback(.impact(weight: .heavy), trigger: deleteConfirmed)
     }
     private var profileForm: some View {
         ScrollView(showsIndicators: false) {
@@ -498,14 +522,34 @@ private var pairInfoSection: some View {
         .padding()
     }
     private var logoutSection: some View {
-        Button("Logout", role: .destructive) {
-            logoutTapped.toggle()
-            showLogoutDialog = true
+        VStack(spacing: 12) {
+            Button("Logout", role: .destructive) {
+                logoutTapped.toggle()
+                showLogoutDialog = true
+            }
+            .frame(maxWidth: .infinity)
+            .padding()
+            .background(Color.red.opacity(0.15))
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+
+            Button {
+                deleteTapped.toggle()
+                showDeleteDialog = true
+            } label: {
+                if isDeletingAccount {
+                    ProgressView()
+                        .frame(maxWidth: .infinity)
+                } else {
+                    Text("Delete Account")
+                        .frame(maxWidth: .infinity)
+                }
+            }
+            .foregroundStyle(.red)
+            .padding()
+            .background(Color(.secondarySystemGroupedBackground))
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .disabled(isDeletingAccount)
         }
-        .frame(maxWidth: .infinity)
-        .padding()
-        .background(Color.red.opacity(0.15))
-        .clipShape(RoundedRectangle(cornerRadius: 16))
     }
     private var avatarSection: some View {
         VStack(spacing: 18) {
