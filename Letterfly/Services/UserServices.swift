@@ -106,7 +106,20 @@ class UserServices: UserServiceProtocol {
     
     func deleteUserDocument(uid: String, pairID: String?) async throws {
         if let pairID {
-            try await db.collection("pairs").document(pairID).updateData([
+            let pairRef = db.collection("pairs").document(pairID)
+            let snapshot = try await pairRef.getDocument()
+
+            if let members = snapshot.data()?["members"] as? [String] {
+                let partnerID = members.first(where: { $0 != uid })
+
+                if let partnerID {
+                    try await db.collection("users").document(partnerID).updateData([
+                        "pairID": NSNull()
+                    ])
+                }
+            }
+
+            try await pairRef.updateData([
                 "members": FieldValue.arrayRemove([uid])
             ])
         }
