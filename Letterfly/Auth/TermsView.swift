@@ -51,7 +51,7 @@ struct TermsView: View {
                         )
                     }
 
-                    Text("By continuing, you agree to our [Terms of Use and Privacy Policy](https://naazx.github.io/letterfly-legal/).")
+                    Text("By continuing, you agree to our [Terms of Use](https://naazx.github.io/letterfly-legal/terms.html) and [Privacy Policy](https://naazx.github.io/letterfly-legal/).")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
