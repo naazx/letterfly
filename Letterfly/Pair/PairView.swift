@@ -128,6 +128,9 @@ struct PairView: View {
                                 } catch PairError.selfSearch {
                                     errorMessage = "You can't pair with your own code."
                                     showError = true
+                                } catch PairError.blocked {
+                                    errorMessage = "You can't pair with this user."
+                                    showError = true
                                 } catch {
                                     errorMessage = error.localizedDescription
                                     showError = true

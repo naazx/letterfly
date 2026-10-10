@@ -23,10 +23,14 @@ struct LetterDetailView: View {
     @State private var menuActionTapped = false
     @State private var playbackToggled = false
     @State private var letterDeleted = false
+    @State private var showReportDialog: Bool = false
+    @State private var showReportConfirmation: Bool = false
+    @State private var reportError: Bool = false
     
     let letter: Letter
     let pairID: String
     var letterServices = LetterServices()
+    var reportServices: ReportServiceProtocol = ReportServices()
     var currentUserID: String?
     var partnerName: String?
     var locationService: LocationService
@@ -121,6 +125,10 @@ struct LetterDetailView: View {
                         showDeleteConfirmation = true
                         menuActionTapped.toggle()
                     }
+                    Button("Report", systemImage: "flag", role: .destructive) {
+                        showReportDialog = true
+                        menuActionTapped.toggle()
+                    }
                 } label: {
                     Image(systemName: "ellipsis.circle")
                 }
@@ -147,6 +155,30 @@ struct LetterDetailView: View {
             Button("Ok") {}
         } message:{
             Text("Something went wrong")
+        }
+        .confirmationDialog("Report this letter?", isPresented: $showReportDialog, titleVisibility: .visible) {
+            Button("Report as objectionable", role: .destructive) {
+                guard let id = letter.id, let reporterID = currentUserID else { return }
+                Task {
+                    do {
+                        try await reportServices.reportLetter(letterID: id, pairID: pairID, reportedUserID: letter.authorID, reporterID: reporterID, reason: "objectionable_content")
+                        showReportConfirmation = true
+                    } catch {
+                        reportError = true
+                    }
+                }
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("We'll review this letter and take action if it violates our guidelines.")
+        }
+        .alert("Reported", isPresented: $showReportConfirmation) {
+            Button("OK") {}
+        } message: {
+            Text("Thank you. We'll review this letter within 24 hours.")
+        }
+        .alert("Something went wrong", isPresented: $reportError) {
+            Button("OK") {}
         }
         .sheet(isPresented: $isShowingEdit) {
             NewLetterView(

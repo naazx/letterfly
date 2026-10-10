@@ -42,4 +42,14 @@ class MockUserServices: UserServiceProtocol {
     func deleteUserDocument(uid: String, pairID: String?) async throws {
         
     }
+    
+    var blockedPairs: Set<String> = []
+    
+    func blockPartner(myUID: String, partnerUID: String, pairID: String) async throws {
+        blockedPairs.insert("\(myUID)_\(partnerUID)")
+    }
+    
+    func isBlocked(myUID: String, otherUID: String) async throws -> Bool {
+        blockedPairs.contains("\(myUID)_\(otherUID)") || blockedPairs.contains("\(otherUID)_\(myUID)")
+    }
 }

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     @AppStorage("appTheme") private var appTheme: Int = 1
+    @AppStorage("hasAcceptedTerms") private var hasAcceptedTerms: Bool = false
     @State private var authViewModel = AuthViewModel()
     
     var body: some View {
@@ -16,6 +17,9 @@ struct ContentView: View {
         Group{
             if authViewModel.isLoadingPairID{
                 LetterLoadingView()
+            }
+            else if !hasAcceptedTerms{
+                TermsView(hasAcceptedTerms: $hasAcceptedTerms)
             }
             else if authViewModel.isLogged == false{
                 AuthView(viewModel: authViewModel)

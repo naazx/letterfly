@@ -18,6 +18,8 @@ protocol UserServiceProtocol {
     func updateDisplayName(uid: String, name: String) async throws
     func updatePartnerNickname(uid: String, nickname: String) async throws
     func deleteUserDocument(uid: String, pairID: String?) async throws
+    func blockPartner(myUID: String, partnerUID: String, pairID: String) async throws
+    func isBlocked(myUID: String, otherUID: String) async throws -> Bool
 }
 
 class UserServices: UserServiceProtocol {
@@ -124,5 +126,31 @@ class UserServices: UserServiceProtocol {
             ])
         }
         try await db.collection("users").document(uid).delete()
+    }
+    
+    func blockPartner(myUID: String, partnerUID: String, pairID: String) async throws {
+        let pairRef = db.collection("pairs").document(pairID)
+
+        try await db.collection("users").document(partnerUID).updateData([
+            "pairID": NSNull()
+        ])
+        try await db.collection("users").document(myUID).updateData([
+            "pairID": NSNull()
+        ])
+        try await pairRef.updateData([
+            "members": FieldValue.arrayRemove([myUID, partnerUID])
+        ])
+
+        try await db.collection("blockedPairs").document("\(myUID)_\(partnerUID)").setData([
+            "blockerID": myUID,
+            "blockedID": partnerUID,
+            "createdAt": Timestamp(date: Date())
+        ])
+    }
+    
+    func isBlocked(myUID: String, otherUID: String) async throws -> Bool {
+        let doc1 = try await db.collection("blockedPairs").document("\(myUID)_\(otherUID)").getDocument()
+        let doc2 = try await db.collection("blockedPairs").document("\(otherUID)_\(myUID)").getDocument()
+        return doc1.exists || doc2.exists
     }
 }

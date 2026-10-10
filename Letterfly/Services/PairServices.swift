@@ -9,7 +9,7 @@ import Foundation
 import FirebaseFirestore
 
 enum PairError: Error {
-    case codeNotFound, selfSearch
+    case codeNotFound, selfSearch, blocked
 }
 
 protocol PairServiceProtocol {
@@ -29,6 +29,9 @@ class PairServices: PairServiceProtocol {
         }
         if partnerID == myUID {
             throw PairError.selfSearch
+        }
+        if try await userServices.isBlocked(myUID: myUID, otherUID: partnerID) {
+            throw PairError.blocked
         }
 
         let newPairRef = db.collection("pairs").document()

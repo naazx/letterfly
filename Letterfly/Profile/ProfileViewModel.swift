@@ -31,6 +31,27 @@ class ProfileViewModel{
     }
     
     var pair: Pair?
+    var partnerUID: String?
+    
+    func loadPartnerUID(pairID: String?, myUID: String?) async {
+        guard let pairID, let myUID else { return }
+        do {
+            partnerUID = try await pairServices.fetchPartnerID(pairID: pairID, myUID: myUID)
+        } catch {
+            // Non-critical — the block button just stays disabled without a partner UID.
+        }
+    }
+    
+    func blockPartner(myUID: String, partnerUID: String, pairID: String) async -> Bool {
+        do {
+            try await userServices.blockPartner(myUID: myUID, partnerUID: partnerUID, pairID: pairID)
+            return true
+        } catch {
+            errorMessage = "ERROR: \(error.localizedDescription)"
+            showError = true
+            return false
+        }
+    }
     
     func loadAndUpload(item: PhotosPickerItem) async {
         isLoading = true

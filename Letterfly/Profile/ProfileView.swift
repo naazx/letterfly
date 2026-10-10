@@ -39,6 +39,11 @@ struct ProfileView: View {
     @State private var deleteTapped = false
     @State private var deleteConfirmed = false
     
+    @State private var showBlockDialog = false
+    @State private var isBlockingPartner = false
+    @State private var blockTapped = false
+    @State private var blockConfirmed = false
+    
 
     var authViewModel: AuthViewModel
     var homeViewModel: HomeViewModel
@@ -75,6 +80,7 @@ struct ProfileView: View {
                 .task {
                     await profileViewModel.loadProfile()
                     await profileViewModel.loadPair(pairID: authViewModel.pairID)
+                    await profileViewModel.loadPartnerUID(pairID: authViewModel.pairID, myUID: authViewModel.userID)
                 }
                 .confirmationDialog(
                     "Delete your account?",
@@ -93,6 +99,29 @@ struct ProfileView: View {
                 } message: {
                     Text("This permanently deletes your account and profile. Your partner will keep any letters already exchanged, but you'll lose access to them. This can't be undone.")
                 }
+                .confirmationDialog(
+                    "Block your partner?",
+                    isPresented: $showBlockDialog,
+                    titleVisibility: .visible
+                ) {
+                    Button("Block & Unpair", role: .destructive) {
+                        blockConfirmed.toggle()
+                        guard let myUID = authViewModel.userID,
+                              let partnerUID = profileViewModel.partnerUID,
+                              let pairID = authViewModel.pairID else { return }
+                        Task {
+                            isBlockingPartner = true
+                            let success = await profileViewModel.blockPartner(myUID: myUID, partnerUID: partnerUID, pairID: pairID)
+                            isBlockingPartner = false
+                            if success {
+                                authViewModel.pairID = nil
+                            }
+                        }
+                    }
+                    Button("Cancel", role: .cancel) { }
+                } message: {
+                    Text("This immediately ends your pairing, removes their letters from your view, and reports them for review. This can't be undone.")
+                }
         }
         .sensoryFeedback(.impact(weight: .light), trigger: nameEditToggled)
         .sensoryFeedback(.success, trigger: codeCopyTapped)
@@ -103,6 +132,8 @@ struct ProfileView: View {
         .sensoryFeedback(.impact(weight: .heavy), trigger: logoutConfirmed)
         .sensoryFeedback(.impact(weight: .light), trigger: deleteTapped)
         .sensoryFeedback(.impact(weight: .heavy), trigger: deleteConfirmed)
+        .sensoryFeedback(.impact(weight: .light), trigger: blockTapped)
+        .sensoryFeedback(.impact(weight: .heavy), trigger: blockConfirmed)
     }
     private var profileForm: some View {
         ScrollView(showsIndicators: false) {
@@ -114,6 +145,8 @@ struct ProfileView: View {
                 userInfoSection
                 
                 pairInfoSection
+                
+                blockPartnerSection
                 
                 logoutSection
             }
@@ -520,6 +553,25 @@ private var pairInfoSection: some View {
             Spacer()
         }
         .padding()
+    }
+    private var blockPartnerSection: some View {
+        Button {
+            blockTapped.toggle()
+            showBlockDialog = true
+        } label: {
+            if isBlockingPartner {
+                ProgressView()
+                    .frame(maxWidth: .infinity)
+            } else {
+                Label("Block Partner", systemImage: "person.crop.circle.badge.xmark")
+                    .frame(maxWidth: .infinity)
+            }
+        }
+        .foregroundStyle(.red)
+        .padding()
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .disabled(isBlockingPartner || profileViewModel.partnerUID == nil)
     }
     private var logoutSection: some View {
         VStack(spacing: 12) {

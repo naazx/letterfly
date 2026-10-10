@@ -17,6 +17,7 @@ class NewLetterViewModel {
         var subject: String = ""
         var text: String?
         let letterServices: LetterServiceProtocol
+        let moderationService: ContentModerationServiceProtocol
         var previewImage: UIImage?
         var selectedImageData: Data?
         
@@ -40,9 +41,10 @@ class NewLetterViewModel {
         }
         var inputMode: InputMode = .text
     
-    init(existingLetter: Letter? = nil, storageService: StorageServiceProtocol = StorageService(), letterServices: LetterServiceProtocol = LetterServices()) {
+    init(existingLetter: Letter? = nil, storageService: StorageServiceProtocol = StorageService(), letterServices: LetterServiceProtocol = LetterServices(), moderationService: ContentModerationServiceProtocol = ContentModerationService()) {
             self.storageService = storageService
             self.letterServices = letterServices
+            self.moderationService = moderationService
             self.existingLetter = existingLetter
             self.subject = existingLetter?.subject ?? ""
             self.text = existingLetter?.text ?? ""
@@ -83,6 +85,12 @@ class NewLetterViewModel {
         selectedImageData = compression
     }
     func send(pairID: String, authorID: String, recordingURL: URL?, location: Letter.LetterLocation?) async {
+        if moderationService.containsObjectionableContent(subject) || moderationService.containsObjectionableContent(text ?? "") {
+            errorMessage = "Your letter contains language that isn't allowed here. Please edit it and try again."
+            showError = true
+            return
+        }
+        
         isLoading = true
         defer{ isLoading = false }
         
