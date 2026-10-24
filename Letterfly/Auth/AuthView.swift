@@ -1,34 +1,44 @@
 import SwiftUI
 import AuthenticationServices
 import GoogleSignInSwift
+import FirebaseAuth
 
 struct AuthView: View {
     @State private var showError: Bool = false
+    @State private var logoTapCount = 0
+    @State private var showDemoSignIn = false
     @Environment(\.colorScheme) private var colorScheme
-    
+
     var viewModel: AuthViewModel
-    
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                
+
                 Spacer()
-                
+
                 VStack(spacing: 14) {
                     Image(systemName: "envelope.fill")
                         .font(.system(size: 42, weight: .medium))
                         .foregroundStyle(.pink)
-                    
+                        .onTapGesture {
+                            logoTapCount += 1
+                            if logoTapCount >= 5 {
+                                showDemoSignIn = true
+                                logoTapCount = 0
+                            }
+                        }
+
                     VStack(spacing: 6) {
                         Text("Letterfly")
                             .font(.largeTitle.bold())
-                        
+
                         Text("Letters made for you.")
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                     }
                 }
-                
+
                 Spacer()
                 
                 VStack(spacing: 12) {
@@ -99,6 +109,14 @@ struct AuthView: View {
                 }
             } message: {
                 Text(viewModel.authError?.errorDescription ?? "")
+            }
+            .alert("Reviewer Sign-In", isPresented: $showDemoSignIn) {
+                Button("Sign In") {
+                    Task {
+                        await viewModel.signInDemo()
+                    }
+                }
+                Button("Cancel", role: .cancel) {}
             }
         }
     }

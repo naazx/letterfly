@@ -187,6 +187,18 @@ class AuthViewModel {
                 if !existingDoc.exists {
                     let code = try await userServices.generateUniqueInviteCode()
                     try await userServices.createUserDocument(uid: userIDlocal, inviteCode: code)
+
+                    // Apple only hands back the name on this very first sign-in.
+                    // Save it now so NameSetupView is skipped entirely, per
+                    // Sign in with Apple HIG — never ask again for info Apple already gave us.
+                    if let fullName = appleIDCredential.fullName {
+                        let formatter = PersonNameComponentsFormatter()
+                        let nameString = formatter.string(from: fullName)
+                            .trimmingCharacters(in: .whitespaces)
+                        if !nameString.isEmpty {
+                            try? await userServices.updateDisplayName(uid: userIDlocal, name: nameString)
+                        }
+                    }
                 }
 
                 await loadUserData(uid: userIDlocal)
@@ -200,6 +212,25 @@ class AuthViewModel {
             if let mapError{
                 authError = mapError
             }
+        }
+    }
+
+    // App Review reviewer sign-in — bypasses Apple/Google OAuth entirely so
+    // Google's "new device" security check never blocks review again.
+    func signInDemo() async {
+        do {
+            let authResult = try await Auth.auth().signIn(
+                withEmail: "appreview@letterfly.app",
+                password: "Letterfly-Review-2026!"
+            )
+            let userIDlocal = authResult.user.uid
+            self.userID = userIDlocal
+            isLoadingPairID = true
+
+            await loadUserData(uid: userIDlocal)
+            isLogged = true
+        } catch {
+            authError = .unknown(error.localizedDescription)
         }
     }
 
