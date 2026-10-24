@@ -6,19 +6,28 @@
 //
 
 import Foundation
-@testable import PawLetter
+@testable import Letterfly
 
 class MockStorageService: StorageServiceProtocol {
     var errorToThrow: Error?
+    var deleteErrorToThrow: Error?
+    private(set) var uploadedPaths: [String] = []
+    private(set) var uploadedData: [Data] = []
+    private(set) var deletedPaths: [String] = []
     
     func uploadFile(data: Data, path: String) async throws -> URL {
+        uploadedPaths.append(path)
+        uploadedData.append(data)
         if let error = errorToThrow {
             throw error
         } else {
-            URL(string: "https://fake.com/\(path)")!
+            return URL(string: "https://fake.com/\(path)")!
         }
     }
     func deleteFile(path: String) async throws {
-        
+        deletedPaths.append(path)
+        if let error = deleteErrorToThrow {
+            throw error
+        }
     }
 }

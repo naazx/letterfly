@@ -7,7 +7,7 @@
 
 import Foundation
 import Testing
-@testable import PawLetter
+@testable import Letterfly
 
 @MainActor
 struct AuthViewModelTests {
@@ -60,6 +60,61 @@ struct AuthViewModelTests {
         let result = viewModel.mapError(error)
         
         #expect(result?.localizedDescription == "nazar loves nastia")
+    }
+
+    @Test func loadUserData_clearsOldPartnerWhenNewProfileHasNoPair() async {
+        let users = MockUserServices()
+        users.profilesByUID["paired"] = (nil, nil, "Nazar", "pair-1", nil)
+        users.profilesByUID["single"] = (nil, nil, "Nazar", nil, nil)
+        let pairs = MockPairServices()
+        pairs.partnerID = "partner"
+        users.profilesByUID["partner"] = (nil, nil, "Partner", nil, nil)
+        let viewModel = AuthViewModel(userServices: users, pairServices: pairs)
+
+        await viewModel.loadUserData(uid: "paired")
+        await viewModel.loadUserData(uid: "single")
+
+        #expect(viewModel.pairID == nil)
+        #expect(viewModel.partnerDisplayName == nil)
+    }
+
+    @Test func loadUserData_pairWithoutPartnerClearsPartnerName() async {
+        let users = MockUserServices()
+        users.profilesByUID["me"] = (nil, nil, "Nazar", "pair-1", nil)
+        users.profilesByUID["oldPartner"] = (nil, nil, "Old", nil, nil)
+        let pairs = MockPairServices()
+        pairs.partnerID = "oldPartner"
+        let viewModel = AuthViewModel(userServices: users, pairServices: pairs)
+
+        await viewModel.loadUserData(uid: "me")
+        pairs.partnerID = nil
+        await viewModel.loadUserData(uid: "me")
+
+        #expect(viewModel.partnerDisplayName == nil)
+    }
+
+    @Test func loadUserData_fetchFailureEndsLoadingState() async {
+        let users = MockUserServices()
+        users.fetchProfileError = NSError(domain: "test", code: 1)
+        let viewModel = AuthViewModel(userServices: users, pairServices: MockPairServices())
+        viewModel.isLoadingPairID = true
+
+        await viewModel.loadUserData(uid: "me")
+
+        #expect(!viewModel.isLoadingPairID)
+    }
+
+    @Test func loadUserData_fetchesCurrentAndPartnerProfiles() async {
+        let users = MockUserServices()
+        users.profilesByUID["me"] = (nil, nil, "Nazar", "pair-1", nil)
+        users.profilesByUID["partner"] = (nil, nil, "Partner", nil, nil)
+        let pairs = MockPairServices()
+        pairs.partnerID = "partner"
+        let viewModel = AuthViewModel(userServices: users, pairServices: pairs)
+
+        await viewModel.loadUserData(uid: "me")
+
+        #expect(users.fetchedProfileUIDs == ["me", "partner"])
     }
 
 }

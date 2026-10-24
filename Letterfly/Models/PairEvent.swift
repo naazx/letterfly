@@ -23,7 +23,7 @@ extension PairEvent {
         components.year = calendar.component(.year, from: Date())
         
         let thisYearDate = calendar.date(from: components)!
-        if thisYearDate < Date() {
+        if calendar.startOfDay(for: thisYearDate) < calendar.startOfDay(for: Date()) {
             components.year! += 1
             return calendar.date(from: components)!
         }

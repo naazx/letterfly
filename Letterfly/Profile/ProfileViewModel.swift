@@ -34,6 +34,7 @@ class ProfileViewModel{
     var partnerUID: String?
     
     func loadPartnerUID(pairID: String?, myUID: String?) async {
+        partnerUID = nil
         guard let pairID, let myUID else { return }
         do {
             partnerUID = try await pairServices.fetchPartnerID(pairID: pairID, myUID: myUID)
@@ -120,6 +121,7 @@ class ProfileViewModel{
         }
     }
     func loadPair(pairID: String?) async {
+        pair = nil
         guard let pID = pairID else { return }
         do{
             pair = try await pairServices.fetchPair(pairID: pID)

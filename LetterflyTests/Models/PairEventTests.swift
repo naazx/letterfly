@@ -8,7 +8,7 @@
 import Foundation
 import Testing
 
-@testable import PawLetter
+@testable import Letterfly
 
 struct PairEventTests {
 
@@ -54,5 +54,25 @@ struct PairEventTests {
         )
         
         #expect(event.nextOccurrence == expectedDate)
+    }
+
+    @Test func nextOccurrence_keepsTodayAsCurrentOccurrence() {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: .now)
+        let historicalDate = calendar.date(byAdding: .year, value: -5, to: today)!
+        let event = PairEvent(title: "Today", date: historicalDate, isRecurring: true, createdBy: "user1")
+
+        #expect(calendar.isDate(event.nextOccurrence, inSameDayAs: today))
+    }
+
+    @Test func nextOccurrence_movesPastRecurringDateToNextYear() {
+        let calendar = Calendar.current
+        let pastDate = calendar.date(byAdding: .day, value: -2, to: .now)!
+        let event = PairEvent(title: "Past", date: pastDate, isRecurring: true, createdBy: "user1")
+        let expectedYear = calendar.component(.year, from: .now) + 1
+
+        #expect(calendar.component(.year, from: event.nextOccurrence) == expectedYear)
+        #expect(calendar.component(.month, from: event.nextOccurrence) == calendar.component(.month, from: pastDate))
+        #expect(calendar.component(.day, from: event.nextOccurrence) == calendar.component(.day, from: pastDate))
     }
 }

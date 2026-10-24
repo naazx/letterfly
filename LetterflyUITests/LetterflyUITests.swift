@@ -23,19 +23,43 @@ final class LetterflyUITests: XCTestCase {
     }
 
     @MainActor
-    func testExample() throws {
-        // UI tests must launch the application that they test.
+    func testTermsAcceptanceAdvancesPastSafetyGate() throws {
         let app = XCUIApplication()
+        app.launchArguments += ["--ui-testing"]
         app.launch()
 
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+        let title = app.staticTexts["Before you start"]
+        let continueButton = app.buttons["Agree and Continue"]
+        XCTAssertTrue(title.waitForExistence(timeout: 5))
+        XCTAssertTrue(continueButton.exists)
+
+        continueButton.tap()
+
+        let buttonDisappeared = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "exists == false"),
+            object: continueButton
+        )
+        XCTAssertEqual(XCTWaiter.wait(for: [buttonDisappeared], timeout: 5), .completed)
+    }
+
+    @MainActor
+    func testTermsScreenIncludesReportingAndBlockingRules() throws {
+        let app = XCUIApplication()
+        app.launchArguments += ["--ui-testing"]
+        app.launch()
+
+        XCTAssertTrue(app.staticTexts["Reporting"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Blocking"].exists)
+        XCTAssertTrue(app.staticTexts["Our response"].exists)
     }
 
     @MainActor
     func testLaunchPerformance() throws {
         // This measures how long it takes to launch your application.
         measure(metrics: [XCTApplicationLaunchMetric()]) {
-            XCUIApplication().launch()
+            let app = XCUIApplication()
+            app.launchArguments += ["--ui-testing"]
+            app.launch()
         }
     }
 }

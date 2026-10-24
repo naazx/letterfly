@@ -256,6 +256,7 @@ class AuthViewModel {
     }
 
     func loadUserData(uid: String) async {
+        partnerDisplayName = nil
         do {
             let profile = try await userServices.fetchUserProfile(uid: uid)
             pairID = profile.pairID

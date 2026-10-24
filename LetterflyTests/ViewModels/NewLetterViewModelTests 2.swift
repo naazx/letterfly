@@ -7,7 +7,7 @@
 
 import Foundation
 import Testing
-@testable import PawLetter
+@testable import Letterfly
 
 @MainActor
 struct NewLetterViewModelTests {

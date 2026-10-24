@@ -6,15 +6,21 @@
 //
 
 import Foundation
-@testable import PawLetter
+@testable import Letterfly
 
 
 class MockUserServices: UserServiceProtocol {
     var profilesByUID: [String: (inviteCode: String?, avatarURL: String?, displayName: String?, pairID: String?, partnerNickname: String?)] = [:]
     var defaultProfile: (inviteCode: String?, avatarURL: String?, displayName: String?, pairID: String?, partnerNickname: String?) = (nil, nil, nil, nil, nil)
+    private(set) var fetchedProfileUIDs: [String] = []
+    var fetchProfileError: Error?
+    var blockPartnerError: Error?
+    private(set) var lastBlockRequest: (myUID: String, partnerUID: String, pairID: String)?
 
     func fetchUserProfile(uid: String) async throws -> (inviteCode: String?, avatarURL: String?, displayName: String?, pairID: String?, partnerNickname: String?) {
-        profilesByUID[uid] ?? defaultProfile
+        fetchedProfileUIDs.append(uid)
+        if let fetchProfileError { throw fetchProfileError }
+        return profilesByUID[uid] ?? defaultProfile
     }
     
     func createUserDocument(uid: String, inviteCode: String) async throws {
@@ -46,6 +52,8 @@ class MockUserServices: UserServiceProtocol {
     var blockedPairs: Set<String> = []
     
     func blockPartner(myUID: String, partnerUID: String, pairID: String) async throws {
+        lastBlockRequest = (myUID, partnerUID, pairID)
+        if let blockPartnerError { throw blockPartnerError }
         blockedPairs.insert("\(myUID)_\(partnerUID)")
     }
     

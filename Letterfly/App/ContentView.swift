@@ -13,24 +13,25 @@ struct ContentView: View {
     @State private var authViewModel = AuthViewModel()
     
     var body: some View {
-        
-        Group{
-            if authViewModel.isLoadingPairID{
+        Group {
+            switch AppRoute.resolve(
+                isLoadingPairID: authViewModel.isLoadingPairID,
+                hasAcceptedTerms: hasAcceptedTerms,
+                isLogged: authViewModel.isLogged,
+                displayName: authViewModel.displayName,
+                pairID: authViewModel.pairID
+            ) {
+            case .loading:
                 LetterLoadingView()
-            }
-            else if !hasAcceptedTerms{
+            case .terms:
                 TermsView(hasAcceptedTerms: $hasAcceptedTerms)
-            }
-            else if authViewModel.isLogged == false{
+            case .authentication:
                 AuthView(viewModel: authViewModel)
-            }
-            else if authViewModel.displayName == nil{
+            case .nameSetup:
                 NameSetupView(authViewModel: authViewModel)
-            }
-            else if authViewModel.pairID == nil{
+            case .pairing:
                 PairView(viewModel: authViewModel)
-            }
-            else{
+            case .main:
                 MainTabView(viewModel: authViewModel)
             }
         }

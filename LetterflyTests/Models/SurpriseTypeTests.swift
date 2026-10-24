@@ -7,7 +7,7 @@
 
 import Testing
 
-@testable import PawLetter
+@testable import Letterfly
 
 struct SurpriseTypeTests {
 

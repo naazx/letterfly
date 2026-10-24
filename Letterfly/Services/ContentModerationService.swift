@@ -21,6 +21,10 @@ class ContentModerationService: ContentModerationServiceProtocol {
 
     func containsObjectionableContent(_ text: String) -> Bool {
         let normalized = text.lowercased()
-        return blockedWords.contains { normalized.contains($0) }
+        return blockedWords.contains { word in
+            let escapedWord = NSRegularExpression.escapedPattern(for: word)
+            let pattern = "(?<![\\p{L}\\p{N}_])\(escapedWord)(?![\\p{L}\\p{N}_])"
+            return normalized.range(of: pattern, options: .regularExpression) != nil
+        }
     }
 }

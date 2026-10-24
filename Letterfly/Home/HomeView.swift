@@ -25,32 +25,16 @@ struct HomeView: View {
     
     var onOpenLocationInMap: (CLLocationCoordinate2D) -> Void
     
-    private var sortedLetters: [Letter] {
-        switch sortOption {
-        case .dateSent:
-            return  unlockedLetters.sorted { letter1, letter2 in
-                return letter1.createdAt > letter2.createdAt
-            }
-        case .name:
-            return unlockedLetters.sorted { letter1, letter2 in
-                return letter1.subject.lowercased() < letter2.subject.lowercased()
-            }
-        }
-    }
-    
     private var displayedLetters: [Letter] {
-        if searchText.isEmpty {
-            sortedLetters
-        } else {
-            sortedLetters.filter { $0.subject.localizedCaseInsensitiveContains(searchText) }
-        }
+        homeViewModel.displayedLetters(
+            searchText: searchText,
+            sortOption: sortOption,
+            currentUserID: currentUserID
+        )
     }
 
-    private var unlockedLetters: [Letter] {
-        homeViewModel.letters.filter { !$0.isLocked(for: currentUserID) }
-    }
     private var lockedLetters: [Letter] {
-        homeViewModel.letters.filter { $0.isLocked(for: currentUserID) }
+        homeViewModel.lockedLetters(for: currentUserID)
     }
     
     var body: some View {

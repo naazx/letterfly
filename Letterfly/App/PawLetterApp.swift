@@ -14,6 +14,12 @@ struct PawLetterApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @State private var pushService = PushNotificationService()
 
+    init() {
+        if ProcessInfo.processInfo.arguments.contains("--ui-testing") {
+            UserDefaults.standard.removeObject(forKey: "hasAcceptedTerms")
+        }
+    }
+
     var body: some Scene {
         WindowGroup {
              ContentView()
